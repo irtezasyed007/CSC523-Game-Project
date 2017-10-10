@@ -30,13 +30,13 @@ namespace CSC_523_Game
         //Invariant: {array.Length > 5}
         private string toPostfix()
         {
-            Stack<char>operands = new Stack<char>();
+            Stack<char> operands = new Stack<char>();
 
             string output = "";
 
             char[] array = function.ToCharArray();
 
-            for(int i = 0; i < array.Length; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 char c = array[i];
 
@@ -46,7 +46,7 @@ namespace CSC_523_Game
                         operands.Push(c);
                         break;
                     case ')':
-                        while(operands.Peek() != '(')
+                        while (operands.Peek() != '(')
                         {
                             output += operands.Pop().ToString();
                         }
@@ -85,27 +85,37 @@ namespace CSC_523_Game
         private List<Variable> identifyVariables()
         {
             char[] functionChars = function.ToCharArray();
-            List<Variable> uniqueVars = new List<Variable>();
+            List<Variable> variables = new List<Variable>();
+            List<char> uniqueVariables = new List<char>();
 
-            for(int i = 0; i < functionChars.Length; i++)
+            for (int i = 0; i < functionChars.Length; i++)
             {
                 char var = functionChars[i];
-                
+
                 if (Char.IsLetter(var))
                 {
                     var = Char.ToLower(var);
-                    Variable v = new Variable(var);
 
-                    if (!uniqueVars.Contains(v)) uniqueVars.Add(v);       
+                    if (!uniqueVariables.Contains(var))
+                    {
+                        uniqueVariables.Add(var);
+                        Variable v = new Variable(var);
+                        variables.Add(v);
+                    }
                 }
             }
 
-            return uniqueVars;
+            return variables;
         }
 
         public string getPostFix()
         {
             return this.postfix;
+        }
+
+        public void viewTruthTable()
+        {
+            truthTable.generateTruthTable();
         }
     }
 }
