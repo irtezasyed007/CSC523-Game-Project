@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CSC_523_Game
+namespace ConsoleApplication19
 {
 
     class TruthTable
@@ -22,7 +22,7 @@ namespace CSC_523_Game
             initPostfixStack();
             generateInputValues();
         }
-        
+
         private void initPostfixStack()
         {
             for (int i = 0; i < postfix.Length; i++)
@@ -30,7 +30,7 @@ namespace CSC_523_Game
                 postfixStack.Push(postfix[i]);
             }
         }
-        
+       
         private void generateInputValues()
         {
             int row = 1;
@@ -76,7 +76,7 @@ namespace CSC_523_Game
 
         private bool solveRow()
         {
-            Stack<string> infixStack = new Stack<string>();
+            Stack<Term> infixStack = new Stack<Term>();
             Dictionary<string, bool> termValues = new Dictionary<string, bool>();
             bool truthValueResult = true;
 
@@ -86,32 +86,40 @@ namespace CSC_523_Game
 
                 if (isOperator(token))
                 {
-                    string element1 = infixStack.Pop();
-                    string element2 = infixStack.Pop();
+                    Term t1 = infixStack.Pop();
+                    Term t2 = infixStack.Pop();
 
                     if (token == '+')
                     {
-                        string newTerm = element1 + '+' + element2;
-                        infixStack.Push(newTerm);
+                        string newTerm = t1.getExpression() + '+' + t2.getExpression();
+                        bool newTermValue = t1.getValue() || t2.getValue();
+                        Term term = new Term(newTerm, newTermValue);
+                        infixStack.Push(term);
                     }
 
                     else
                     {
-                        string newTerm = element1 + '*' + element2;
-                        infixStack.Push(newTerm);
+                        string newTerm = t1.getExpression() + '*' + t2.getExpression();
+                        bool newTermValue = t1.getValue() && t2.getValue();
+                        Term term = new Term(newTerm, newTermValue);
+                        infixStack.Push(term);
                     }
                 }
 
                 else
                 {
-                    infixStack.Push(token.ToString());
+                    infixStack.Push(new Term(token.ToString(), true));
                 }
             }
 
             return truthValueResult;
         }
 
-
+        private bool isOperator(char c)
+        {
+            if (c == '+' || c == '*') return true;
+            else return false;
+        }
 
         private Variable charToVariable(char c)
         {
