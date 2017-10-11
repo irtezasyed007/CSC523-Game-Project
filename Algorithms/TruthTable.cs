@@ -12,15 +12,25 @@ namespace CSC_523_Game
         private List<Variable> variables;
         private Dictionary<int, string> truthValues = new Dictionary<int, string>();
         private string postfix;
+        private Stack<char> postfixStack = new Stack<char>();
 
         public TruthTable(List<Variable> variables, string postfix)
         {
             this.variables = variables;
             this.size = 2 ^ variables.Count;
             this.postfix = postfix;
+            initPostfixStack();
             generateInputValues();
         }
-
+        
+        private void initPostfixStack()
+        {
+            for (int i = 0; i < postfix.Length; i++)
+            {
+                postfixStack.Push(postfix[i]);
+            }
+        }
+        
         private void generateInputValues()
         {
             int row = 1;
@@ -66,76 +76,35 @@ namespace CSC_523_Game
 
         private bool solveRow()
         {
-            char[] postfixCharArray = postfix.ToCharArray();
-            Stack<string> s = new Stack<string>();
+            Stack<string> infixStack = new Stack<string>();
             Dictionary<string, bool> termValues = new Dictionary<string, bool>();
             bool truthValueResult = true;
 
-            for (int i = 0; i < postfix.Count(); i++)
+            for (int i = 0; i < postfixStack.Count; i++)
             {
-                char c = postfixCharArray[i];
-               
-                switch (c)
+                char token = postfixStack.Pop();
+
+                if (isOperator(token))
                 {
-                    case '+':
-                        string literal = s.Pop();
-                        string trailingTerm = s.Pop();
-                        bool trailingTermTruthValue;
-                        string newTerm = "";
+                    string element1 = infixStack.Pop();
+                    string element2 = infixStack.Pop();
 
-                        //If the dicitonary does not contain the truth value of the trailing term,
-                        //create a new term and find that truth value then store back into stack and dictionary
-                        if (!termValues.TryGetValue(trailingTerm, out trailingTermTruthValue))
-                        {
-                            Variable v1 = charToVariable(trailingTerm.ToCharArray()[0]);
-                            Variable v2 = charToVariable(literal.ToCharArray()[0]);
-                            trailingTermTruthValue = v1.getTruthValue() || v2.getTruthValue();
-                            newTerm = trailingTerm + "+" + literal;
-                            termValues.Add(newTerm, trailingTermTruthValue);
-                            s.Push(newTerm);
-                            break;
-                        }
+                    if (token == '+')
+                    {
+                        string newTerm = element1 + '+' + element2;
+                        infixStack.Push(newTerm);
+                    }
 
-                        //If it does contain the truth value of the trailing term.
-                        else
-                        {
-                            Variable v = charToVariable(literal.ToCharArray()[0]);
-                            newTerm = trailingTerm + "+" + v.getVariable();
-                            truthValueResult = trailingTermTruthValue || v.getTruthValue();
-                            termValues.Add(newTerm, trailingTermTruthValue);
-                            s.Push(newTerm);
-                        }
-                        break;
-                    case '*':
-                        literal = s.Pop();
-                        trailingTerm = s.Pop();
+                    else
+                    {
+                        string newTerm = element1 + '*' + element2;
+                        infixStack.Push(newTerm);
+                    }
+                }
 
-                        //If the dicitonary does not contain the truth value of the trailing term,
-                        //create a new term and find that truth value then store back into stack and dictionary
-                        if (!termValues.TryGetValue(trailingTerm, out trailingTermTruthValue))
-                        {
-                            Variable v1 = charToVariable(trailingTerm.ToCharArray()[0]);
-                            Variable v2 = charToVariable(literal.ToCharArray()[0]);
-                            trailingTermTruthValue = v1.getTruthValue() && v2.getTruthValue();
-                            newTerm = trailingTerm + "*" + literal;
-                            termValues.Add(newTerm, trailingTermTruthValue);
-                            s.Push(newTerm);
-                            break;
-                        }
-
-                        //If it does contain the truth value of the trailing term.
-                        else
-                        {
-                            Variable v = charToVariable(literal.ToCharArray()[0]);
-                            newTerm = trailingTerm + "*" + v.getVariable();
-                            truthValueResult = trailingTermTruthValue && v.getTruthValue();
-                            termValues.Add(newTerm, trailingTermTruthValue);
-                            s.Push(newTerm);
-                        }
-                        break;
-                    default:
-                        s.Push(c.ToString());
-                        break;
+                else
+                {
+                    infixStack.Push(token.ToString());
                 }
             }
 
