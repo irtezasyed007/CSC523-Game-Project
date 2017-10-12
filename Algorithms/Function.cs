@@ -2,222 +2,119 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Collections;
 
 namespace CSC_523_Game
 {
-
-    class TruthTable
+    class Function
     {
-        private int variableCount;
-        private List<Variable> variables;
-        private List<Variable> uniqueVariables = new List<Variable>();
-        private Dictionary<int, string> truthValues = new Dictionary<int, string>();
+        //Two representations of the function
+        private string function;
         private string postfix;
+        private List<Variable> variables = new List<Variable>();
+        private TruthTable truthTable;
 
-        public TruthTable(List<Variable> variables, string postfix)
+        // ((A + B)*C)
+        // ((A + (B*C)) + D)
+        // ABC*+D+
+        public Function(string function)
         {
-            this.variables = variables;     
-            this.postfix = postfix;
-            init();          
+            this.function = function;
+            postfix = toPostfix();
+            variables = identifyVariables();
+            truthTable = new TruthTable(variables, postfix);
         }
 
-        private void init()
+        //Precondition: The function to format must be fully paranthesized
+        //Postcondition: Return a function in postfix form
+        //Invariant: {array.Length > 5}
+        private string toPostfix()
         {
-            initUniqueVariables();
-            this.variableCount = uniqueVariables.Count;
-            generateInputValues();
-        }
+            Stack<char>operands = new Stack<char>();
 
-        private void initUniqueVariables()
-        {
-            List<char> localVars = new List<char>(); 
+            string output = "";
 
-            foreach (Variable v in variables)
+            char[] array = function.ToCharArray();
+
+            for(int i = 0; i < array.Length; i++)
             {
-                char c = v.getVariable();
-                if (Char.IsUpper(c)) c = Char.ToLower(c);
+                char c = array[i];
 
-                if (!localVars.Contains(c))
+                switch (c)
                 {
-                    localVars.Add(c);
-                    Variable var = new Variable(c);
-                    uniqueVariables.Add(var);
-                }
-            }
-        }
-
-        private void generateInputValues()
-        {
-            if (variableCount == 2) twoVariables();
-            else if (variableCount == 3) threeVariables();
-            else if (variableCount == 4) fourVariables();
-        }
-
-        private void twoVariables()
-        {
-            int row = 1;
-
-            for (int x = 0; x < 2; x++)
-            {
-                for (int y = 0; y < 2; y++)
-                {
-
-                    string val = x.ToString() + y.ToString();
-                    truthValues.Add(row, val);
-                    row++;
-                }
-            }
-        }
-
-        private void threeVariables()
-        {
-            int row = 1;
-
-            for (int x = 0; x < 2; x++)
-            {
-                for (int y = 0; y < 2; y++)
-                {
-                    for (int z = 0; z < 2; z++)
-                    {
-                        string val = x.ToString() + y.ToString() + z.ToString();
-                        truthValues.Add(row, val);
-                        row++;
-                    }
-                }
-            }
-        }
-
-        private void fourVariables()
-        {
-            int row = 1;
-
-            for (int w = 0; w < 2; w++)
-            {
-                for (int x = 0; x < 2; x++)
-                {
-                    for (int y = 0; y < 2; y++)
-                    {
-                        for (int z = 0; z < 2; z++)
+                    case '(':
+                        operands.Push(c);
+                        break;
+                    case ')':
+                        while(operands.Peek() != '(')
                         {
-                            string val = w.ToString() + x.ToString() + y.ToString() + z.ToString();
-                            truthValues.Add(row, val);
-                            row++; 
+                            output += operands.Pop().ToString();
                         }
-                    }
+
+                        //Removing the last '(' that we no longer need
+                        operands.Pop();
+                        break;
+                    case '+':
+                        //Invariant: LET k=operands.Peek()  Precedence of k MUST: (k = +) OR (k > +)  
+                        while (operands.Peek() == '+' || operands.Peek() == '*')
+                        {
+                            output += operands.Pop().ToString();
+                        }
+
+                        operands.Push(c);
+                        break;
+                    case '*':
+                        //Invariant: LET k=operands.Peek()  Precedence of k MUST: (k = *)  
+                        while (operands.Peek() == '*')
+                        {
+                            output += operands.Pop().ToString();
+                        }
+
+                        operands.Push(c);
+                        break;
+                    default:
+                        output += c.ToString();
+                        break;
                 }
+
             }
+
+            return output;
         }
 
-        //Should solve truth table
-        public void generateTruthTable()
+        private List<Variable> identifyVariables()
         {
-            foreach (string val in truthValues.Values)
+            char[] functionChars = function.ToCharArray();
+            List<Variable> variables = new List<Variable>();
+            List<char> uniqueVariables = new List<char>();
+
+            for (int i = 0; i < functionChars.Length; i++)
             {
-                // {'0', '1', '0'}
-                char[] rowTruthValues = val.ToCharArray();                
-                updateVariableTruthValues(rowTruthValues);
+                char var = functionChars[i];
 
-                bool result = solveRow();
-                Console.WriteLine(val + "     " + result);
-            }
-        }
-
-        private void updateVariableTruthValues(char[] newTruthValues)
-        {
-            int index = 0;
-            foreach(Variable v in uniqueVariables)
-            {
-                //newTruthValues = {'0', '1', '0'}
-                bool value = Convert.ToBoolean(Char.GetNumericValue(newTruthValues[index]));
-                v.setValue(value);
-                index++;
-            }
-        }
-
-        private bool solveRow()
-        {
-            Stack<Term> infixStack = new Stack<Term>();
-            Stack<char> postfixStack = generatePostfixStack();
-            Dictionary<string, bool> termValues = new Dictionary<string, bool>();
-            for (int i = 0; i < postfixStack.Count; i++)
-            {
-                char token = postfix[i];
-
-                if (isOperator(token))
+                if (Char.IsLetter(var))
                 {
-                    Term t1 = infixStack.Pop();
-                    Term t2 = infixStack.Pop();
 
-                    if (token == '+')
+                    if (!uniqueVariables.Contains(var))
                     {
-                        string newTerm = t1.getExpression() + '+' + t2.getExpression();                        
-                        bool newTermValue = t1.getValue() || t2.getValue();
-                        Term term = new Term(newTerm, newTermValue);
-                        infixStack.Push(term);
-                    }
-
-                    else
-                    {
-                        string newTerm = t1.getExpression() + '*' + t2.getExpression();
-                        bool newTermValue = t1.getValue() && t2.getValue();
-                        Term term = new Term(newTerm, newTermValue);
-                        infixStack.Push(term);
+                        uniqueVariables.Add(var);
+                        Variable v = new Variable(var);
+                        variables.Add(v);
                     }
                 }
-
-                else
-                {
-                    Variable v = charToVariable(token);
-                    infixStack.Push(new Term(v.getVariable().ToString(), v.getTruthValue()));
-                }
             }
 
-            return infixStack.Pop().getValue();
+            return variables;
         }
 
-        private Stack<char> generatePostfixStack()
+        public string getPostFix()
         {
-            Stack<char> localPostfix = new Stack<char>();
-
-            for (int i = postfix.Length - 1; i >= 0; i--)
-            {
-                localPostfix.Push(postfix[i]);
-            }
-
-            return localPostfix;
+            return this.postfix;
         }
 
-        private bool isOperator(char c)
+        public void viewTruthTable()
         {
-            if (c == '+' || c == '*') return true;
-            else return false;
+            truthTable.generateTruthTable();
         }
-
-        private Variable charToVariable(char c)
-        {
-            foreach (Variable v in uniqueVariables)
-            {
-                if (v.getVariable() == c) return v;
-                else if (Char.ToUpper(v.getVariable()) == c) return new Variable(c, !v.getTruthValue());
-            }
-
-            return null;
-        }
-
-        private void viewStack(Stack<char> s)
-        {
-            int size = s.Count();
-            char[] array = new char[size];
-            s.CopyTo(array, 0);
-
-            Console.WriteLine("----------");
-            for (int i = 0; i < size; i++)
-            {
-                Console.WriteLine("Index: " + i + " :: Element: " + array[i]);
-            }
-            Console.WriteLine("----------");
-        }
-
     }
-
 }
