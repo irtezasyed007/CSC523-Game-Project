@@ -3,35 +3,73 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ConsoleApplication19
+namespace CSC_523_Game
 {
 
     class TruthTable
     {
-        private int size;
+        private int variableCount;
         private List<Variable> variables;
+        private List<Variable> uniqueVariables = new List<Variable>();
         private Dictionary<int, string> truthValues = new Dictionary<int, string>();
         private string postfix;
-        private Stack<char> postfixStack = new Stack<char>();
 
         public TruthTable(List<Variable> variables, string postfix)
         {
-            this.variables = variables;
-            this.size = 2 ^ variables.Count;
+            this.variables = variables;     
             this.postfix = postfix;
-            initPostfixStack();
+            init();          
+        }
+
+        private void init()
+        {
+            initUniqueVariables();
+            this.variableCount = uniqueVariables.Count;
             generateInputValues();
         }
 
-        private void initPostfixStack()
+        private void initUniqueVariables()
         {
-            for (int i = 0; i < postfix.Length; i++)
+            List<char> localVars = new List<char>(); 
+
+            foreach (Variable v in variables)
             {
-                postfixStack.Push(postfix[i]);
+                char c = v.getVariable();
+                if (Char.IsUpper(c)) c = Char.ToLower(c);
+
+                if (!localVars.Contains(c))
+                {
+                    localVars.Add(c);
+                    Variable var = new Variable(c);
+                    uniqueVariables.Add(var);
+                }
             }
         }
-       
+
         private void generateInputValues()
+        {
+            if (variableCount == 2) twoVariables();
+            else if (variableCount == 3) threeVariables();
+            else if (variableCount == 4) fourVariables();
+        }
+
+        private void twoVariables()
+        {
+            int row = 1;
+
+            for (int x = 0; x < 2; x++)
+            {
+                for (int y = 0; y < 2; y++)
+                {
+
+                    string val = x.ToString() + y.ToString();
+                    truthValues.Add(row, val);
+                    row++;
+                }
+            }
+        }
+
+        private void threeVariables()
         {
             int row = 1;
 
@@ -49,14 +87,35 @@ namespace ConsoleApplication19
             }
         }
 
+        private void fourVariables()
+        {
+            int row = 1;
+
+            for (int w = 0; w < 2; w++)
+            {
+                for (int x = 0; x < 2; x++)
+                {
+                    for (int y = 0; y < 2; y++)
+                    {
+                        for (int z = 0; z < 2; z++)
+                        {
+                            string val = w.ToString() + x.ToString() + y.ToString() + z.ToString();
+                            truthValues.Add(row, val);
+                            row++; 
+                        }
+                    }
+                }
+            }
+        }
+
         //Should solve truth table
         public void generateTruthTable()
         {
             foreach (string val in truthValues.Values)
             {
                 // {'0', '1', '0'}
-                char[] boolVal = val.ToCharArray();
-                updateVariableTruthValues(boolVal);
+                char[] rowTruthValues = val.ToCharArray();                
+                updateVariableTruthValues(rowTruthValues);
 
                 bool result = solveRow();
                 Console.WriteLine(val + "     " + result);
@@ -66,10 +125,11 @@ namespace ConsoleApplication19
         private void updateVariableTruthValues(char[] newTruthValues)
         {
             int index = 0;
-            foreach (Variable v in variables)
+            foreach(Variable v in uniqueVariables)
             {
-                int charToInt = (int) Char.GetNumericValue(newTruthValues[index]);
-                v.setValue(Convert.ToBoolean(charToInt));
+                //newTruthValues = {'0', '1', '0'}
+                bool value = Convert.ToBoolean(Char.GetNumericValue(newTruthValues[index]));
+                v.setValue(value);
                 index++;
             }
         }
@@ -77,12 +137,11 @@ namespace ConsoleApplication19
         private bool solveRow()
         {
             Stack<Term> infixStack = new Stack<Term>();
+            Stack<char> postfixStack = generatePostfixStack();
             Dictionary<string, bool> termValues = new Dictionary<string, bool>();
-            bool truthValueResult = true;
-
             for (int i = 0; i < postfixStack.Count; i++)
             {
-                char token = postfixStack.Pop();
+                char token = postfix[i];
 
                 if (isOperator(token))
                 {
@@ -91,7 +150,7 @@ namespace ConsoleApplication19
 
                     if (token == '+')
                     {
-                        string newTerm = t1.getExpression() + '+' + t2.getExpression();
+                        string newTerm = t1.getExpression() + '+' + t2.getExpression();                        
                         bool newTermValue = t1.getValue() || t2.getValue();
                         Term term = new Term(newTerm, newTermValue);
                         infixStack.Push(term);
@@ -108,11 +167,24 @@ namespace ConsoleApplication19
 
                 else
                 {
-                    infixStack.Push(new Term(token.ToString(), true));
+                    Variable v = charToVariable(token);
+                    infixStack.Push(new Term(v.getVariable().ToString(), v.getTruthValue()));
                 }
             }
 
-            return truthValueResult;
+            return infixStack.Pop().getValue();
+        }
+
+        private Stack<char> generatePostfixStack()
+        {
+            Stack<char> localPostfix = new Stack<char>();
+
+            for (int i = postfix.Length - 1; i >= 0; i--)
+            {
+                localPostfix.Push(postfix[i]);
+            }
+
+            return localPostfix;
         }
 
         private bool isOperator(char c)
@@ -123,22 +195,27 @@ namespace ConsoleApplication19
 
         private Variable charToVariable(char c)
         {
-            bool isUppercase = false;
-            if (Char.IsUpper(c)) isUppercase = true;
-
-            c = Char.ToLower(c);
-
-            foreach(Variable v in variables)
+            foreach (Variable v in uniqueVariables)
             {
-                if (v.getVariable().Equals(c))
-                {
-                    if (isUppercase) v.setAsComplement();
-
-                    return v;
-                }
+                if (v.getVariable() == c) return v;
+                else if (Char.ToUpper(v.getVariable()) == c) return new Variable(c, !v.getTruthValue());
             }
 
             return null;
+        }
+
+        private void viewStack(Stack<char> s)
+        {
+            int size = s.Count();
+            char[] array = new char[size];
+            s.CopyTo(array, 0);
+
+            Console.WriteLine("----------");
+            for (int i = 0; i < size; i++)
+            {
+                Console.WriteLine("Index: " + i + " :: Element: " + array[i]);
+            }
+            Console.WriteLine("----------");
         }
 
     }
