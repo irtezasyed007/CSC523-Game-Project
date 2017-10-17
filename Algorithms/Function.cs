@@ -30,13 +30,13 @@ namespace CSC_523_Game
         //Invariant: {array.Length > 5}
         private string toPostfix()
         {
-            Stack<char> operands = new Stack<char>();
+            Stack<char>operands = new Stack<char>();
 
             string output = "";
 
             char[] array = function.ToCharArray();
 
-            for (int i = 0; i < array.Length; i++)
+            for(int i = 0; i < array.Length; i++)
             {
                 char c = array[i];
 
@@ -46,7 +46,7 @@ namespace CSC_523_Game
                         operands.Push(c);
                         break;
                     case ')':
-                        while (operands.Peek() != '(')
+                        while(operands.Peek() != '(')
                         {
                             output += operands.Pop().ToString();
                         }
@@ -94,7 +94,6 @@ namespace CSC_523_Game
 
                 if (Char.IsLetter(var))
                 {
-                    var = Char.ToLower(var);
 
                     if (!uniqueVariables.Contains(var))
                     {
