@@ -16,6 +16,12 @@ namespace CSC_523_Game
             this.truthValue = true;
         }
 
+        public Variable(char c, bool truthValue)
+        {
+            this.var = c;
+            this.truthValue = truthValue;
+        }
+
         public void setValue(bool truthValue)
         {
             this.truthValue = truthValue;
