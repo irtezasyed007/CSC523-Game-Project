@@ -15,11 +15,18 @@ namespace CSC_523_Game
 
         public override bool getResult()
         {
+            bool assignedValue = false;
             bool result = false;
 
-            foreach(Variable v in vars)
+            foreach (Variable v in Variables)
             {
-                result = result && v.getTruthValue();
+                if (!assignedValue)
+                {
+                    result = v.getTruthValue();
+                    assignedValue = true;
+                }
+
+                else result = result && v.getTruthValue();
             }
 
             return result;
