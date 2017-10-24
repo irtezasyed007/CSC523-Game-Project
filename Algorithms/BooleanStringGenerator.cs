@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CircuitsVsZombies_test
 {
-    class Program
+    class BooleanStringGenerator
     {
         static void Main(string[] args)
         {
@@ -16,7 +16,7 @@ namespace CircuitsVsZombies_test
             Console.ReadKey();
         }
 
-        struct BoolVar
+       public  struct BoolVar
         {
             public readonly char var;
             public readonly bool isPrime;
@@ -140,25 +140,51 @@ namespace CircuitsVsZombies_test
                 Console.WriteLine(newStackString);
 
 
-                return new Term();
+                return new Term(arr, operation, newStackString);
+            }
+            public Term combineTerms(Random rng, BoolVar[] arr, Term anotherTerm)
+            {
+                bool operation = Convert.ToBoolean(rng.Next(0, 2));
+                string newStackString;
+                if (operation)  // multiplication
+                {
+                    newStackString = '(' + this.stackString + '*' + anotherTerm.StackString + ')';
+                }
+                else
+                {
+                    newStackString = '(' + this.stackString + '+' + anotherTerm.StackString + ')';
+                }
+                Console.WriteLine(newStackString);
+                return new Term(arr, operation, newStackString);
             }
         }
 
-        class Equation
+        public class Equation
         {
-            private Term[] terms;
+            private BoolVar[] vars;
+            private string stackString;
 
             public Equation()
             {
-                terms = null;
+                vars = null;
+                stackString = null;
             }
-            public Equation(Term[] terms)
+            public string StackString
             {
-                this.terms = terms;
+                get { return stackString; }
+            }
+            public BoolVar[] Vars
+            {
+                get { return vars; }
+            }
+            public Equation(BoolVar[] vars, string stackString)
+            {
+                this.vars = vars;
+                this.stackString = stackString;
             }
         }
 
-        static public char[] generateBooleanString()    // We've limited the number of terms to 4
+        static public Equation generateBooleanString()    // We've limited the number of terms to 4
         {
             Random rng = new Random();
             BoolVar[] arr = BoolVar.getRandomArray(rng);
@@ -166,19 +192,42 @@ namespace CircuitsVsZombies_test
             int termsLeft = 4;
             int firstLevelTerms = rng.Next(2, 4);     // First Level Terms are the outermost in terms of parenthesis
             termsLeft -= firstLevelTerms;
-            
+
+
+            int chosen;
+            Term[] terms;
+            string final;
             bool b = Convert.ToBoolean(rng.Next(0, 2));
             if (termsLeft == 2)
             {
-                Term.generateTerm(rng, arr, Term.generateTerm(rng, arr));
+                terms = new Term[2];
+                terms[0] = Term.generateTerm(rng, arr);
+                terms[1] = Term.generateTerm(rng, arr);
+                terms[0] = Term.generateTerm(rng, arr, terms[0]);
+                terms[1] = Term.generateTerm(rng, arr, terms[1]);
+                b = Convert.ToBoolean(rng.Next(0, 2));
+                chosen = b == true ? 0 : 1;
+                final = terms[Convert.ToInt16(b)].combineTerms(rng, arr, terms[chosen]).StackString;
+                Console.WriteLine(true);
             }
-            else
+            else    // termsLeft == 1
             {
-                Term.generateTerm(rng, arr, Term.generateTerm(rng, arr));
+                terms = new Term[3];
+                terms[0] = Term.generateTerm(rng, arr);
+                terms[1] = Term.generateTerm(rng, arr);
+                terms[2] = Term.generateTerm(rng, arr);
+                chosen = rng.Next(0, 3);
+                terms[chosen] = Term.generateTerm(rng, arr, terms[(chosen + 1) % 2]);
+                chosen = rng.Next(0, 2);
+                terms[chosen] = terms[chosen].combineTerms(rng, arr, terms[2]);
+                terms[(chosen + 1) % 2] = terms[(chosen + 1) % 2].combineTerms(rng, arr, terms[chosen]);
+                final = terms[(chosen + 1) % 2].StackString;
+                Console.WriteLine(false);
             }
+            Equation eq = new Equation(arr, final);
+            Console.WriteLine(eq.StackString);
 
-
-            return new char[10];
+            return eq;
         }
     }
 }
