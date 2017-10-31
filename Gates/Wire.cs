@@ -6,20 +6,13 @@ using System.Threading.Tasks;
 
 namespace CSC_523_Game
 {
-    class Term
+    class Wire
     {
-        private string expression;
         private bool value;
 
-        public Term(string expression, bool value)
+        public Wire(bool value)
         {
-            this.expression = expression;
             this.value = value;
-        }
-
-        public string getExpression()
-        {
-            return this.expression;
         }
 
         public bool getValue()

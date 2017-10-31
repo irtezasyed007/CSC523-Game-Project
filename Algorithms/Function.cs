@@ -13,6 +13,7 @@ namespace CSC_523_Game
         private string postfix;
         private List<Variable> variables = new List<Variable>();
         private TruthTable truthTable;
+        private string header = "";
 
         // ((A + B)*C)
         // ((A + (B*C)) + D)
@@ -100,6 +101,7 @@ namespace CSC_523_Game
                         uniqueVariables.Add(var);
                         Variable v = new Variable(var);
                         variables.Add(v);
+                        header += var;
                     }
                 }
             }
@@ -114,6 +116,7 @@ namespace CSC_523_Game
 
         public void viewTruthTable()
         {
+            Console.WriteLine(header);
             truthTable.generateTruthTable();
         }
     }
