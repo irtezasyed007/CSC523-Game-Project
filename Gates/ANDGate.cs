@@ -2,24 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CSC_523_Game
 {
     class ANDGate : Gate
     {
-        public ANDGate(Variable [] vars) : base(vars)
+        public ANDGate(Variable[] vars) : base(vars)
         {
 
         }
 
         public override bool getResult()
         {
+            return gateOperation();
+        }
+
+        public override bool gateOperation()
+        {
             bool assignedValue = false;
             bool result = false;
 
-            foreach (Variable v in Variables)
+            foreach (Variable v in vars)
             {
+                //Assigning a base value to the result
                 if (!assignedValue)
                 {
                     result = v.getTruthValue();
