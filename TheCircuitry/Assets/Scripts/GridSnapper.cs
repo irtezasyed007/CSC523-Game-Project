@@ -5,7 +5,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class GridSnapper : MonoBehaviour {
 
-    public float snapValue = 1;
+    public float snapValue = 0.64f;
     public float depth = 0;
 
     void Update()
@@ -17,7 +17,9 @@ public class GridSnapper : MonoBehaviour {
         // if snapValue = .5, x = 1.45 -> snapInverse = 2 -> x*2 => 2.90 -> round 2.90 => 3 -> 3/2 => 1.5
         // so 1.45 to nearest .5 is 1.5
         x = Mathf.Round(transform.position.x * snapInverse) / snapInverse;
+        // x = (transform.position.x * snapInverse) / snapInverse;
         y = Mathf.Round(transform.position.y * snapInverse) / snapInverse;
+        // y = (transform.position.x * snapInverse) / snapInverse;
         z = depth;  // depth from camera
 
         transform.position = new Vector3(x, y, z);
