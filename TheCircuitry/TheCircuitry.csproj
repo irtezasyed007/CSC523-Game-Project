@@ -275,9 +275,13 @@
     <Compile Include="Assets\PostProcessing\Runtime\Utils\MaterialFactory.cs" />
     <Compile Include="Assets\PostProcessing\Runtime\Utils\RenderTextureFactory.cs" />
     <Compile Include="Assets\Scripts\ButtonHandler.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Enemy.cs" />
+    <Compile Include="Assets\Scripts\Enemies\RobotEnemy.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\GridSnapper.cs" />
     <Compile Include="Assets\Scripts\ParticleSystemSorting.cs" />
+    <Compile Include="Assets\Scripts\Tile\SpawnTile.cs" />
+    <Compile Include="Assets\Scripts\Tile\TileMovement.cs" />
     <Compile Include="Assets\Scripts\Towers\Tower.cs" />
     <Compile Include="Assets\Scripts\TutorialGates\GateInfo.cs" />
     <Compile Include="Assets\Scripts\TutorialGates\PanelBehavior.cs" />

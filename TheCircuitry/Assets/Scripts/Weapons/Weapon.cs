@@ -19,7 +19,6 @@ public class Weapon : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D collision)
     {
         ps.Play();
-        print("hit");
         Destroy(this.gameObject);
     }
 }
