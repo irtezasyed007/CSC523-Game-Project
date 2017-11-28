@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/level1.unity
     guid: ea938be187f086a49a21937ec1d239f3
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/credits.unity
-    guid: 38564484f8abec54eaeca9594152e97e
+    path: Assets/tutorialCircuitScene.unity
+    guid: efb49cc88845ae1439172a6993b1783a
