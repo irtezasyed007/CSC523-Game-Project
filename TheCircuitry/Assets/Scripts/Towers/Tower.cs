@@ -9,7 +9,8 @@ public class Tower : MonoBehaviour {
     public Vector2 offset = new Vector2(0.4f, 0.1f);
     public GameObject brokenTowerParticles;
     private bool canFire = true;
-    private bool isBroken = true;
+    //private bool isBroken = true;
+    private Vector2 dir;
 
 	// Use this for initialization
 	void Start () {
@@ -19,22 +20,35 @@ public class Tower : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (isBroken)
-        {
-            brokenTowerParticles.GetComponent<ParticleSystem>().Play();
-        }
+        //if (isBroken)
+        //{
+            //brokenTowerParticles.GetComponent<ParticleSystem>().Play();
+        //}
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             GameObject go = (GameObject)Instantiate(projectile, (Vector2)transform.position + offset * transform.localScale.y, Quaternion.identity);
-            go.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x, velocity.y);
+            go.GetComponent<Rigidbody2D>().velocity = this.dir * -250;
+            go.transform.eulerAngles = new Vector3(
+                                            this.transform.eulerAngles.x,
+                                            this.transform.eulerAngles.y,
+                                            this.transform.eulerAngles.z
+                                            );
         }
 
 
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            facePoint(ray.origin);
+            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 dir = (transform.position - pos);
+            this.transform.right = dir;
+            this.transform.eulerAngles = new Vector3(
+                                        this.transform.eulerAngles.x,
+                                        this.transform.eulerAngles.y,
+                                        this.transform.eulerAngles.z + 90
+                                        );
+
+            this.dir = dir.normalized;
         }
 
         List<Enemy> nearEnemies = getNearEntities(1);
