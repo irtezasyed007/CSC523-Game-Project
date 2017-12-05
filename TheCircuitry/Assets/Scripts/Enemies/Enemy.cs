@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour {
@@ -22,7 +23,37 @@ public class Enemy : MonoBehaviour {
 	void Update () {
         Vector2 val = direction * movementSpeed * Time.deltaTime;
         transform.Translate(val);
+        if (health <= 0.0) Destroy(this);
 	}
+
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        string tag = collision.gameObject.tag;
+
+        if(tag == "Rocket")
+        {
+            health -= 20.0;
+        }
+
+        if(tag == "EndCollider")
+        {
+            Text currHealth = GameObject.Find("healthText").GetComponent<Text>();
+            string[] tokens = currHealth.text.Split(':');
+            int tmpHealth = System.Convert.ToInt32(tokens[1]) - 1;
+            Destroy(this);
+
+            if(tmpHealth < 0)
+            {
+                
+            }
+
+            else
+            {
+                currHealth.text = "Health: " + tmpHealth;
+            }
+            
+        }
+    }
 
     private void OnDestroy()
     {

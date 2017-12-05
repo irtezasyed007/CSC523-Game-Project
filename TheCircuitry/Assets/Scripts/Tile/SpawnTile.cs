@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class SpawnTile : MonoBehaviour {
 
-    public GameObject objectToSpawn;
-
-    public int clusterMin;
-    public int clusterMax;
     public int minYieldTime;
     public int maxYieldTime;
 
@@ -17,6 +13,7 @@ public class SpawnTile : MonoBehaviour {
     private bool canSpawn = true;
     private bool readyToSpawn = true;
     private System.Random rand;
+
 	// Use this for initialization
 	void Start () {
         //Point of collider in space
@@ -30,21 +27,21 @@ public class SpawnTile : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        Vector3 spawnPosition = new Vector3(x, y, 0.0f);
-        Quaternion q = new Quaternion(0, 0, 0, this.objectToSpawn.transform.rotation.w);
+        if (canSpawn)
+        {
+            canSpawn = false;
+            Instantiate(Resources.Load<GameObject>("Prefabs/enemy1"));
+
+            int wait = rand.Next(maxYieldTime) + minYieldTime;
+
+            StartCoroutine(waitUntilNextSpawn(wait));
+        }
+        
     }
 
     private IEnumerator waitUntilNextSpawn(int time)
     {
         yield return new WaitForSeconds((float) time);
         canSpawn = true;
-    }
-    
-    private IEnumerator spawnGameObject(Vector3 position, Quaternion q)
-    {
-        readyToSpawn = false;
-        yield return new WaitForSeconds(1f);
-        Instantiate(objectToSpawn, position, q);
-        readyToSpawn = true;
     }
 }

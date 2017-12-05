@@ -8,7 +8,7 @@ public class Weapon : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+
 	}
 	
 	// Update is called once per frame
@@ -18,7 +18,13 @@ public class Weapon : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        ps.Play();
-        Destroy(this.gameObject);
+        GameObject go = collision.gameObject;
+
+        if(go.tag == "Enemy")
+        {
+            Destroy(this.gameObject);
+        }
+
+        
     }
 }

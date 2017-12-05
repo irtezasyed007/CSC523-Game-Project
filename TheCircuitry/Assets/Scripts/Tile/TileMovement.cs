@@ -29,30 +29,27 @@ public class TileMovement : MonoBehaviour {
             }
         }
 
-        if (enemy == null)
+        if (enemy != null)
         {
-            Debug.Log("Not found!");
-            return;
-        }
-
-        //Manipulate the game object's velocity
-        switch (tag)
-        {
-            case "up":
-                enemy.direction = Vector2.up;
-                break;
-            case "down":
-                enemy.direction = Vector2.down;
-                break;
-            case "left":
-                enemy.direction = Vector2.left;
-                break;
-            case "right":
-                enemy.direction = Vector2.right;
-                break;
-            default:
-                Debug.Log("[Warning] Could not translate enemies position!");
-                break;
+            //Manipulate the game object's velocity
+            switch (tag)
+            {
+                case "up":
+                    enemy.direction = Vector2.up;
+                    break;
+                case "down":
+                    enemy.direction = Vector2.down;
+                    break;
+                case "left":
+                    enemy.direction = Vector2.left;
+                    break;
+                case "right":
+                    enemy.direction = Vector2.right;
+                    break;
+                default:
+                    Debug.Log("[Warning] Could not translate enemies position!");
+                    break;
+            }
         }
     }
 

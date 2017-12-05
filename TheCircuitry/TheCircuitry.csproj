@@ -274,6 +274,7 @@
     <Compile Include="Assets\Scripts\Enemies\Enemy.cs" />
     <Compile Include="Assets\Scripts\Enemies\RobotEnemy.cs" />
     <Compile Include="Assets\Scripts\Function.cs" />
+    <Compile Include="Assets\Scripts\GameOver.cs" />
     <Compile Include="Assets\Scripts\Globals\GameManager.cs" />
     <Compile Include="Assets\Scripts\GridSnapper.cs" />
     <Compile Include="Assets\Scripts\LineRenderer\DrawLines.cs" />

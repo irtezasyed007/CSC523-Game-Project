@@ -6,6 +6,9 @@ TagManager:
   tags:
   - TutorialPanel
   - TutorialPanelText
+  - Rocket
+  - EndCollider
+  - Enemy
   layers:
   - Default
   - TransparentFX

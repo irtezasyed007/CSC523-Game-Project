@@ -4,39 +4,24 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour {
 
+    public static List<GameObject> rockets = new List<GameObject>();
+
     public GameObject projectile;
-    public Vector2 velocity;
+    public int velocity;
     public Vector2 offset = new Vector2(0.4f, 0.1f);
     public GameObject brokenTowerParticles;
     private bool canFire = true;
-    //private bool isBroken = true;
+    private bool isBroken = true;
     private Vector2 dir;
 
 	// Use this for initialization
 	void Start () {
-		
+        velocity *= -1;
 	}
 
     // Update is called once per frame
     void Update()
     {
-        //if (isBroken)
-        //{
-            //brokenTowerParticles.GetComponent<ParticleSystem>().Play();
-        //}
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            GameObject go = (GameObject)Instantiate(projectile, (Vector2)transform.position + offset * transform.localScale.y, Quaternion.identity);
-            go.GetComponent<Rigidbody2D>().velocity = this.dir * -250;
-            go.transform.eulerAngles = new Vector3(
-                                            this.transform.eulerAngles.x,
-                                            this.transform.eulerAngles.y,
-                                            this.transform.eulerAngles.z
-                                            );
-        }
-
-
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -49,18 +34,47 @@ public class Tower : MonoBehaviour {
                                         );
 
             this.dir = dir.normalized;
+            this.isBroken = !this.isBroken;
         }
 
-        List<Enemy> nearEnemies = getNearEntities(1);
-
-        if(nearEnemies.Count != 0)
+        if (isBroken)
         {
-            if (canFire)
+            brokenTowerParticles.GetComponent<ParticleSystem>().Play();
+        }
+
+        else
+        {
+            brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
+
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                faceEnemy(nearEnemies[0]);
                 GameObject go = (GameObject)Instantiate(projectile, (Vector2)transform.position + offset * transform.localScale.y, Quaternion.identity);
-                go.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x, velocity.y);
-                StartCoroutine(WeaponCooldown());
+                go.GetComponent<Rigidbody2D>().velocity = this.dir * velocity;
+                go.transform.eulerAngles = new Vector3(
+                                                this.transform.eulerAngles.x,
+                                                this.transform.eulerAngles.y,
+                                                this.transform.eulerAngles.z
+                                                );
+            }
+
+            List<Enemy> nearEnemies = getNearEntities(1000);
+
+            if (nearEnemies.Count != 0)
+            {
+                if (canFire)
+                {
+                    faceEnemy(nearEnemies[0]);
+
+                    GameObject go = (GameObject)Instantiate(projectile, (Vector2)transform.position + offset * transform.localScale.y, Quaternion.identity);
+                    go.GetComponent<Rigidbody2D>().velocity = this.dir * velocity;
+                    go.transform.eulerAngles = new Vector3(
+                                                    this.transform.eulerAngles.x,
+                                                    this.transform.eulerAngles.y,
+                                                    this.transform.eulerAngles.z
+                                                    );
+                    rockets.Add(go);
+                    StartCoroutine(WeaponCooldown());
+                }
             }
         }
     }
@@ -68,7 +82,7 @@ public class Tower : MonoBehaviour {
     private IEnumerator WeaponCooldown()
     {
         canFire = false;
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         canFire = true;
     }
 
@@ -103,21 +117,20 @@ public class Tower : MonoBehaviour {
     //Need code to set rotation of the turret to face the enemy
     private void faceEnemy(Enemy enemy)
     {
-        //We only want to change z, not x or y
-        Vector3 dir = enemy.transform.position - transform.position;
-        Quaternion lookRot = Quaternion.LookRotation(dir);
-        lookRot.x = 0; lookRot.y = 0;
-        lookRot.z *= -1.64f;
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Mathf.Clamp01(3.0f * Time.maximumDeltaTime));
+        Vector3 pos = enemy.gameObject.transform.position;
+        Vector2 dir = (transform.position - pos);
+        this.transform.right = dir;
+        this.transform.eulerAngles = new Vector3(
+                                    this.transform.eulerAngles.x,
+                                    this.transform.eulerAngles.y,
+                                    this.transform.eulerAngles.z + 90
+                                    );
+
+        this.dir = dir.normalized;
     }
 
-    private void facePoint(Vector3 origin)
+    public void OnTriggerEnter2D(Collider2D collision)
     {
-        origin.z = 0;
-        Vector3 dir = transform.position - origin;
-        Quaternion lookRot = Quaternion.LookRotation(dir);
-        lookRot.x = 0; lookRot.y = 0;
-        lookRot.z *= -0.64f;
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Mathf.Clamp01(3.0f * Time.maximumDeltaTime));
+        Debug.Log("hit");
     }
 }
