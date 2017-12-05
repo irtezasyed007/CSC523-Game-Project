@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 // Put this script on a Camera
 public class DrawLines : MonoBehaviour
@@ -12,38 +13,141 @@ public class DrawLines : MonoBehaviour
     public Material lineMat;
     public GameObject point1;
     public GameObject point2;
+    internal List<Collider2D[]> collidersToDraw = new List<Collider2D[]>();
 
+    private void Awake()
+    {
+        lineMat = Resources.Load<Material>("Materials/Background");
+    }
 
     // Connect all of the `points` to the `mainPoint`
     internal void DrawConnectingLines()
     {
         if (point1 && point2)
         {
-            // Loop through each point to connect to the mainPoint
-            //foreach (GameObject point in points)
-            //{
-                Vector3 point1Pos = point1.transform.position;
-                Vector3 point2Pos = point2.transform.position;
+            Vector3 point1Pos = point1.transform.position;
+            Vector3 point2Pos = point2.transform.position;
 
-                GL.Begin(GL.LINES);
-                lineMat.SetPass(0);
-                GL.Color(new Color(lineMat.color.r, lineMat.color.g, lineMat.color.b, lineMat.color.a));
-                GL.Vertex3(point1Pos.x, point1Pos.y, point1Pos.z);
-                GL.Vertex3(point2Pos.x, point2Pos.y, point2Pos.z);
-                GL.End();
-            //}
+            Draw2pxWide(point1Pos, point2Pos);
+        }
+        if(collidersToDraw.Count != 0)
+        {
+            foreach(Collider2D[] endpointColliders in collidersToDraw)
+            {
+                // Look at GameManager.InstantiateRedCircle() for insight into this logic
+                Vector3 startPoint = new Vector3(endpointColliders[0].gameObject.transform.position.x + endpointColliders[0].offset.x * 75,
+                    endpointColliders[0].gameObject.transform.position.y + endpointColliders[0].offset.y * 75, 0);
+                Vector3 endPoint = new Vector3(endpointColliders[1].gameObject.transform.position.x + endpointColliders[1].offset.x * 75,
+                    endpointColliders[1].gameObject.transform.position.y + endpointColliders[1].offset.y * 75, 0);
+                Draw2pxWide(startPoint, endPoint);
+            }
         }
     }
 
     // To show the lines in the game window whne it is running
     void OnPostRender()
     {
+        DrawGrid();
         DrawConnectingLines();
     }
 
     // To show the lines in the editor
     void OnDrawGizmos()
     {
+        DrawGrid();
         DrawConnectingLines();
+    }
+
+    void DrawGrid()
+    {
+        // The "y-coordinate" of the bottom side of the background. 768/2 gives the proper positioning, +5 is for adjustment
+        float backgroundBot = GameObject.FindGameObjectWithTag("Background").transform.position.y - 768/2 + 5;
+        // The "top" value of the Grid bar. Not sure why Unity returns the value as a negative
+        float gridTop = GameObject.FindGameObjectWithTag("GridTop").GetComponent<RectTransform>().offsetMax.y * -1 + backgroundBot;
+        // The "bot" value of the Grid bar
+        float gridBot = GameObject.FindGameObjectWithTag("GridBot").GetComponent<RectTransform>().offsetMax.y * -1 + backgroundBot;
+
+        // The "x-coordinate" of the left side of the background. 1024/2 gives the proper positioning
+        float backgroundLeft = GameObject.FindGameObjectWithTag("Background").transform.position.x - 1024/2;
+        //
+        float gridLeft = backgroundLeft;
+        float gridRight = backgroundLeft + 1024;
+
+        float movingX, movingY, numGridLines = 9;  
+        for (int i = 0; i < numGridLines; i++)
+        {
+            movingX = backgroundLeft + 144 + (96 * i);
+            Draw(movingX, gridTop, movingX, gridBot);
+            if(i == 0)  // The left-most vertical grid line
+            {
+                Draw(movingX - 1, gridTop, movingX - 1, gridBot);
+                Draw(movingX - 2, gridTop, movingX - 2, gridBot);
+                Draw(movingX - 3, gridTop, movingX - 3, gridBot);
+            }
+            if(i == 8)  // The right-most vertical grid line
+            {
+                Draw(movingX + 1, gridTop, movingX + 1, gridBot);
+                Draw(movingX + 2, gridTop, movingX + 2, gridBot);
+                Draw(movingX + 3, gridTop, movingX + 3, gridBot);
+            }
+            if(i < 4)
+            {
+                // Sorry! 11 is a magic number, it adjusts the lines so they line up just right. I'm sure there's a reason
+                // for it, just can't really bother with it right now
+                movingY = backgroundBot + 1024/2 + 11 - (96 * (i));
+                Draw(gridLeft, movingY, gridRight, movingY);
+            }
+        }
+
+         
+        
+    }
+
+    void Draw(float x1, float y1, float x2, float y2)
+    {
+        GL.Begin(GL.LINES);
+        lineMat.SetPass(0);
+        GL.Color(new Color(lineMat.color.r, lineMat.color.g, lineMat.color.b, lineMat.color.a));
+        GL.Vertex3(x1, y1, 0);
+        GL.Vertex3(x2, y2, 0);
+        GL.End();
+    }
+
+    void Draw(Vector3 pointA, Vector3 pointB)
+    {
+        GL.Begin(GL.LINES);
+        lineMat.SetPass(0);
+        GL.Color(new Color(lineMat.color.r, lineMat.color.g, lineMat.color.b, lineMat.color.a));
+        GL.Vertex3(pointA.x, pointA.y, pointA.z);
+        GL.Vertex3(pointB.x, pointB.y, pointB.z);
+        GL.End();
+    }
+    
+    void Draw2pxWide(Vector3 pointA, Vector3 pointB)    // I draw a line, then another 1px below it or to the left
+    {
+        if(pointA.x == pointB.x)
+        {
+            Draw(pointA, pointB);
+            Draw(pointA.x - 1, pointA.y, pointB.x - 1, pointB.y);
+        }
+        else
+        {
+            Draw(pointA, pointB);
+            Draw(pointA.x, pointA.y - 1, pointB.x, pointB.y - 1);
+        }   
+    }
+
+    void Draw2pxWide(float x1, float y1, float x2, float y2)    // I draw a line, then another 1px below it or to the left
+    {
+        if(x1 == x2)
+        {
+            Draw(x1, y1, x2, y2);
+            Draw(x1 - 1, y1, x2 - 1, y2);
+        }
+        else
+        {
+            Draw(x1, y1, x2, y2);
+            Draw(x1, y1 - 1, x2, y2 - 1);
+        }  
     }
 }
