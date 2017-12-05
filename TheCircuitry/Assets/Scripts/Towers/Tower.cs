@@ -11,7 +11,7 @@ public class Tower : MonoBehaviour {
     public Vector2 offset = new Vector2(0.4f, 0.1f);
     public GameObject brokenTowerParticles;
     private bool canFire = true;
-    private bool isBroken = true;
+    internal bool isBroken = true;
     private Vector2 dir;
 
 	// Use this for initialization
@@ -129,8 +129,5 @@ public class Tower : MonoBehaviour {
         this.dir = dir.normalized;
     }
 
-    public void OnTriggerEnter2D(Collider2D collision)
-    {
-        Debug.Log("hit");
-    }
+
 }

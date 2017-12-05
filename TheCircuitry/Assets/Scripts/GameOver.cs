@@ -5,20 +5,17 @@ using UnityEngine;
 
 public class GameOver : MonoBehaviour {
 
+    public static GameObject staticPanel;
+
     public GameObject panel;
 
 	// Use this for initialization
 	void Start () {
-		
+        staticPanel = panel;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
 	}
-
-    public void setActive()
-    {
-        this.panel.setActive(true);
-    }
 }

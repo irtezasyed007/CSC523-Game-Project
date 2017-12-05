@@ -271,6 +271,7 @@
     <Compile Include="Assets\Scripts\BooleanStringGenerator.cs" />
     <Compile Include="Assets\Scripts\ButtonHandler.cs" />
     <Compile Include="Assets\Scripts\CircuitBuilderGates\DynamicGates.cs" />
+    <Compile Include="Assets\Scripts\CircuitBuilderGates\GenerateGate.cs" />
     <Compile Include="Assets\Scripts\Enemies\Enemy.cs" />
     <Compile Include="Assets\Scripts\Enemies\RobotEnemy.cs" />
     <Compile Include="Assets\Scripts\Function.cs" />

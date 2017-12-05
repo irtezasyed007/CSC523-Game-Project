@@ -63,6 +63,12 @@ public class GameManager : MonoBehaviour {
             set { heldGate = value; }
         }
     }
+    
+    internal struct TowerScene
+    {
+
+    }
+    
     // Use this for initialization
     private void Awake()
     {
@@ -84,14 +90,20 @@ public class GameManager : MonoBehaviour {
             CircuitBuilder.ListOfGates = new List<GameObject>();
             CircuitBuilder.Mask.value = 1 << LayerMask.NameToLayer("Default");
         }
-          
+        
+        else if(SceneManager.GetActiveScene().name == "level1")
+        {
+
+        }
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        
-        if(SceneManager.GetActiveScene().name == "circuitBuilderScene")
+
+        if (SceneManager.GetActiveScene().name == "circuitBuilderScene")
         {
+            
+
             if (Input.GetMouseButtonDown(0))
             {
                 //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -120,6 +132,27 @@ public class GameManager : MonoBehaviour {
             }
         }
         
+        else if(SceneManager.GetActiveScene().name == "level1")
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
+                if (hit.collider != null && hit.collider.name.Contains("Turret")
+                    && hit.collider.gameObject.GetComponent<Tower>().isBroken)
+                {
+                    loadAndPrepScene();
+                }
+            }
+        }
+    }
+
+    internal static void loadAndPrepScene()
+    {
+        CircuitBuilder.draw = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DrawLines>();
+        CircuitBuilder.ListOfGates = new List<GameObject>();
+        CircuitBuilder.Mask.value = 1 << LayerMask.NameToLayer("Default");
+        SceneManager.LoadScene("circuitBuilderScene");
     }
 
     internal static void SetWirePoint(Collider2D col)
@@ -202,6 +235,7 @@ public class GameManager : MonoBehaviour {
     internal static void InstantiateGate(string gateType)
     {
         GameObject gate = Instantiate(Resources.Load<GameObject>("Prefabs/" + gateType + "_dynamic"));
+        Debug.Log("Gate: " + gate);
         CircuitBuilder.AddGateToList(gate);
         CarryGate(gate);
     }

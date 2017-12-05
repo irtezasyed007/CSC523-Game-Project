@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour {
 
             if(tmpHealth < 0)
             {
-                
+                GameOver.staticPanel.SetActive(true);
             }
 
             else
