@@ -9,6 +9,14 @@ TagManager:
   - Rocket
   - EndCollider
   - Enemy
+  - OutOfBounds
+  - HealthSprite
+  - GridBot
+  - Background
+  - Function
+  - GridTop
+  - GameOverPanel
+  - Music
   layers:
   - Default
   - TransparentFX

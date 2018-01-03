@@ -10,7 +10,7 @@ public class SpawnTile : MonoBehaviour {
     private float x;
     private float y;
 
-    private bool canSpawn = true;
+    private bool canSpawn = false;
     private bool readyToSpawn = true;
     private System.Random rand;
 
@@ -36,12 +36,17 @@ public class SpawnTile : MonoBehaviour {
 
             StartCoroutine(waitUntilNextSpawn(wait));
         }
-        
     }
 
     private IEnumerator waitUntilNextSpawn(int time)
     {
         yield return new WaitForSeconds((float) time);
+        canSpawn = true;
+    }
+
+    public void enabledSpawn()
+    {
+        GameManager.tipShown = true;
         canSpawn = true;
     }
 }

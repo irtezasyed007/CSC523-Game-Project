@@ -2,68 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
     public static GameManager Manager;
-    internal struct CircuitBuilder
-    {
-        public static LayerMask Mask = new LayerMask();
-        private static GameObject redCircle;
-        private static GameObject redCircleHolder;
-        private static Collider2D selectedGateCollider;
-        private static GameObject heldGate;
-        private static List<GameObject> listOfGates;
-        public static DrawLines draw;
 
-        public static List<GameObject> ListOfGates
-        {
-            get { return listOfGates; }
-            set { listOfGates = value; }
-        }
+    public static bool tipShown = false;
+    public static int score = 0;
+    public static double health = 100;
 
-        public static void AddGateToList(GameObject gate)
-        {
-            listOfGates.Add(gate);
-        }
-
-        public static void RemoveGateFromList(GameObject gate)
-        {
-            listOfGates.Remove(gate);
-            // Unity doesn't allow modification of collections while iterating... so I make a new list and delete the old one.
-            List<Collider2D[]> newCollidersToDraw = new List<Collider2D[]>();
-            foreach(Collider2D[] endpointColliders in draw.collidersToDraw)
-            {
-                if (endpointColliders[0].gameObject != gate && endpointColliders[1].gameObject != gate)
-                {
-                    newCollidersToDraw.Add(endpointColliders);
-                }
-            }
-            draw.collidersToDraw = newCollidersToDraw;
-        }
-
-        public static GameObject RedCircleHolder
-        {
-            get { return redCircleHolder; }
-            set { redCircleHolder = value; }
-        }
-        public static GameObject RedCircle
-        {
-            get { return redCircle; }
-            set { redCircle = value; }
-        }
-        
-        public static Collider2D SelectedGateCollider
-        {
-            get { return selectedGateCollider; }
-            set { selectedGateCollider = value; }
-        }
-        public static GameObject HeldGate
-        {
-            get { return heldGate; }
-            set { heldGate = value; }
-        }
-    }
-    
+    internal CircuitBuilder circuitBuilder;
+    internal string activeScene;
     internal struct TowerScene
     {
 
@@ -81,171 +30,193 @@ public class GameManager : MonoBehaviour {
         {
             Destroy(gameObject);
         }
+
+        activeScene = SceneManager.GetActiveScene().name;
+
+        if (activeScene == "circuitBuilderScene")
+        {
+            loadAndPrepScene(activeScene);
+        }
+
+        else if (activeScene == "level1")
+        {
+            if (tipShown)
+            {
+                if (GameObject.Find("StartPanel") != null) GameObject.Find("StartPanel").SetActive(false);
+            }
+        }
     }
 
     void Start () {
-        if (SceneManager.GetActiveScene().name == "circuitBuilderScene")
-        {
-            CircuitBuilder.draw = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DrawLines>();
-            CircuitBuilder.ListOfGates = new List<GameObject>();
-            CircuitBuilder.Mask.value = 1 << LayerMask.NameToLayer("Default");
-        }
         
-        else if(SceneManager.GetActiveScene().name == "level1")
-        {
-
-        }
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        startAudioIfAllowed();
+        activeScene = SceneManager.GetActiveScene().name;
 
-        if (SceneManager.GetActiveScene().name == "circuitBuilderScene")
+        if (activeScene == "circuitBuilderScene")
         {
-            
 
-            if (Input.GetMouseButtonDown(0))
-            {
-                //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                //RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, CircuitBuilder.Mask);
-                //if (hit.collider != null)
-                //{
-                //    // To be completed later
-                //}
-            }
-            else if (Input.GetMouseButtonDown(1) && CircuitBuilder.HeldGate == null)
+            if (Input.GetMouseButtonDown(1))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, CircuitBuilder.Mask);
+                RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, circuitBuilder.Mask);
                 if (hit.collider != null && hit.transform.name.EndsWith("(Clone)"))
                 {
-                    CircuitBuilder.RemoveGateFromList(hit.collider.gameObject);
-                    if (CircuitBuilder.RedCircle != null)
+                    if(circuitBuilder.SelectedGateCollider == hit.collider) // Right click on a Red Circle to delete a line
                     {
-                        Destroy(CircuitBuilder.RedCircle);
-                        CircuitBuilder.RedCircle = null;
-                        CircuitBuilder.RedCircleHolder = null;
-                        CircuitBuilder.SelectedGateCollider = null;
+                        Destroy(circuitBuilder.RedCircle);
+                        circuitBuilder.RedCircle = null;
+                        circuitBuilder.RedCircleHolder = null;
+                        circuitBuilder.SelectedGateCollider = null;
+                        circuitBuilder.RemoveColliderAndItsPairsFromList(hit.collider);
                     }
-                    Destroy(hit.collider.gameObject);
+
+                    else if(hit.collider.offset.x == 0)  // Right click on a gate's main body to delete it and any connected lines
+                    {
+                        circuitBuilder.RemoveGateFromList(hit.collider.gameObject);
+                        if (circuitBuilder.RedCircleHolder == hit.collider.gameObject)
+                        {
+                            Destroy(circuitBuilder.RedCircle);
+                            circuitBuilder.RedCircle = null;
+                            circuitBuilder.RedCircleHolder = null;
+                            circuitBuilder.SelectedGateCollider = null;
+                        }
+
+                        Destroy(hit.collider.gameObject);
+                    }
+                    
                 }
             }
+
         }
+
         
-        else if(SceneManager.GetActiveScene().name == "level1")
+        else if (SceneManager.GetActiveScene().name == "level1")
         {
+
+            loadAndRenderStats();
+
             if (Input.GetMouseButtonDown(0))
             {
+                //If they click on a broken tower/turrent then load the "circuitBuilderScene"
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
                 if (hit.collider != null && hit.collider.name.Contains("Turret")
                     && hit.collider.gameObject.GetComponent<Tower>().isBroken)
                 {
-                    loadAndPrepScene();
+                    loadAndPrepScene("circuitBuilderScene");
+                    CircuitBuilder.instance = hit.collider.gameObject.GetComponent<Tower>();
+                    setIsActiveForEnemiesAndTowers(false);
                 }
             }
         }
+
     }
 
-    internal static void loadAndPrepScene()
+    //Plays for all scenes except for "welcome"
+     private void startAudioIfAllowed()
     {
-        CircuitBuilder.draw = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DrawLines>();
-        CircuitBuilder.ListOfGates = new List<GameObject>();
-        CircuitBuilder.Mask.value = 1 << LayerMask.NameToLayer("Default");
-        SceneManager.LoadScene("circuitBuilderScene");
-    }
+        GameObject[] go = GameObject.FindGameObjectsWithTag("Music");
+        AudioSource audio = null;
 
-    internal static void SetWirePoint(Collider2D col)
-    {
-        if (CircuitBuilder.RedCircle != null)   // There is a red circle indicator already
+        foreach (GameObject g in go)
         {
-            Destroy(CircuitBuilder.RedCircle);
-            CircuitBuilder.RedCircle = null;
-        }
-
-        // The gate just clicked is the same as the previous gate with the red circle indicator  
-        if (CircuitBuilder.RedCircleHolder == col.gameObject)
-        {
-            InstantiateRedCircle(col);
-            CircuitBuilder.SelectedGateCollider = col;
-        }
-        // There was a previous red circle and the gate that contained it is not the one just clicked
-        else if (CircuitBuilder.RedCircleHolder != null)
-        {
-            
-            // If the x offsets don't equal, then the pairing of the each gate's side is a valid input-output pair
-            if (col.offset.x != CircuitBuilder.SelectedGateCollider.offset.x)
+            if(g.name == "Defense Line")
             {
-                Debug.Log(CircuitBuilder.draw);
-                Collider2D[] endpointColliders = new Collider2D[] { CircuitBuilder.SelectedGateCollider, col};
-                
-                CircuitBuilder.draw.collidersToDraw.Add(endpointColliders);
-                CircuitBuilder.RedCircleHolder = null;
-                CircuitBuilder.SelectedGateCollider = null;
+                audio = g.GetComponent<AudioSource>();
+                break;
             }
-            else   // The selections are either both inputs or both outputs, so just set a new red circle instead
+        }
+
+        if(audio == null)
+        {
+            Debug.Log("[ERROR] Cannot find audio: Defense Line");
+            Debug.Log("[ERROR] Caused In: GameManager startAudioIfAllowed()");
+            return;
+        }
+
+        if(SceneManager.GetActiveScene().name == "welcome")
+        {
+            audio.Stop();
+        }
+
+        else if(!audio.isPlaying && !audio.isActiveAndEnabled)
+        {
+            audio.Play();
+        }
+    }
+
+    internal void loadAndPrepScene(string sceneName)
+    {
+        if(sceneName == "circuitBuilderScene")
+        {
+            if(circuitBuilder == null)
             {
-                InstantiateRedCircle(col);
-                CircuitBuilder.RedCircleHolder = col.gameObject;
-                CircuitBuilder.SelectedGateCollider = col;
+                circuitBuilder = gameObject.AddComponent<CircuitBuilder>();
             }
-            
+
+            else
+            {
+                circuitBuilder.enabled = true;
+            }
+
+            SceneManager.LoadScene(sceneName);
         }
-        else   // No gate had a red circle indicator before (that we're interested in). Also the initial case
+        
+    }
+
+    //Updates the health and score Text to the Game's recorded values
+    public static void loadAndRenderStats()
+    {
+        updateHealth();
+        updateScore();
+    }
+
+    public static void decrementHealth()
+    {
+        health -= 1;
+    }
+    
+    public static void updateHealth()
+    {
+        Text healthText = GameObject.Find("HealthPanel").GetComponentInChildren<Text>();
+        healthText.text = "Health: " + health;
+    }
+
+    public static void incrementScore()
+    {
+        score += 1;
+    }
+
+    public static void appendToScore(int val)
+    {
+        score += val;
+    }
+
+    public static void updateScore()
+    {
+        Text scoreText = GameObject.Find("ScorePanel").GetComponentInChildren<Text>();
+        scoreText.text = "Score: " + score;
+    }
+
+    ///<summary>
+    /// Loads or Unloads all instantiated towers/enemies
+    ///</summary>
+    public static void setIsActiveForEnemiesAndTowers(bool active)
+    {
+
+        foreach (GameObject go in Enemy.enemyGameObject)
         {
-            InstantiateRedCircle(col);
-            CircuitBuilder.RedCircleHolder = col.gameObject;
-            CircuitBuilder.SelectedGateCollider = col;
-        }   
-    }
-
-    internal static void CarryGate(GameObject gate)
-    {
-        gate.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        gate.transform.position = new Vector3(gate.transform.position.x, gate.transform.position.y, 0);
-        gate.GetComponent<DynamicGates>().isBeingHeld = true;
-        gate.GetComponent<GridSnapper>().enabled = false;
-        CircuitBuilder.HeldGate = gate;
-    }
-
-    internal static void UpdateCarriedGate(GameObject gate)
-    {
-        gate.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        gate.transform.position = new Vector3(gate.transform.position.x, gate.transform.position.y, 0);
-    }
-
-    internal static void DropGateIfPossible(GameObject gate)
-    {
-        gate.GetComponent<DynamicGates>().isBeingHeld = false;
-        gate.GetComponent<GridSnapper>().enabled = true;
-        gate.GetComponent<GridSnapper>().ImmediateSnap(); // Snap immediately to check for other colliders.
-        CircuitBuilder.HeldGate = null;
-        // Radius = 48 because each gate is a 96 x 96 sprite. 47 is used because 48 picked up an unexpected collider.
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(gate.transform.position, 47);
-        if (colliders.Length > 4)    // More than 4 colliders means that there was a gate in the spot already.
-        {
-            CarryGate(gate);
+            go.SetActive(active);
         }
-        else if(gate.transform.name == "Inverter_dynamic" && colliders.Length > 3)   // Since inverter has one less collider
+
+        foreach (GameObject go in Tower.towerGameObjects)
         {
-            CarryGate(gate);
+            go.SetActive(active);
         }
-    }
 
-    internal static void InstantiateGate(string gateType)
-    {
-        GameObject gate = Instantiate(Resources.Load<GameObject>("Prefabs/" + gateType + "_dynamic"));
-        Debug.Log("Gate: " + gate);
-        CircuitBuilder.AddGateToList(gate);
-        CarryGate(gate);
-    }
-
-    internal static void InstantiateRedCircle(Collider2D col)
-    {
-        CircuitBuilder.RedCircle = Instantiate(Resources.Load<GameObject>("Prefabs/red-circle"));
-        // Offset is scaled by 75 because the red-circle sprite is also scaled by 75
-        Vector3 redCirclePos = new Vector3(col.gameObject.transform.position.x + col.offset.x * 75,
-            col.gameObject.transform.position.y + col.offset.y * 75, 0);
-        CircuitBuilder.RedCircle.transform.position = redCirclePos;
     }
 }

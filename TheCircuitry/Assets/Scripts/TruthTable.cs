@@ -11,6 +11,7 @@ public class TruthTable
     private List<Variable> uniqueVariables = new List<Variable>();
     private Dictionary<int, string> truthValues = new Dictionary<int, string>();
     private string postfix;
+    private bool[] expectedResults;
 
     public TruthTable(List<Variable> variables, string postfix)
     {
@@ -49,6 +50,7 @@ public class TruthTable
     {
         int row = 1;
         double inputs = Math.Pow(2, Convert.ToDouble(uniqueVariables.Count));
+        expectedResults = new bool[(int) inputs];
 
         for(int i = 0; i < inputs; i++)
         {
@@ -67,6 +69,7 @@ public class TruthTable
     //Should solve truth table
     public void generateTruthTable()
     {
+        int index = 0;
         foreach (string val in truthValues.Values)
         {
             // {'0', '1', '0'}
@@ -74,8 +77,15 @@ public class TruthTable
             updateVariableTruthValues(rowTruthValues);
 
             bool result = solveRow();
+            expectedResults[index] = result;
+            index++;
             Debug.Log(val + "     " + result);
         }
+    }
+
+    public bool[] getExpectedResults()
+    {
+        return this.expectedResults;
     }
 
     private void updateVariableTruthValues(char[] newTruthValues)

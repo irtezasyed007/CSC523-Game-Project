@@ -32,16 +32,87 @@ public class DrawLines : MonoBehaviour
         }
         if(collidersToDraw.Count != 0)
         {
-            foreach(Collider2D[] endpointColliders in collidersToDraw)
+            foreach (Collider2D[] endpointColliders in collidersToDraw)
             {
-                // Look at GameManager.InstantiateRedCircle() for insight into this logic
-                Vector3 startPoint = new Vector3(endpointColliders[0].gameObject.transform.position.x + endpointColliders[0].offset.x * 75,
-                    endpointColliders[0].gameObject.transform.position.y + endpointColliders[0].offset.y * 75, 0);
-                Vector3 endPoint = new Vector3(endpointColliders[1].gameObject.transform.position.x + endpointColliders[1].offset.x * 75,
-                    endpointColliders[1].gameObject.transform.position.y + endpointColliders[1].offset.y * 75, 0);
+                // Look at GameManager.CircuitBuilder.DetermineCollider2DPosition(Collider2D col) for insight into this logic
+                Vector3 startPoint = GameManager.Manager.circuitBuilder.DetermineCollider2DPosition(endpointColliders[0]);
+                Vector3 endPoint = GameManager.Manager.circuitBuilder.DetermineCollider2DPosition(endpointColliders[1]);
                 Draw2pxWide(startPoint, endPoint);
             }
         }
+    }
+
+    internal bool ContainsCollidersInEitherOrder(Collider2D col1, Collider2D col2)
+    {
+        foreach(Collider2D[] cols in collidersToDraw)
+        {
+            if(cols[0] == col1 && cols[1] == col2)
+            {
+                return true;
+            }
+            if(cols[0] == col2 && cols[1] == col1)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    internal bool ContainsAtLeastOneCollider(Collider2D col1, Collider2D col2)
+    {
+        foreach (Collider2D[] cols in collidersToDraw)
+        {
+            if (cols[0] == col1 || cols[0] == col2 || cols[1] == col1 || cols[1] == col2)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    internal bool ContainsCollider(Collider2D col)
+    {
+        foreach (Collider2D[] cols in collidersToDraw)
+        {
+            if (cols[0] == col || cols[1] == col)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    internal Collider2D[] GetPairedColliders(Collider2D col)
+    {
+        List<Collider2D> matchedColliders = new List<Collider2D>();
+        foreach (Collider2D[] cols in collidersToDraw)
+        {
+            if(cols[0] == col)
+            {
+                matchedColliders.Add(cols[1]);
+            }
+            else if (cols[1] == col)
+            {
+                matchedColliders.Add(cols[0]);
+            }
+        }
+        return matchedColliders.ToArray();
+    }
+
+    internal Collider2D GetPairedCollider(Collider2D col)
+    {
+        foreach (Collider2D[] cols in collidersToDraw)
+        {
+            if (cols[0] == col)
+            {
+                return cols[1];
+            }
+            else if (cols[1] == col)
+            {
+                return cols[0];
+            }
+        }
+        return null;
     }
 
     // To show the lines in the game window whne it is running
@@ -123,26 +194,26 @@ public class DrawLines : MonoBehaviour
         GL.End();
     }
     
-    void Draw2pxWide(Vector3 pointA, Vector3 pointB)    // I draw a line, then another 1px below it or to the left
+    void Draw2pxWide(Vector3 pointA, Vector3 pointB)    // I draw a line, then another 1px above it or to the right
     {
         if(pointA.x == pointB.x)
         {
             Draw(pointA, pointB);
-            Draw(pointA.x - 1, pointA.y, pointB.x - 1, pointB.y);
+            Draw(pointA.x + 1, pointA.y, pointB.x + 1, pointB.y);
         }
         else
         {
             Draw(pointA, pointB);
-            Draw(pointA.x, pointA.y - 1, pointB.x, pointB.y - 1);
+            Draw(pointA.x, pointA.y + 1, pointB.x, pointB.y + 1);
         }   
     }
 
-    void Draw2pxWide(float x1, float y1, float x2, float y2)    // I draw a line, then another 1px below it or to the left
+    void Draw2pxWide(float x1, float y1, float x2, float y2)    // I draw a line, then another 1px above it or to the right
     {
         if(x1 == x2)
         {
             Draw(x1, y1, x2, y2);
-            Draw(x1 - 1, y1, x2 - 1, y2);
+            Draw(x1 + 1, y1, x2 + 1, y2);
         }
         else
         {

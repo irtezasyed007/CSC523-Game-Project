@@ -1,10 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿    using Assets.Scripts;
+    using System.Collections;
+    using System.Collections.Generic;
+    using UnityEngine;
 
-public class Tower : MonoBehaviour {
+    public class Tower : MonoBehaviour {
+
+    private static bool loaded = false;
+    private const int MAX_TOWERS = 4;
+    private static List<int> instantiatedTowers = new List<int>(); //A list of loaded towers with their IDs
 
     public static List<GameObject> rockets = new List<GameObject>();
+    public static List<Tower> towerObjects = new List<Tower>();
+    public static List<GameObject> towerGameObjects = new List<GameObject>();
+    public static int towerID = 1;
 
     public GameObject projectile;
     public int velocity;
@@ -13,57 +21,94 @@ public class Tower : MonoBehaviour {
     private bool canFire = true;
     internal bool isBroken = true;
     private Vector2 dir;
+    private int id;
+    private int noWeaponFireCount = 0;
+    private int noTowerCountdownCount = 0;
+    private bool startCountdown = false;
 
-	// Use this for initialization
-	void Start () {
-        velocity *= -1;
-	}
+    // Use this for initialization
+    void Start () {
+        this.id = towerID;
+        towerID++;
+
+        velocity *= -1; //So tower isn't shooting backwards
+
+        DontDestroyOnLoad(transform.gameObject);
+        instantiatedTowers.Add(this.id);
+        towerObjects.Add(this);
+        towerGameObjects.Add(this.gameObject);
+
+        //Deletes tower if they all have already been instantiated
+        if (id > MAX_TOWERS)
+        {
+            Destroy(this.gameObject);
+            Destroy(this);
+            this.gameObject.SetActive(false);
+            towerObjects.Remove(this);
+            towerGameObjects.Remove(this.gameObject);
+        }
+    }
+
+    void Awake()
+    {
+
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 dir = (transform.position - pos);
-            this.transform.right = dir;
-            this.transform.eulerAngles = new Vector3(
-                                        this.transform.eulerAngles.x,
-                                        this.transform.eulerAngles.y,
-                                        this.transform.eulerAngles.z + 90
-                                        );
+        //DEBUG FEATURE TO FIX ALL TOWERS IN A LEVEL
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //    Vector2 dir = (transform.position - pos);
+        //    this.transform.right = dir;
+        //    this.transform.eulerAngles = new Vector3(
+        //                                this.transform.eulerAngles.x,
+        //                                this.transform.eulerAngles.y,
+        //                                this.transform.eulerAngles.z + 90
+        //                                );
 
-            this.dir = dir.normalized;
-            this.isBroken = !this.isBroken;
-        }
+        //    this.dir = dir.normalized;
+        //    this.isBroken = !this.isBroken;
+        //}
 
         if (isBroken)
         {
             brokenTowerParticles.GetComponent<ParticleSystem>().Play();
+            Debug.Log("Broken: " + isBroken);
         }
 
         else
         {
-            brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
-
-            if (Input.GetKeyDown(KeyCode.Space))
+            //If it didnt start the countdown yet, start it.
+            if (!startCountdown)
             {
-                GameObject go = (GameObject)Instantiate(projectile, (Vector2)transform.position + offset * transform.localScale.y, Quaternion.identity);
-                go.GetComponent<Rigidbody2D>().velocity = this.dir * velocity;
-                go.transform.eulerAngles = new Vector3(
-                                                this.transform.eulerAngles.x,
-                                                this.transform.eulerAngles.y,
-                                                this.transform.eulerAngles.z
-                                                );
+                StartCoroutine(TowerBreak());               
             }
 
-            List<Enemy> nearEnemies = getNearEntities(1000);
+            brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
+
+            //DEBUG FEATURE FOR SHOOTING
+            //if (Input.GetKeyDown(KeyCode.Space))
+            //{
+            //    GameObject go = (GameObject)Instantiate(projectile, (Vector2)transform.position + offset * transform.localScale.y, Quaternion.identity);
+            //    go.GetComponent<Rigidbody2D>().velocity = this.dir * velocity;
+            //    go.transform.eulerAngles = new Vector3(
+            //                                    this.transform.eulerAngles.x,
+            //                                    this.transform.eulerAngles.y,
+            //                                    this.transform.eulerAngles.z
+            //                                    );
+            //}
+
+            List<Enemy> nearEnemies = getNearEntities(60);
 
             if (nearEnemies.Count != 0)
             {
                 if (canFire)
                 {
-                    faceEnemy(nearEnemies[0]);
+                    int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
+                    faceEnemy(nearEnemies[enemyIndex]);
 
                     GameObject go = (GameObject)Instantiate(projectile, (Vector2)transform.position + offset * transform.localScale.y, Quaternion.identity);
                     go.GetComponent<Rigidbody2D>().velocity = this.dir * velocity;
@@ -74,6 +119,21 @@ public class Tower : MonoBehaviour {
                                                     );
                     rockets.Add(go);
                     StartCoroutine(WeaponCooldown());
+                    noWeaponFireCount = 0;
+                }
+                noWeaponFireCount++;
+                noTowerCountdownCount++;
+
+                if (noWeaponFireCount > 75)
+                {
+                    canFire = true;
+                    noWeaponFireCount = 0;
+                }
+
+                if(noTowerCountdownCount > 1000)
+                {
+                    startCountdown = false;
+                    noTowerCountdownCount = 0;
                 }
             }
         }
@@ -84,6 +144,15 @@ public class Tower : MonoBehaviour {
         canFire = false;
         yield return new WaitForSeconds(1);
         canFire = true;
+    }
+
+    private IEnumerator TowerBreak()
+    {
+        noTowerCountdownCount = 0;
+        startCountdown = true;
+        yield return new WaitForSeconds(20);
+        isBroken = true;
+        startCountdown = false;
     }
 
     private List<Enemy> getNearEntities(float range)
@@ -100,7 +169,10 @@ public class Tower : MonoBehaviour {
             float lengthDiff = Mathf.Abs(enemyPosition.magnitude - towerPosition.magnitude);
 
             //If the enemy is within the tower's range capabilities
-            if (isNear(towerPosition, enemyPosition, range)) nearEnemies.Add(enemy);
+            if (isNear(towerPosition, enemyPosition, range))
+            {
+                nearEnemies.Add(enemy);
+            }
         }
 
         return nearEnemies;
@@ -114,7 +186,6 @@ public class Tower : MonoBehaviour {
         else return false;
     }
 
-    //Need code to set rotation of the turret to face the enemy
     private void faceEnemy(Enemy enemy)
     {
         Vector3 pos = enemy.gameObject.transform.position;
@@ -129,5 +200,9 @@ public class Tower : MonoBehaviour {
         this.dir = dir.normalized;
     }
 
+    private int getID()
+    {
+        return this.id;
+    }
 
 }

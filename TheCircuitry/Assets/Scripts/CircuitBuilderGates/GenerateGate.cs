@@ -11,13 +11,13 @@ public class GenerateGate : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetMouseButtonDown(0) && GameManager.CircuitBuilder.HeldGate == null)
+        if (Input.GetMouseButtonDown(0) && GameManager.Manager.circuitBuilder.HeldGate == null)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, mask);    // mask is set to Default
             if(hit.collider != null && hit.collider.transform == this.transform)
             {
-                GameManager.InstantiateGate(transform.name);
+                GameManager.Manager.circuitBuilder.InstantiateGate(transform.name);
             }
         }
 	}

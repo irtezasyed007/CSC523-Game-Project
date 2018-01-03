@@ -119,6 +119,11 @@ public class Function
         return variables;
     }
 
+    public bool[] getTruthResults()
+    {
+        return truthTable.getExpectedResults();
+    }
+
     public string getPostFix()
     {
         return this.postfix;
@@ -128,6 +133,11 @@ public class Function
     {
         Debug.Log(header);
         truthTable.generateTruthTable();
+    }
+
+    internal string getHeader()
+    {
+        return this.header;
     }
 }
 

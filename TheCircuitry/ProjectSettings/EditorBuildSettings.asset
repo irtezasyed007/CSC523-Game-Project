@@ -23,3 +23,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/circuitBuilderScene.unity
     guid: a2368a0d0ade6264a8fa2700de445ea0
+  - enabled: 1
+    path: Assets/howToPlay3.unity
+    guid: c52f1cfd13e18904dbf7935a22ff9240
+  - enabled: 1
+    path: Assets/howToPlay4.unity
+    guid: 8eb45f6ea03eb3041962f44a672a48fb
+  - enabled: 1
+    path: Assets/howToPlay5.unity
+    guid: 10e10078e9cdb1146ac63adec9ce11f8
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000

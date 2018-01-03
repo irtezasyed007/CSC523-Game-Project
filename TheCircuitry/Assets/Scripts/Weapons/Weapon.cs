@@ -25,6 +25,9 @@ public class Weapon : MonoBehaviour {
             Destroy(this.gameObject);
         }
 
-        
+        if(go.tag == "OutOfBounds")
+        {
+            Destroy(this.gameObject);
+        }
     }
 }
