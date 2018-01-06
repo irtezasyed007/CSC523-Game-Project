@@ -254,13 +254,19 @@ namespace CSC_523_Game
             }
         }
 
-        public static Equation generateBooleanString(int numTerms = 2)    // 
+        public static Equation generateBooleanString(int numTerms = 1)    // 
         {
             Random rng = new Random();
             BoolVar[] arr = BoolVar.getRandomArray(rng);
 
             int termsLeft = numTerms;
-            if(termsLeft == 3)
+            if(termsLeft == 1)
+            {
+                Term term = Term.generateTerm(rng, arr);
+                Equation equation = new Equation(term.StackString);
+                return equation;
+            }
+            else if(termsLeft == 3)
             {
                 termsLeft -= rng.Next(1, termsLeft);
             }

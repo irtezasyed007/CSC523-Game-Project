@@ -336,8 +336,9 @@ internal class CircuitBuilder : MonoBehaviour {
         draw = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DrawLines>();
         listOfGates = new List<GameObject>();
         Mask.value = 1 << LayerMask.NameToLayer("Default");
-        int diff = 2;
-        if (GameManager.score >= 50 && GameManager.score < 100) diff = 3;
+        int diff = 1;
+        if (GameManager.score >= 30 && GameManager.score < 60) diff = 2;
+        else if (GameManager.score >= 60 && GameManager.score < 100) diff = 3;
         else if (GameManager.score >= 100) diff = 4;
         equation = CSC_523_Game.BooleanStringGenerator.generateBooleanString(diff);
         func = new Function(equation.StackString);
