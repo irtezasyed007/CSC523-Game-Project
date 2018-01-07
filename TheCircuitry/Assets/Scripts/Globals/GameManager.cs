@@ -33,12 +33,7 @@ public class GameManager : MonoBehaviour {
 
         activeScene = SceneManager.GetActiveScene().name;
 
-        if (activeScene == "circuitBuilderScene")
-        {
-            loadAndPrepScene(activeScene);
-        }
-
-        else if (activeScene == "level1")
+        if (activeScene == "level1")
         {
             if (tipShown)
             {
@@ -48,8 +43,13 @@ public class GameManager : MonoBehaviour {
     }
 
     void Start () {
-        
-	}
+        activeScene = SceneManager.GetActiveScene().name;
+
+        if (activeScene == "circuitBuilderScene")
+        {
+            loadAndPrepScene(activeScene);
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
