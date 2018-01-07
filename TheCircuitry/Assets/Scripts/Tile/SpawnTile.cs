@@ -22,6 +22,8 @@ public class SpawnTile : MonoBehaviour {
 
         this.x = gameObjectPos.x;
         this.y = gameObjectPos.y;
+
+        canSpawn = true;
     }
 
     // Update is called once per frame
