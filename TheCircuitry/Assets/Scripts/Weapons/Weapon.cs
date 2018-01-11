@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Weapon : MonoBehaviour {
+public abstract class Weapon : MonoBehaviour {
 
-    public ParticleSystem ps;
+    public double damage;
 
 	// Use this for initialization
 	void Start () {
@@ -16,7 +16,18 @@ public class Weapon : MonoBehaviour {
 		
 	}
 
-    void OnTriggerEnter2D(Collider2D collision)
+    public virtual void FireWeapon(Vector3 rotation, Vector2 position, Vector2 velocity)
+    {
+        GameObject go = (GameObject)Instantiate(this.gameObject, position, Quaternion.identity);
+        go.GetComponent<Rigidbody2D>().velocity = velocity;
+        go.transform.eulerAngles = new Vector3(
+                                        rotation.x,
+                                        rotation.y,
+                                        rotation.z
+                                        );
+    }
+
+    protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
         GameObject go = collision.gameObject;
 
@@ -29,5 +40,10 @@ public class Weapon : MonoBehaviour {
         {
             Destroy(this.gameObject);
         }
+    }
+
+    public double getDamage()
+    {
+        return this.damage;
     }
 }

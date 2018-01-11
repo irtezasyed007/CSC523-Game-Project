@@ -23,7 +23,7 @@ public class SpawnTile : MonoBehaviour {
         this.x = gameObjectPos.x;
         this.y = gameObjectPos.y;
 
-        canSpawn = true;
+        if(GameManager.Manager.tipShown) canSpawn = true;
     }
 
     // Update is called once per frame
@@ -48,7 +48,7 @@ public class SpawnTile : MonoBehaviour {
 
     public void enabledSpawn()
     {
-        GameManager.tipShown = true;
+        GameManager.Manager.tipShown = true;
         canSpawn = true;
     }
 }

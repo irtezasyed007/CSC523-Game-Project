@@ -12,9 +12,12 @@ public class Enemy : MonoBehaviour {
     private static int movementSpeedAddition = 0;
 
     public Vector2 direction;
-    public double health;
+    public double maxHealth;
     public int movementSpeed;
 
+    private double currentHealth;
+    private double appliedDamage;
+    private double damageThreshold;
     private bool counting = false;
     private int selector = 4;
     private SpriteRenderer[] sprites; //The sprites used to display the enemies health (1, 2, 3, 4, 5)
@@ -48,6 +51,9 @@ public class Enemy : MonoBehaviour {
 
             index++;
         }
+
+        this.damageThreshold = (this.maxHealth / 5);
+        this.currentHealth = this.maxHealth;
     }
 
     // Update is called once per frame
@@ -56,17 +62,13 @@ public class Enemy : MonoBehaviour {
         transform.Translate(val);
         StartCoroutine(StartCount());
 
-        if (health <= 0.0)
+        if (currentHealth <= 0.0)
         {
-            GameManager.incrementScore();
+            GameManager.Manager.incrementScore();
 
             instantiedEnemies.Remove(this);
             enemyGameObject.Remove(this.gameObject);
-            Destroy(this);
-            //this.gameObject.SetActive(false);
-
-            //foreach (SpriteRenderer sr in sprites)
-            //    sr.gameObject.SetActive(false);
+            Destroy(this.gameObject);
         }
 	}
 
@@ -85,42 +87,6 @@ public class Enemy : MonoBehaviour {
     {
         string tag = collision.gameObject.tag;
 
-        if(tag == "Rocket")
-        {
-            health -= 20.0;
-            
-            if (selector > 0)
-            {
-                switch (selector)
-                {                  
-                    case 1:
-                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                        sprites[4].gameObject.SetActive(true);
-                        break;
-                    case 2:
-                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                        sprites[3].gameObject.SetActive(true);
-                        break;
-                    case 3:
-                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                        sprites[2].gameObject.SetActive(true);
-                        break;
-                    case 4:
-                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                        sprites[1].gameObject.SetActive(true);                   
-                        break;
-                    default:
-                        Debug.Log("Error");
-                        break;
-                }
-
-                selector--;
-            }
-
-
-             
-        }
-
         //Enemy reaches end of the path
         if(tag == "EndCollider")
         {
@@ -129,18 +95,18 @@ public class Enemy : MonoBehaviour {
             Destroy(this);
             this.gameObject.SetActive(false);
 
-            GameManager.decrementHealth();
+            GameManager.Manager.decrementHealth();
 
-            if(GameManager.health <= 0)
+            if(GameManager.Manager.health <= 0)
             {
                 GameOver.staticPanel.SetActive(true);
                 Text txt = GameObject.FindGameObjectWithTag("GameOverPanel").GetComponent<Text>();
-                txt.text = "Score: " + GameManager.score;
+                txt.text = "Score: " + GameManager.Manager.score;
             }
 
             else
             {
-                GameManager.updateHealth();
+                GameManager.Manager.updateHealth();
             }
             
         }
@@ -149,6 +115,46 @@ public class Enemy : MonoBehaviour {
     public void setDirection(Vector3 dir)
     {
         this.direction = dir;
+    }
+
+    public void applyDamage(double damage)
+    {
+        this.currentHealth -= damage;
+        this.appliedDamage += damage;
+
+        if (this.appliedDamage >= this.damageThreshold)
+        {
+            this.appliedDamage -= this.damageThreshold;
+
+            if (selector > 0)
+            {
+                switch (selector)
+                {
+                    case 1: //1 Sprite
+                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
+                        sprites[4].gameObject.SetActive(true);
+                        break;
+                    case 2: //2 Sprite
+                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
+                        sprites[3].gameObject.SetActive(true);
+                        break;
+                    case 3: //3 Sprite
+                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
+                        sprites[2].gameObject.SetActive(true);
+                        break;
+                    case 4: //4 Sprite
+                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
+                        sprites[1].gameObject.SetActive(true);
+                        break;
+                    default:
+                        Debug.Log("Error");
+                        break;
+                }
+
+                selector--;
+            }
+        }
+
     }
 
     private void OnDestroy()

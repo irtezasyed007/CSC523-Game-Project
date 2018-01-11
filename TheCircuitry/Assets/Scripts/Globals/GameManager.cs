@@ -7,9 +7,11 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour {
     public static GameManager Manager;
 
-    public static bool tipShown = false;
-    public static int score = 0;
-    public static double health = 100;
+    public bool tipShown = false;
+    public int score = 0;
+    public double health = 100;
+    public bool musicEnabled = true;
+    public bool musicPlaying = false;
 
     internal CircuitBuilder circuitBuilder;
     internal string activeScene;
@@ -116,36 +118,46 @@ public class GameManager : MonoBehaviour {
 
     }
 
-    //Plays for all scenes except for "welcome"
      private void startAudioIfAllowed()
     {
+        string activeScene = SceneManager.GetActiveScene().name;
         GameObject[] go = GameObject.FindGameObjectsWithTag("Music");
         AudioSource audio = null;
 
-        foreach (GameObject g in go)
+        if (!musicEnabled)
         {
-            if(g.name == "Defense Line")
+            if (musicPlaying)
             {
-                audio = g.GetComponent<AudioSource>();
-                break;
-            }
-        }
+                foreach (GameObject g in go)
+                {
+                    g.GetComponent<AudioSource>().Stop();
+                }
 
-        if(audio == null)
-        {
-            Debug.Log("[ERROR] Cannot find audio: Defense Line");
-            Debug.Log("[ERROR] Caused In: GameManager startAudioIfAllowed()");
+                musicPlaying = false;
+            }         
+
             return;
         }
 
-        if(SceneManager.GetActiveScene().name == "welcome")
+        if (activeScene == "welcome")
         {
-            audio.Stop();
+            audio = searchAudioSourceByName(go, "8-bit-Arcade4");
+            if (!audio.isPlaying)
+            {
+                audio.Play();
+                musicPlaying = true;
+            }
         }
 
-        else if(!audio.isPlaying && !audio.isActiveAndEnabled)
+        else
         {
-            audio.Play();
+            audio = searchAudioSourceByName(go, "Defense Line");
+            if (!audio.isPlaying)
+            {
+                audio.Play();
+                musicPlaying = true;
+            }
+            
         }
     }
 
@@ -169,43 +181,40 @@ public class GameManager : MonoBehaviour {
     }
 
     //Updates the health and score Text to the Game's recorded values
-    public static void loadAndRenderStats()
+    public void loadAndRenderStats()
     {
         updateHealth();
         updateScore();
     }
 
-    public static void decrementHealth()
+    public void decrementHealth()
     {
         health -= 1;
     }
     
-    public static void updateHealth()
+    public void updateHealth()
     {
         Text healthText = GameObject.Find("HealthPanel").GetComponentInChildren<Text>();
         healthText.text = "Health: " + health;
     }
 
-    public static void incrementScore()
+    public void incrementScore()
     {
         score += 1;
     }
 
-    public static void appendToScore(int val)
+    public void appendToScore(int val)
     {
         score += val;
     }
 
-    public static void updateScore()
+    public void updateScore()
     {
         Text scoreText = GameObject.Find("ScorePanel").GetComponentInChildren<Text>();
         scoreText.text = "Score: " + score;
     }
 
-    ///<summary>
-    /// Loads or Unloads all instantiated towers/enemies
-    ///</summary>
-    public static void setIsActiveForEnemiesAndTowers(bool active)
+    public void setIsActiveForEnemiesAndTowers(bool active)
     {
 
         foreach (GameObject go in Enemy.enemyGameObject)
@@ -218,5 +227,18 @@ public class GameManager : MonoBehaviour {
             go.SetActive(active);
         }
 
+    }
+
+    public static AudioSource searchAudioSourceByName(GameObject[] audioSources, string audioToFind)
+    {
+        foreach(GameObject go in audioSources)
+        {
+            if (string.Equals(go.name, audioToFind, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return go.GetComponent<AudioSource>();
+            }
+        }
+
+        return null;
     }
 }

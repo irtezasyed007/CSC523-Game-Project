@@ -59,14 +59,14 @@ internal class CircuitBuilder : MonoBehaviour {
             if (truthBools[i] != results[i])
             {
                 instance.GetComponent<Tower>().isBroken = true;
-                GameManager.appendToScore(-2);
+                GameManager.Manager.appendToScore(-2);
                 return "Sorry, your answer isn't correct! Make sure there are no extra gates and all wires are properly connected.";
             }
                 
         }
 
         instance.GetComponent<Tower>().isBroken = false;
-        GameManager.appendToScore(10);
+        GameManager.Manager.appendToScore(10);
         return "Answer is correct!";
     }
     
@@ -337,9 +337,9 @@ internal class CircuitBuilder : MonoBehaviour {
         listOfGates = new List<GameObject>();
         Mask.value = 1 << LayerMask.NameToLayer("Default");
         int diff = 1;
-        if (GameManager.score >= 30 && GameManager.score < 60) diff = 2;
-        else if (GameManager.score >= 60 && GameManager.score < 100) diff = 3;
-        else if (GameManager.score >= 100) diff = 4;
+        if (GameManager.Manager.score >= 30 && GameManager.Manager.score < 60) diff = 2;
+        else if (GameManager.Manager.score >= 60 && GameManager.Manager.score < 100) diff = 3;
+        else if (GameManager.Manager.score >= 100) diff = 4;
         equation = CSC_523_Game.BooleanStringGenerator.generateBooleanString(diff);
         func = new Function(equation.StackString);
         func.viewTruthTable();

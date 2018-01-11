@@ -5,11 +5,10 @@
 
     public class Tower : MonoBehaviour {
 
-    private static bool loaded = false;
-    private const int MAX_TOWERS = 4;
-    private static List<int> instantiatedTowers = new List<int>(); //A list of loaded towers with their IDs
-
-    public static List<GameObject> rockets = new List<GameObject>();
+    protected static bool loaded = false;
+    protected const int MAX_TOWERS = 6;
+    protected static List<int> instantiatedTowers = new List<int>(); //A list of loaded towers with their IDs
+    
     public static List<Tower> towerObjects = new List<Tower>();
     public static List<GameObject> towerGameObjects = new List<GameObject>();
     public static int towerID = 1;
@@ -18,25 +17,33 @@
     public int velocity;
     public Vector2 offset = new Vector2(0.4f, 0.1f);
     public GameObject brokenTowerParticles;
-    private bool canFire = true;
+    public int towerTier;
     internal bool isBroken = true;
-    private Vector2 dir;
-    private int id;
-    private int noWeaponFireCount = 0;
-    private int noTowerCountdownCount = 0;
-    private bool startCountdown = false;
+    protected bool canFire = true;
+    protected Weapon weapon;
+    protected Vector2 dir;
+    protected int id;
+    protected int noWeaponFireCount = 0;
+    protected int noTowerCountdownCount = 0;
+    protected bool startCountdown = false;
 
     // Use this for initialization
-    void Start () {
+    protected void Start () {
+        init();
+    }
+
+    protected void init()
+    {
         this.id = towerID;
         towerID++;
 
         velocity *= -1; //So tower isn't shooting backwards
 
-        DontDestroyOnLoad(transform.gameObject);
+        DontDestroyOnLoad(this.gameObject);
         instantiatedTowers.Add(this.id);
         towerObjects.Add(this);
         towerGameObjects.Add(this.gameObject);
+        this.weapon = projectile.GetComponent<Weapon>();
 
         //Deletes tower if they all have already been instantiated
         if (id > MAX_TOWERS)
@@ -46,6 +53,7 @@
             this.gameObject.SetActive(false);
             towerObjects.Remove(this);
             towerGameObjects.Remove(this.gameObject);
+            instantiatedTowers.Remove(this.id);
         }
     }
 
@@ -76,7 +84,6 @@
         if (isBroken)
         {
             brokenTowerParticles.GetComponent<ParticleSystem>().Play();
-            Debug.Log("Broken: " + isBroken);
         }
 
         else
@@ -108,7 +115,7 @@
                 if (canFire)
                 {
                     int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
-                    faceEnemy(nearEnemies[enemyIndex]);
+                    faceEnemy(nearEnemies[enemyIndex], this.gameObject);
 
                     GameObject go = (GameObject)Instantiate(projectile, (Vector2)transform.position + offset * transform.localScale.y, Quaternion.identity);
                     go.GetComponent<Rigidbody2D>().velocity = this.dir * velocity;
@@ -117,7 +124,7 @@
                                                     this.transform.eulerAngles.y,
                                                     this.transform.eulerAngles.z
                                                     );
-                    rockets.Add(go);
+
                     StartCoroutine(WeaponCooldown());
                     noWeaponFireCount = 0;
                 }
@@ -146,7 +153,7 @@
         canFire = true;
     }
 
-    private IEnumerator TowerBreak()
+    protected IEnumerator TowerBreak()
     {
         noTowerCountdownCount = 0;
         startCountdown = true;
@@ -155,7 +162,7 @@
         startCountdown = false;
     }
 
-    private List<Enemy> getNearEntities(float range)
+    protected List<Enemy> getNearEntities(float range)
     {
         Vector2 towerPosition = this.gameObject.transform.position;
         List<Enemy> nearEnemies = new List<Enemy>();
@@ -178,7 +185,7 @@
         return nearEnemies;
     }
 
-    private bool isNear(Vector2 pos1, Vector2 pos2, float range)
+    protected bool isNear(Vector2 pos1, Vector2 pos2, float range)
     {
         float lengthDiff = Mathf.Abs(pos1.magnitude - pos2.magnitude);
 
@@ -186,21 +193,21 @@
         else return false;
     }
 
-    private void faceEnemy(Enemy enemy)
+    protected void faceEnemy(Enemy enemy, GameObject objectToRotate)
     {
         Vector3 pos = enemy.gameObject.transform.position;
-        Vector2 dir = (transform.position - pos);
-        this.transform.right = dir;
-        this.transform.eulerAngles = new Vector3(
-                                    this.transform.eulerAngles.x,
-                                    this.transform.eulerAngles.y,
-                                    this.transform.eulerAngles.z + 90
-                                    );
+        Vector2 dir = (objectToRotate.transform.position - pos);
+        objectToRotate.transform.right = dir;
+        objectToRotate.transform.eulerAngles = new Vector3(
+                                                objectToRotate.transform.eulerAngles.x,
+                                                objectToRotate.transform.eulerAngles.y,
+                                                objectToRotate.transform.eulerAngles.z + 90
+                                                );
 
         this.dir = dir.normalized;
     }
 
-    private int getID()
+    protected int getID()
     {
         return this.id;
     }
