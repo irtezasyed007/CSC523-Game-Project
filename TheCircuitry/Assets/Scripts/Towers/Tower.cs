@@ -26,6 +26,9 @@
     protected int noWeaponFireCount = 0;
     protected int noTowerCountdownCount = 0;
     protected bool startCountdown = false;
+    protected GameObject tier1Tower;
+    protected GameObject tier2Tower;
+    protected GameObject tier3Tower;
 
     // Use this for initialization
     protected void Start () {
@@ -212,4 +215,12 @@
         return this.id;
     }
 
+    public int getTier()
+    {
+        return this.towerTier;
+    }
+
+    public virtual string getTowerType() { return "Tower"; }
+
+    public virtual bool upgradeTower() { return false; }
 }

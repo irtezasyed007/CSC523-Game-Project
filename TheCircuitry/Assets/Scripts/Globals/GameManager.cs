@@ -6,9 +6,11 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
     public static GameManager Manager;
+    public static Level1Scene level1Scene;
 
     public bool tipShown = false;
     public int score = 0;
+    public int gold = 0;
     public double health = 100;
     public bool musicEnabled = true;
     public bool musicPlaying = false;
@@ -96,25 +98,25 @@ public class GameManager : MonoBehaviour {
         }
 
         
-        else if (SceneManager.GetActiveScene().name == "level1")
-        {
+        //else if (SceneManager.GetActiveScene().name == "level1")
+        //{
 
-            loadAndRenderStats();
+        //    loadAndRenderStats();
 
-            if (Input.GetMouseButtonDown(0))
-            {
-                //If they click on a broken tower/turrent then load the "circuitBuilderScene"
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
-                if (hit.collider != null && hit.collider.name.Contains("Turret")
-                    && hit.collider.gameObject.GetComponent<Tower>().isBroken)
-                {
-                    loadAndPrepScene("circuitBuilderScene");
-                    CircuitBuilder.instance = hit.collider.gameObject.GetComponent<Tower>();
-                    setIsActiveForEnemiesAndTowers(false);
-                }
-            }
-        }
+        //    if (Input.GetMouseButtonDown(0))
+        //    {
+        //        //If they click on a broken tower/turrent then load the "circuitBuilderScene"
+        //        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //        RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
+        //        if (hit.collider != null && hit.collider.name.Contains("Turret")
+        //            && hit.collider.gameObject.GetComponent<Tower>().isBroken)
+        //        {
+        //            loadAndPrepScene("circuitBuilderScene");
+        //            CircuitBuilder.instance = hit.collider.gameObject.GetComponent<Tower>();
+        //            setIsActiveForEnemiesAndTowers(false);
+        //        }
+        //    }
+        //}
 
     }
 
@@ -185,6 +187,7 @@ public class GameManager : MonoBehaviour {
     {
         updateHealth();
         updateScore();
+        updateGold();
     }
 
     public void decrementHealth()
@@ -214,6 +217,17 @@ public class GameManager : MonoBehaviour {
         scoreText.text = "Score: " + score;
     }
 
+    public void addToGold(int amount)
+    {
+        this.gold += amount;
+    }
+
+    public void updateGold()
+    {
+        Text goldText = GameObject.Find("GoldText").GetComponentInChildren<Text>();
+        goldText.text = this.gold.ToString();
+    }
+
     public void setIsActiveForEnemiesAndTowers(bool active)
     {
 
@@ -227,6 +241,21 @@ public class GameManager : MonoBehaviour {
             go.SetActive(active);
         }
 
+    }
+
+    public void resetGame()
+    {
+        Tower.towerID = 1;
+        setIsActiveForEnemiesAndTowers(false);
+
+        Tower.towerGameObjects.Clear();
+        Tower.towerObjects.Clear();
+        Enemy.instantiedEnemies.Clear();
+        Enemy.enemyGameObject.Clear();
+        score = 0;
+        health = 100;
+        tipShown = false;
+        gold = 0;
     }
 
     public static AudioSource searchAudioSourceByName(GameObject[] audioSources, string audioToFind)

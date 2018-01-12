@@ -5204,7 +5204,7 @@ Prefab:
     - target: {fileID: 114987865978633114, guid: e4c21fb55e8b5114dbe5807edd6c0622,
         type: 2}
       propertyPath: m_Text
-      value: Start Game
+      value: " Start \nGame"
       objectReference: {fileID: 0}
     - target: {fileID: 114369000250957216, guid: e4c21fb55e8b5114dbe5807edd6c0622,
         type: 2}
@@ -5229,6 +5229,11 @@ Prefab:
         type: 2}
       propertyPath: m_SortingOrder
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114987865978633114, guid: e4c21fb55e8b5114dbe5807edd6c0622,
+        type: 2}
+      propertyPath: m_FontData.m_FontSize
+      value: 33
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e4c21fb55e8b5114dbe5807edd6c0622, type: 2}
@@ -5305,6 +5310,26 @@ Prefab:
         type: 2}
       propertyPath: m_SortingOrder
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114987865978633114, guid: e4c21fb55e8b5114dbe5807edd6c0622,
+        type: 2}
+      propertyPath: m_FontData.m_BestFit
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114987865978633114, guid: e4c21fb55e8b5114dbe5807edd6c0622,
+        type: 2}
+      propertyPath: m_FontData.m_HorizontalOverflow
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114987865978633114, guid: e4c21fb55e8b5114dbe5807edd6c0622,
+        type: 2}
+      propertyPath: m_FontData.m_LineSpacing
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114987865978633114, guid: e4c21fb55e8b5114dbe5807edd6c0622,
+        type: 2}
+      propertyPath: m_FontData.m_FontSize
+      value: 33
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e4c21fb55e8b5114dbe5807edd6c0622, type: 2}
@@ -12799,14 +12824,22 @@ Prefab:
     - target: {fileID: 114987865978633114, guid: e4c21fb55e8b5114dbe5807edd6c0622,
         type: 2}
       propertyPath: m_Text
-      value: 'How To Play
-
-'
+      value: "How \nTo Play\n"
       objectReference: {fileID: 0}
     - target: {fileID: 212804415220185688, guid: e4c21fb55e8b5114dbe5807edd6c0622,
         type: 2}
       propertyPath: m_SortingOrder
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 114987865978633114, guid: e4c21fb55e8b5114dbe5807edd6c0622,
+        type: 2}
+      propertyPath: m_FontData.m_FontSize
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 224685409766725518, guid: e4c21fb55e8b5114dbe5807edd6c0622,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: -0.3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e4c21fb55e8b5114dbe5807edd6c0622, type: 2}

@@ -23,6 +23,12 @@ public class ButtonHandler : MonoBehaviour {
         }
     }
 
+    public void upgradeTower()
+    {
+        Tower towerToUpgrade = GameManager.level1Scene.getTowerToUpgrade();
+        towerToUpgrade.upgradeTower();
+    }
+
     public void stopMusic()
     {
         GameManager.Manager.musicEnabled = !GameManager.Manager.musicEnabled;

@@ -67,6 +67,7 @@ internal class CircuitBuilder : MonoBehaviour {
 
         instance.GetComponent<Tower>().isBroken = false;
         GameManager.Manager.appendToScore(10);
+        GameManager.Manager.addToGold(250);
         return "Answer is correct!";
     }
     

@@ -26,16 +26,7 @@ public class WelcomeScene : MonoBehaviour
     {
         if (scene.name == "welcome")
         {
-            Tower.towerID = 1;
-            GameManager.Manager.setIsActiveForEnemiesAndTowers(false);
-
-            Tower.towerGameObjects.Clear();
-            Tower.towerObjects.Clear();
-            Enemy.instantiedEnemies.Clear();
-            Enemy.enemyGameObject.Clear();
-            GameManager.Manager.score = 0;
-            GameManager.Manager.health = 100;
-            GameManager.Manager.tipShown = false;
+            GameManager.Manager.resetGame();
         }
     }
 

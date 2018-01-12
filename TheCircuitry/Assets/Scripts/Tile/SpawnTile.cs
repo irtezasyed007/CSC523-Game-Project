@@ -10,20 +10,24 @@ public class SpawnTile : MonoBehaviour {
     private float x;
     private float y;
 
+    private GameObject[] enemies = new GameObject[4];
     private bool canSpawn = false;
     private bool readyToSpawn = true;
-    private System.Random rand;
 
 	// Use this for initialization
 	void Start () {
         //Point of collider in space
         Vector2 gameObjectPos = (Vector2)gameObject.transform.position;
-        rand = new System.Random();
 
         this.x = gameObjectPos.x;
         this.y = gameObjectPos.y;
 
         if(GameManager.Manager.tipShown) canSpawn = true;
+
+        enemies[0] = Resources.Load<GameObject>("Prefabs/Enemies/enemy1");
+        enemies[1] = Resources.Load<GameObject>("Prefabs/Enemies/enemy2");
+        enemies[2] = Resources.Load<GameObject>("Prefabs/Enemies/enemy3");
+        enemies[3] = Resources.Load<GameObject>("Prefabs/Enemies/enemy4");
     }
 
     // Update is called once per frame
@@ -32,10 +36,9 @@ public class SpawnTile : MonoBehaviour {
         if (canSpawn)
         {
             canSpawn = false;
-            Instantiate(Resources.Load<GameObject>("Prefabs/enemy1"));
-
-            int wait = rand.Next(maxYieldTime) + minYieldTime;
-
+            
+            int wait = Random.Range(minYieldTime, maxYieldTime);
+            Instantiate(getRandomEnemy());
             StartCoroutine(waitUntilNextSpawn(wait));
         }
     }
@@ -50,5 +53,11 @@ public class SpawnTile : MonoBehaviour {
     {
         GameManager.Manager.tipShown = true;
         canSpawn = true;
+    }
+
+    private GameObject getRandomEnemy()
+    {
+        int index = Random.Range(0, 3);
+        return enemies[index];
     }
 }
