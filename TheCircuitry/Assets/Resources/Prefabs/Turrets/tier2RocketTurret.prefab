@@ -37,7 +37,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4371599660824694}
   m_Layer: 0
-  m_Name: turretHeads
+  m_Name: turretHead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 4817605338427690}
   - component: {fileID: 212419891997985986}
   m_Layer: 0
-  m_Name: rocketBase
+  m_Name: turretBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

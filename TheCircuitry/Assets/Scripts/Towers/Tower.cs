@@ -6,12 +6,6 @@
     public class Tower : MonoBehaviour {
 
     protected static bool loaded = false;
-    protected const int MAX_TOWERS = 6;
-    protected static List<int> instantiatedTowers = new List<int>(); //A list of loaded towers with their IDs
-    
-    public static List<Tower> towerObjects = new List<Tower>();
-    public static List<GameObject> towerGameObjects = new List<GameObject>();
-    public static int towerID = 1;
 
     public GameObject projectile;
     public int velocity;
@@ -22,13 +16,9 @@
     protected bool canFire = true;
     protected Weapon weapon;
     protected Vector2 dir;
-    protected int id;
     protected int noWeaponFireCount = 0;
     protected int noTowerCountdownCount = 0;
     protected bool startCountdown = false;
-    protected GameObject tier1Tower;
-    protected GameObject tier2Tower;
-    protected GameObject tier3Tower;
 
     // Use this for initialization
     protected void Start () {
@@ -37,27 +27,9 @@
 
     protected void init()
     {
-        this.id = towerID;
-        towerID++;
-
         velocity *= -1; //So tower isn't shooting backwards
 
-        DontDestroyOnLoad(this.gameObject);
-        instantiatedTowers.Add(this.id);
-        towerObjects.Add(this);
-        towerGameObjects.Add(this.gameObject);
         this.weapon = projectile.GetComponent<Weapon>();
-
-        //Deletes tower if they all have already been instantiated
-        if (id > MAX_TOWERS)
-        {
-            Destroy(this.gameObject);
-            Destroy(this);
-            this.gameObject.SetActive(false);
-            towerObjects.Remove(this);
-            towerGameObjects.Remove(this.gameObject);
-            instantiatedTowers.Remove(this.id);
-        }
     }
 
     void Awake()
@@ -210,11 +182,6 @@
         this.dir = dir.normalized;
     }
 
-    protected int getID()
-    {
-        return this.id;
-    }
-
     public int getTier()
     {
         return this.towerTier;
@@ -223,4 +190,5 @@
     public virtual string getTowerType() { return "Tower"; }
 
     public virtual bool upgradeTower() { return false; }
+
 }

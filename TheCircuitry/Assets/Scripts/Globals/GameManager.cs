@@ -236,22 +236,23 @@ public class GameManager : MonoBehaviour {
             go.SetActive(active);
         }
 
-        foreach (GameObject go in Tower.towerGameObjects)
+        foreach (TowerManager towerManager in TowerManager.activeTowers)
         {
-            go.SetActive(active);
+            towerManager.getActiveTower().gameObject.SetActive(active);
         }
 
     }
 
     public void resetGame()
     {
-        Tower.towerID = 1;
         setIsActiveForEnemiesAndTowers(false);
 
-        Tower.towerGameObjects.Clear();
-        Tower.towerObjects.Clear();
+        TowerManager.activeTowers.Clear();
+        TowerManager.instantiatedTowers = 0;
+
         Enemy.instantiedEnemies.Clear();
         Enemy.enemyGameObject.Clear();
+
         score = 0;
         health = 100;
         tipShown = false;

@@ -17,6 +17,7 @@ TagManager:
   - GridTop
   - GameOverPanel
   - Music
+  - PictureButton
   layers:
   - Default
   - TransparentFX

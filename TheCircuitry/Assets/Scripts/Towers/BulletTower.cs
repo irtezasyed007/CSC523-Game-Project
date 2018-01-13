@@ -5,40 +5,44 @@ using System.Collections.Generic;
 public class BulletTower : Tower
 {
 
+    private TowerManager towerManager;
+    private GameObject turretHead;
     private GameObject muzzleFlash1;
     private GameObject muzzleFlash2;
-    private GameObject turretToRotate;
+    private GameObject turretBase;
 
     // Use this for initialization
     void Start()
     {
         init();
         initComponents();
-        initTieredTurrets();
+        this.towerManager = this.GetComponentInParent<TowerManager>();
     }
 
     private void initComponents()
     {
-        foreach (Component go in gameObject.GetComponentsInChildren<Component>(true))
+        foreach (Component go in GetComponentsInChildren<Component>(true))
         {
             if (go.gameObject.name.Contains("muzzleFlash"))
             {
                 if (muzzleFlash1 == null) muzzleFlash1 = go.gameObject;
-                else muzzleFlash2 = go.gameObject;
+                else
+                {
+                    muzzleFlash2 = go.gameObject;
+                    if (towerTier == 1) muzzleFlash2.SetActive(false);
+                }
             }
 
-            if (go.gameObject.name == "turretHead")
+            else if (go.gameObject.name == "turretHead")
             {
-                this.turretToRotate = go.gameObject;
+                this.turretHead = go.gameObject;
+            }
+
+            else if (go.gameObject.name == "turretBase")
+            {
+                this.turretBase = go.gameObject;
             }
         }
-    }
-
-    private void initTieredTurrets()
-    {
-        tier1Tower = Resources.Load<GameObject>("Turrets/tier1BulletTurret");
-        tier2Tower = Resources.Load<GameObject>("Turrets/tier2BulletTurret");
-        tier3Tower = Resources.Load<GameObject>("Turrets/tier3BulletTurret");
     }
 
     // Update is called once per frame
@@ -59,6 +63,9 @@ public class BulletTower : Tower
         //    this.dir = dir.normalized;
         //    this.isBroken = !this.isBroken;
         //}
+
+        if (brokenTowerParticles.GetComponent<ParticleSystem>().isStopped) Debug.Log("Is stopped");
+        else Debug.Log("Isn't stopped");
 
         if (isBroken)
         {
@@ -99,15 +106,15 @@ public class BulletTower : Tower
                 if (canFire)
                 {
                     int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
-                    faceEnemy(nearEnemies[enemyIndex], this.turretToRotate);
+                    faceEnemy(nearEnemies[enemyIndex], this.turretHead);
 
-                    Vector2 pos1 = (Vector2)turretToRotate.transform.position + offset * turretToRotate.transform.localScale.y;
-                    Vector2 pos2 = (Vector2)turretToRotate.transform.position - offset * turretToRotate.transform.localScale.y;
+                    Vector2 pos1 = (Vector2)turretHead.transform.position + offset * turretHead.transform.localScale.y;
+                    Vector2 pos2 = (Vector2)turretHead.transform.position - offset * turretHead.transform.localScale.y;
                     Vector2 newVelocity = this.dir * velocity;
                     Vector3 rotation = new Vector3(
-                                                turretToRotate.transform.eulerAngles.x,
-                                                turretToRotate.transform.eulerAngles.y,
-                                                turretToRotate.transform.eulerAngles.z
+                                                turretHead.transform.eulerAngles.x,
+                                                turretHead.transform.eulerAngles.y,
+                                                turretHead.transform.eulerAngles.z
                                                 );
 
                     StartCoroutine(MuzzleFlash());
@@ -146,12 +153,12 @@ public class BulletTower : Tower
     private IEnumerator MuzzleFlash()
     {
         muzzleFlash1.SetActive(true);
-        if (muzzleFlash2 != null) muzzleFlash2.SetActive(true);
+        if (towerTier > 1) muzzleFlash2.SetActive(true);
 
         yield return new WaitForSeconds(0.15f);
 
         muzzleFlash1.SetActive(false);
-        if (muzzleFlash2 != null) muzzleFlash2.SetActive(false);
+        if (towerTier > 1) muzzleFlash2.SetActive(false);
     }
 
     public override string getTowerType()
@@ -165,12 +172,19 @@ public class BulletTower : Tower
 
         else
         {
-            this.towerTier++;
-            string towerType = "tier" + this.towerTier.ToString() + "BulletTurret";
-            GameObject newTower = Resources.Load<GameObject>("Turrets/" + towerType);
-            
+            if (towerTier == 1)
+            {
+                towerManager.activateNextTower(1);
+            }
+
+            else if (towerTier == 2)
+            {
+                towerManager.activateNextTower(2);
+            }
+
             return true;
         }
     }
+
 
 }

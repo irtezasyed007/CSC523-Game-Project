@@ -6,19 +6,19 @@ using UnityEngine;
 public class RocketTower : Tower
 {
 
-    private SpriteRenderer[] sprites;
-    private GameObject activeGameObject;
-    private GameObject loadedTurret;
-    private GameObject unloadedTurret;
-    private Transform currentTransform;
-    private int activeRocketTurretIndex; //0 or 1
+    private TowerManager towerManager;
+    private GameObject turretHead; //Basically what we are rotating (the turret-head)
+    private Transform currentTransform; //The transform of where the turretHead should be facing
+    private GameObject loadedTurretHead; //GameObject that contains the SpriteRenderer for a loaded rocket turret
+    private GameObject unloadedTurretHead; //GameObject that contains the SpriteRenderer for an unloaded rocket turret
+    private GameObject turretBase;
     private bool isReloaded = true;
 
     private new void Start()
     {
         init();
         initComponents();
-
+        this.towerManager = this.GetComponentInParent<TowerManager>();
     }
 
     private void initComponents()
@@ -28,30 +28,28 @@ public class RocketTower : Tower
             GameObject go = comp1.gameObject;
 
             //Implies more than one head and you must switch between them!
-            if (go.name == "turretHeads")
+            if (go.name == "turretHead")
             {
                 foreach (Component comp2 in go.GetComponentsInChildren<Component>(true))
                 {
-                    if (comp2.gameObject.name.Contains("armed") && loadedTurret == null)
+                    if (comp2.gameObject.name.Contains("armed") && loadedTurretHead == null)
                     {
-                        loadedTurret = comp2.gameObject;
-                        activeGameObject = loadedTurret;
+                        loadedTurretHead = comp2.gameObject;
+                        turretHead = loadedTurretHead;
                     }
 
-                    if (comp2.gameObject.name.Contains("unloaded") && unloadedTurret == null)
+                    if (comp2.gameObject.name.Contains("unloaded") && unloadedTurretHead == null)
                     {
-                        unloadedTurret = comp2.gameObject;
+                        unloadedTurretHead = comp2.gameObject;
                     }
                 }
             }
-        }
-    }
 
-    private void initTieredTurrets()
-    {
-        tier1Tower = Resources.Load<GameObject>("Turrets/tier1RocketTurret");
-        tier2Tower = Resources.Load<GameObject>("Turrets/tier2RocketTurret");
-        tier3Tower = Resources.Load<GameObject>("Turrets/tier3RocketTurret");
+            else if(go.name == "turretBase")
+            {
+                this.turretBase = go;
+            }
+        }
     }
 
     private void Update()
@@ -85,6 +83,7 @@ public class RocketTower : Tower
                 StartCoroutine(TowerBreak());
             }
 
+            Debug.Log("Not Broken!");
             brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
 
             //DEBUG FEATURE FOR SHOOTING
@@ -113,15 +112,15 @@ public class RocketTower : Tower
                 if (canFire && isReloaded)
                 {
                     int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
-                    faceEnemy(nearEnemies[enemyIndex], this.activeGameObject);
+                    faceEnemy(nearEnemies[enemyIndex], this.turretHead);
 
-                    Vector2 pos1 = (Vector2)activeGameObject.transform.position + offset * activeGameObject.transform.localScale.y;
-                    Vector2 pos2 = (Vector2)activeGameObject.transform.position - offset * activeGameObject.transform.localScale.y;
+                    Vector2 pos1 = (Vector2)turretHead.transform.position + offset * turretHead.transform.localScale.y;
+                    Vector2 pos2 = (Vector2)turretHead.transform.position - offset * turretHead.transform.localScale.y;
                     Vector2 newVelocity = this.dir * velocity;
                     Vector3 rotation = new Vector3(
-                                                activeGameObject.transform.eulerAngles.x,
-                                                activeGameObject.transform.eulerAngles.y,
-                                                activeGameObject.transform.eulerAngles.z
+                                                turretHead.transform.eulerAngles.x,
+                                                turretHead.transform.eulerAngles.y,
+                                                turretHead.transform.eulerAngles.z
                                                 );
 
                     weapon.FireWeapon(rotation, pos1, newVelocity);
@@ -162,26 +161,26 @@ public class RocketTower : Tower
     private IEnumerator WeaponReload()
     {
         isReloaded = false;
-        loadedTurret.SetActive(false);
-        updateTransform(unloadedTurret);
-        unloadedTurret.SetActive(true);
-        activeGameObject = unloadedTurret;
+        loadedTurretHead.SetActive(false);
+        updateTransform(unloadedTurretHead);
+        unloadedTurretHead.SetActive(true);
+        turretHead = unloadedTurretHead;
 
         yield return new WaitForSeconds(3);
 
-        unloadedTurret.SetActive(false);
-        updateTransform(loadedTurret);
-        loadedTurret.SetActive(true);
-        activeGameObject = loadedTurret;
+        unloadedTurretHead.SetActive(false);
+        updateTransform(loadedTurretHead);
+        loadedTurretHead.SetActive(true);
+        turretHead = loadedTurretHead;
         isReloaded = true;
     }
 
     private void updateTransform(GameObject go)
     {
         go.transform.eulerAngles = new Vector3(
-                                            activeGameObject.transform.eulerAngles.x,
-                                            activeGameObject.transform.eulerAngles.y,
-                                            activeGameObject.transform.eulerAngles.z
+                                            turretHead.transform.eulerAngles.x,
+                                            turretHead.transform.eulerAngles.y,
+                                            turretHead.transform.eulerAngles.z
                                             );
     }
 
@@ -196,9 +195,19 @@ public class RocketTower : Tower
 
         else
         {
-            this.towerTier++;
+
+            if (towerTier == 1)
+            {
+                towerManager.activateNextTower(1);
+            }
+
+            else if (towerTier == 2)
+            {
+                towerManager.activateNextTower(2);
+            }
 
             return true;
         }
     }
+
 }

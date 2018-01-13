@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Level1Scene : MonoBehaviour
 {
 
-    private Button upgradeButton;
+    public Button upgradeButton;
     private GameObject previousClickedTower; //The previous clicked tower
     private Tower towerToUpgrade; //The tower the player clicked on to upgrade
 
@@ -52,24 +52,29 @@ public class Level1Scene : MonoBehaviour
             //If they click on a broken tower/turrent then load the "circuitBuilderScene"
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
-            if (hit.collider != null && hit.collider.name.Contains("Turret")
-                && hit.collider.gameObject.GetComponent<Tower>().isBroken)
+            if (hit.collider != null && hit.collider.gameObject != null && 
+                hit.collider.gameObject.name.Contains("Turret"))
             {
-                GameManager.Manager.loadAndPrepScene("circuitBuilderScene");
-                CircuitBuilder.instance = hit.collider.gameObject.GetComponent<Tower>();
-                GameManager.Manager.setIsActiveForEnemiesAndTowers(false);
+                if (hit.collider.gameObject.GetComponent<TowerManager>().getActiveTower().isBroken)
+                {
+                    GameManager.Manager.loadAndPrepScene("circuitBuilderScene");
+                    CircuitBuilder.instance = hit.collider.gameObject.GetComponent<TowerManager>().getActiveTower();
+                    GameManager.Manager.setIsActiveForEnemiesAndTowers(false);
+                }
+                
             }
         }
 
         //Player right-clicks on a tower they wish to upgrade
-        if (Input.GetMouseButtonDown(1))
+        else if (Input.GetMouseButtonDown(1))
         {
             //If they click on a broken tower/turrent then load the "circuitBuilderScene"
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
-            if (hit.collider != null && hit.collider.name.Contains("Turret"))
+            if (hit.collider != null && hit.collider.gameObject != null && 
+                hit.collider.gameObject.name.Contains("Turret"))
             {
-                GameObject clickedTower = hit.collider.gameObject;
+                GameObject clickedTower = hit.collider.gameObject.GetComponent<TowerManager>().getActiveTower().gameObject;
 
                 //If they right-click on the same turret, clear the upgrade prompt
                 if (upgradeButton.IsActive() && previousClickedTower == clickedTower)
@@ -82,7 +87,7 @@ public class Level1Scene : MonoBehaviour
                 {
                     previousClickedTower = clickedTower;
 
-                    Tower tower = hit.collider.gameObject.GetComponent<Tower>();
+                    Tower tower = clickedTower.GetComponent<Tower>();
                     this.towerToUpgrade = tower;
                     string towerType = tower.getTowerType();
                     int cost = tower.getTier() * 1000;
