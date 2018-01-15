@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
 
     public bool tipShown = false;
     public int score = 0;
+    public int wave = 0;
     public int gold = 0;
     public double health = 100;
     public bool musicEnabled = true;
@@ -97,27 +98,6 @@ public class GameManager : MonoBehaviour {
 
         }
 
-        
-        //else if (SceneManager.GetActiveScene().name == "level1")
-        //{
-
-        //    loadAndRenderStats();
-
-        //    if (Input.GetMouseButtonDown(0))
-        //    {
-        //        //If they click on a broken tower/turrent then load the "circuitBuilderScene"
-        //        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        //        RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
-        //        if (hit.collider != null && hit.collider.name.Contains("Turret")
-        //            && hit.collider.gameObject.GetComponent<Tower>().isBroken)
-        //        {
-        //            loadAndPrepScene("circuitBuilderScene");
-        //            CircuitBuilder.instance = hit.collider.gameObject.GetComponent<Tower>();
-        //            setIsActiveForEnemiesAndTowers(false);
-        //        }
-        //    }
-        //}
-
     }
 
      private void startAudioIfAllowed()
@@ -185,9 +165,11 @@ public class GameManager : MonoBehaviour {
     //Updates the health and score Text to the Game's recorded values
     public void loadAndRenderStats()
     {
-        updateHealth();
-        updateScore();
-        updateGold();
+        refreshHealthText();
+        refreshScoreText();
+        refreshGoldText();
+        refreshWaveText();
+        Debug.Log("Gold: " + gold);
     }
 
     public void decrementHealth()
@@ -195,7 +177,7 @@ public class GameManager : MonoBehaviour {
         health -= 1;
     }
     
-    public void updateHealth()
+    public void refreshHealthText()
     {
         Text healthText = GameObject.Find("HealthPanel").GetComponentInChildren<Text>();
         healthText.text = "Health: " + health;
@@ -211,7 +193,7 @@ public class GameManager : MonoBehaviour {
         score += val;
     }
 
-    public void updateScore()
+    public void refreshScoreText()
     {
         Text scoreText = GameObject.Find("ScorePanel").GetComponentInChildren<Text>();
         scoreText.text = "Score: " + score;
@@ -222,10 +204,21 @@ public class GameManager : MonoBehaviour {
         this.gold += amount;
     }
 
-    public void updateGold()
+    public void refreshGoldText()
     {
         Text goldText = GameObject.Find("GoldText").GetComponentInChildren<Text>();
         goldText.text = this.gold.ToString();
+    }
+
+    public void incrementWave()
+    {
+        wave += 1;
+    }
+
+    public void refreshWaveText()
+    {
+        Text text = GameObject.Find("WavePanel").GetComponentInChildren<Text>();
+        text.text = "Wave: " + wave.ToString();
     }
 
     public void setIsActiveForEnemiesAndTowers(bool active)
@@ -238,6 +231,11 @@ public class GameManager : MonoBehaviour {
 
         foreach (TowerManager towerManager in TowerManager.activeTowers)
         {
+            foreach(Tower tower in towerManager.gameObject.GetComponentsInChildren<Tower>(true))
+            {
+                tower.gameObject.SetActive(false);
+            }
+
             towerManager.getActiveTower().gameObject.SetActive(active);
         }
 
@@ -245,15 +243,16 @@ public class GameManager : MonoBehaviour {
 
     public void resetGame()
     {
-        setIsActiveForEnemiesAndTowers(false);
+        foreach (Enemy enemy in Enemy.instantiedEnemies) Destroy(enemy.gameObject);
+        foreach (TowerManager tower in TowerManager.activeTowers) Destroy(tower.gameObject);
 
         TowerManager.activeTowers.Clear();
-        TowerManager.instantiatedTowers = 0;
 
         Enemy.instantiedEnemies.Clear();
         Enemy.enemyGameObject.Clear();
 
         score = 0;
+        wave = 0;
         health = 100;
         tipShown = false;
         gold = 0;
@@ -270,5 +269,11 @@ public class GameManager : MonoBehaviour {
         }
 
         return null;
+    }
+
+    public bool hasEnoughToUpgrade(double amt)
+    {
+        if (amt > gold) return false;
+        else return true;
     }
 }

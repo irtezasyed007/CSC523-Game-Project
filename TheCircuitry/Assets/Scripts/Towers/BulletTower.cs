@@ -64,8 +64,15 @@ public class BulletTower : Tower
         //    this.isBroken = !this.isBroken;
         //}
 
-        if (brokenTowerParticles.GetComponent<ParticleSystem>().isStopped) Debug.Log("Is stopped");
-        else Debug.Log("Isn't stopped");
+        if (Input.GetMouseButtonDown(1))
+        {
+            foreach(Enemy e in Enemy.instantiedEnemies)
+            {
+                Vector2 tower = (Vector2)transform.position;
+                Vector2 enemy = (Vector2)e.gameObject.transform.position;
+                Debug.Log("Diff: " + Vector2.Distance(tower, enemy));
+            }
+        }
 
         if (isBroken)
         {
@@ -99,7 +106,7 @@ public class BulletTower : Tower
             //    StartCoroutine(MuzzleFlash());
             //}
 
-            List<Enemy> nearEnemies = getNearEntities(60);
+            List<Enemy> nearEnemies = getNearEntities(175);
 
             if (nearEnemies.Count != 0)
             {
@@ -145,7 +152,7 @@ public class BulletTower : Tower
     {
         canFire = false;
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(weaponFireRate);
 
         canFire = true;
     }
@@ -155,7 +162,7 @@ public class BulletTower : Tower
         muzzleFlash1.SetActive(true);
         if (towerTier > 1) muzzleFlash2.SetActive(true);
 
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSeconds(0.05f);
 
         muzzleFlash1.SetActive(false);
         if (towerTier > 1) muzzleFlash2.SetActive(false);

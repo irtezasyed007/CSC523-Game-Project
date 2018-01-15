@@ -14,6 +14,7 @@ public class Enemy : MonoBehaviour {
     public Vector2 direction;
     public double maxHealth;
     public int movementSpeed;
+    public ParticleSystem damageEffect;
 
     private double currentHealth;
     private double appliedDamage;
@@ -97,16 +98,16 @@ public class Enemy : MonoBehaviour {
 
             GameManager.Manager.decrementHealth();
 
-            if(GameManager.Manager.health <= 0)
+            if(GameManager.Manager.health == 0)
             {
                 GameOver.staticPanel.SetActive(true);
-                Text txt = GameObject.FindGameObjectWithTag("GameOverPanel").GetComponent<Text>();
-                txt.text = "Score: " + GameManager.Manager.score;
+                Text[] txt = GameObject.FindGameObjectWithTag("GameOverPanel").GetComponentsInChildren<Text>();
+                txt[1].text = "Score: " + GameManager.Manager.score;
             }
 
             else
             {
-                GameManager.Manager.updateHealth();
+                GameManager.Manager.refreshHealthText();
             }
             
         }
@@ -155,6 +156,11 @@ public class Enemy : MonoBehaviour {
             }
         }
 
+    }
+
+    public void playDamageEffect()
+    {
+        damageEffect.Play();
     }
 
     private void OnDestroy()

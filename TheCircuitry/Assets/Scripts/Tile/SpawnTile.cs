@@ -10,9 +10,12 @@ public class SpawnTile : MonoBehaviour {
     private float x;
     private float y;
 
+    public int maxEnemies = -1; //-1 means infinite
+
     private GameObject[] enemies = new GameObject[4];
     private bool canSpawn = false;
     private bool readyToSpawn = true;
+    private int totalEnemiesSpawned = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -35,11 +38,20 @@ public class SpawnTile : MonoBehaviour {
     {
         if (canSpawn)
         {
-            canSpawn = false;
-            
-            int wait = Random.Range(minYieldTime, maxYieldTime);
-            Instantiate(getRandomEnemy());
-            StartCoroutine(waitUntilNextSpawn(wait));
+            if (totalEnemiesSpawned <= maxEnemies || maxEnemies == -1)
+            {
+                canSpawn = false;
+
+                int wait = Random.Range(minYieldTime, maxYieldTime);
+                Instantiate(getRandomEnemy(), transform.position, Quaternion.identity);
+                totalEnemiesSpawned++;
+                StartCoroutine(waitUntilNextSpawn(wait));
+            }
+
+            else
+            {
+                //Wave is over
+            }
         }
     }
 

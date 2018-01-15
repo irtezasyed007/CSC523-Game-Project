@@ -83,7 +83,6 @@ public class RocketTower : Tower
                 StartCoroutine(TowerBreak());
             }
 
-            Debug.Log("Not Broken!");
             brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
 
             //DEBUG FEATURE FOR SHOOTING
@@ -105,7 +104,7 @@ public class RocketTower : Tower
             //    StartCoroutine(WeaponCooldown());
             //}
 
-            List<Enemy> nearEnemies = getNearEntities(60);
+            List<Enemy> nearEnemies = getNearEntities(175);
 
             if (nearEnemies.Count != 0)
             {
@@ -123,10 +122,10 @@ public class RocketTower : Tower
                                                 turretHead.transform.eulerAngles.z
                                                 );
 
-                    weapon.FireWeapon(rotation, pos1, newVelocity);
-                    if(base.towerTier == 2) weapon.FireWeapon(rotation, pos2, newVelocity);                   
-
                     StartCoroutine(WeaponReload());
+                    weapon.FireWeapon(rotation, pos1, newVelocity);
+                    if(base.towerTier >= 2) weapon.FireWeapon(rotation, pos2, newVelocity);                   
+                    
                     StartCoroutine(WeaponCooldown());
 
                     noWeaponFireCount = 0;
@@ -153,7 +152,7 @@ public class RocketTower : Tower
     {
         canFire = false;
 
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(weaponFireRate);
         
         canFire = true;
     }

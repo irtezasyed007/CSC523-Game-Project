@@ -30,6 +30,7 @@ public class Rocket : Weapon
             Destroy(this.gameObject);
             Enemy enemy = go.GetComponent<Enemy>();
             enemy.applyDamage(getDamage());
+            enemy.playDamageEffect();
         }
 
         if (go.tag == "OutOfBounds")

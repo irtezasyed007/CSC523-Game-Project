@@ -7,12 +7,20 @@ public class Level1Scene : MonoBehaviour
 {
 
     public Button upgradeButton;
+    private GameObject[] textFadeOut = new GameObject[4];
     private GameObject previousClickedTower; //The previous clicked tower
     private Tower towerToUpgrade; //The tower the player clicked on to upgrade
 
     private void Start()
     {
         GameManager.level1Scene = this;
+
+        int index = 0;
+        foreach(TextFadeOut tmp in GameObject.Find("FadeOutText").GetComponentsInChildren<TextFadeOut>(true))
+        {
+            textFadeOut[index] = tmp.gameObject;
+            index++;
+        }
     }
 
     void OnEnable()
@@ -90,11 +98,21 @@ public class Level1Scene : MonoBehaviour
                     Tower tower = clickedTower.GetComponent<Tower>();
                     this.towerToUpgrade = tower;
                     string towerType = tower.getTowerType();
-                    int cost = tower.getTier() * 1000;
-                    Text[] upgradeTexts = upgradeButton.GetComponentsInChildren<Text>();
-                    upgradeTexts[0].text = "Upgrade " + towerType + " Tower";
-                    upgradeTexts[1].text = cost.ToString();
-                    upgradeButton.gameObject.SetActive(true);
+                    
+                    if(tower.getTier() < 3)
+                    {
+                        int cost = tower.getTier() * 1000;
+                        Text[] upgradeTexts = upgradeButton.GetComponentsInChildren<Text>();
+                        upgradeTexts[0].text = "Upgrade " + towerType + " Tower";
+                        upgradeTexts[1].text = cost.ToString();
+                        upgradeButton.gameObject.SetActive(true);
+                    }
+
+                    //Max tier has been reached
+                    else
+                    {
+                        doTextFadeOut(0);
+                    }
                 }
             }
         }
@@ -120,6 +138,12 @@ public class Level1Scene : MonoBehaviour
             }
 
         }
+    }
+
+    public void doTextFadeOut(int index)
+    {
+        GameObject clone = Instantiate(textFadeOut[index], textFadeOut[index].transform.parent);
+        clone.GetComponent<TextFadeOut>().FadeOut();
     }
 
     public Tower getTowerToUpgrade()

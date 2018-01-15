@@ -17,7 +17,7 @@ public class ButtonHandler : MonoBehaviour {
         SceneManager.LoadScene(sceneName);
 
         //they wish to load a scene other than level1
-        if (sceneName != "level1" || sceneName != "welcome")
+        if (sceneName != "level1")
         {
             GameManager.Manager.setIsActiveForEnemiesAndTowers(false);
         }
@@ -26,8 +26,19 @@ public class ButtonHandler : MonoBehaviour {
     public void upgradeTower()
     {
         Tower towerToUpgrade = GameManager.level1Scene.getTowerToUpgrade();
-        if (towerToUpgrade.upgradeTower())
+        double amt = towerToUpgrade.getTier() * 1000;
+
+        if (!GameManager.Manager.hasEnoughToUpgrade(amt))
         {
+            GameManager.level1Scene.doTextFadeOut(1);
+        }
+
+        else if (towerToUpgrade.canUpgrade())
+        {
+            GameManager.level1Scene.doTextFadeOut(2);
+
+            towerToUpgrade.upgradeTower();
+            GameManager.Manager.addToGold((int)amt * -1);
             GameManager.level1Scene.upgradeButton.gameObject.SetActive(false);
         }
     }

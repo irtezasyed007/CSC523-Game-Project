@@ -11,6 +11,8 @@
     public int velocity;
     public Vector2 offset = new Vector2(0.4f, 0.1f);
     public GameObject brokenTowerParticles;
+    public float weaponFireRate;
+    public int towerTimeToLive;
     public int towerTier;
     internal bool isBroken = true;
     protected bool canFire = true;
@@ -83,7 +85,7 @@
             //                                    );
             //}
 
-            List<Enemy> nearEnemies = getNearEntities(60);
+            List<Enemy> nearEnemies = getNearEntities(100);
 
             if (nearEnemies.Count != 0)
             {
@@ -124,7 +126,7 @@
     private IEnumerator WeaponCooldown()
     {
         canFire = false;
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(weaponFireRate);
         canFire = true;
     }
 
@@ -132,7 +134,7 @@
     {
         noTowerCountdownCount = 0;
         startCountdown = true;
-        yield return new WaitForSeconds(20);
+        yield return new WaitForSeconds(towerTimeToLive);
         isBroken = true;
         startCountdown = false;
     }
@@ -148,8 +150,6 @@
         {
             Vector2 enemyPosition = enemy.gameObject.transform.position;
 
-            float lengthDiff = Mathf.Abs(enemyPosition.magnitude - towerPosition.magnitude);
-
             //If the enemy is within the tower's range capabilities
             if (isNear(towerPosition, enemyPosition, range))
             {
@@ -162,7 +162,7 @@
 
     protected bool isNear(Vector2 pos1, Vector2 pos2, float range)
     {
-        float lengthDiff = Mathf.Abs(pos1.magnitude - pos2.magnitude);
+        float lengthDiff = Vector2.Distance(pos1, pos2);
 
         if (lengthDiff <= range) return true;
         else return false;
@@ -185,6 +185,12 @@
     public int getTier()
     {
         return this.towerTier;
+    }
+
+    public bool canUpgrade()
+    {
+        if (towerTier >= 3) return false;
+        else return true;
     }
 
     public virtual string getTowerType() { return "Tower"; }
