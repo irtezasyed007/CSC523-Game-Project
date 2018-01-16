@@ -18,6 +18,8 @@ TagManager:
   - GameOverPanel
   - Music
   - PictureButton
+  - Output
+  - Gate Clone
   layers:
   - Default
   - TransparentFX

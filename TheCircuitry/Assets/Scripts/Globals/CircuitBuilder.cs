@@ -345,7 +345,7 @@ internal class CircuitBuilder : MonoBehaviour {
         logicRef = GameObject.Find("LogicRefButton").GetComponent<UnityEngine.UI.Button>();
         gatesRef.onClick.AddListener(() => {
             PreserveSceneBeforeLoad();
-            SceneManager.LoadScene("tutorialCircuitScene");
+            SceneManager.LoadScene("gatesReference");
         });
 
         GameObject.Find("BackButton").GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {
