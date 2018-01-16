@@ -28,7 +28,7 @@ TagManager:
   - 
   - 
   - Background
-  - 
+  - Collider Sprites
   - 
   - 
   - 
@@ -57,4 +57,10 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Main Sprites
+    uniqueID: 3196070909
+    locked: 0
+  - name: UI
+    uniqueID: 1450366913
     locked: 0

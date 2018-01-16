@@ -11,11 +11,12 @@ public class GameManager : MonoBehaviour {
 
     public bool tipShown = false;
     public int score = 0;
-    public int wave = 0;
-    public int gold = 0;
+    public int wave = 1;
+    public int gold = 150;
     public double health = 100;
     public bool musicEnabled = true;
     public bool musicPlaying = false;
+    public Wave waveManager;
 
     internal CircuitBuilder circuitBuilder;
     internal string activeScene;
@@ -35,16 +36,6 @@ public class GameManager : MonoBehaviour {
         else if (Manager != null)
         {
             Destroy(gameObject);
-        }
-
-        activeScene = SceneManager.GetActiveScene().name;
-
-        if (activeScene == "level1")
-        {
-            if (tipShown)
-            {
-                if (GameObject.Find("StartPanel") != null) GameObject.Find("StartPanel").SetActive(false);
-            }
         }
     }
 
@@ -251,11 +242,13 @@ public class GameManager : MonoBehaviour {
         Enemy.instantiedEnemies.Clear();
         Enemy.enemyGameObject.Clear();
 
+        Destroy(waveManager.gameObject);
+
         score = 0;
         wave = 0;
         health = 100;
         tipShown = false;
-        gold = 0;
+        gold = 150;
     }
 
     public static AudioSource searchAudioSourceByName(GameObject[] audioSources, string audioToFind)

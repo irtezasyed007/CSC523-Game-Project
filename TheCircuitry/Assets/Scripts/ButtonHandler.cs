@@ -42,6 +42,11 @@ public class ButtonHandler : MonoBehaviour {
         }
     }
 
+    public void setGameManagerTipShown(bool val)
+    {
+        GameManager.Manager.tipShown = val;
+    }
+
     public void stopMusic()
     {
         GameManager.Manager.musicEnabled = !GameManager.Manager.musicEnabled;

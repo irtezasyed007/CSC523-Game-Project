@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class TowerManager : MonoBehaviour
 {
     public static List<TowerManager> activeTowers = new List<TowerManager>();
-    public const int ALLOWED_TOWERS = 2;
+    public const int ALLOWED_TOWERS = 15;
 
     private GameObject activeTower;
     private GameObject[] allTowers;

@@ -16,7 +16,7 @@ public class SpawnTile : MonoBehaviour {
     private float y;
 
     private GameObject[] enemies = new GameObject[4];
-    private bool canSpawn = false;
+    private bool canSpawn = true;
     private bool readyToSpawn = true;
     private int totalEnemiesSpawned = 0;
 
@@ -27,8 +27,6 @@ public class SpawnTile : MonoBehaviour {
 
         this.x = gameObjectPos.x;
         this.y = gameObjectPos.y;
-
-        if(GameManager.Manager.tipShown) canSpawn = true;
 
         enemies[0] = Resources.Load<GameObject>("Prefabs/Enemies/enemy1");
         enemies[1] = Resources.Load<GameObject>("Prefabs/Enemies/enemy2");
@@ -50,7 +48,7 @@ public class SpawnTile : MonoBehaviour {
 
     private bool enemyCanSpawn()
     {
-        return canSpawn && (totalEnemiesSpawned <= maxEnemies || maxEnemies == -1);
+        return canSpawn && (totalEnemiesSpawned <= maxEnemies || maxEnemies == -1) && GameManager.Manager.tipShown;
     }
 
     private IEnumerator waitUntilNextSpawn(int time)

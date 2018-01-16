@@ -15,7 +15,7 @@ public class Tower : MonoBehaviour {
     public float weaponFireRate;
     public int towerTimeToLive;
     public int towerTier;
-    internal bool isBroken = true;
+    internal bool isBroken = false;
     protected bool canFire = true;
     protected Weapon weapon;
     protected Vector2 dir;

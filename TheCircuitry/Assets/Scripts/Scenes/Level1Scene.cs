@@ -7,7 +7,6 @@ public class Level1Scene : MonoBehaviour
 {
 
     public Button upgradeButton;
-    public Wave wave;
     private GameObject previousClickedTower; //The previous clicked tower
     private Tower towerToUpgrade; //The tower the player clicked on to upgrade
 
@@ -40,6 +39,11 @@ public class Level1Scene : MonoBehaviour
             GameManager.Manager.setIsActiveForEnemiesAndTowers(true);
 
             if (GameManager.Manager.tipShown) GameObject.Find("StartPanel").SetActive(false);
+
+            GameObject waveManager = GameObject.Find("waveManager");
+            if (GameManager.Manager.waveManager == null) GameManager.Manager.waveManager = waveManager.GetComponent<Wave>();
+            else waveManager = GameManager.Manager.waveManager.gameObject;
+            
 
             this.upgradeButton = GameObject.Find("UpgradeTurretPanel").GetComponentInChildren<Button>();
             this.upgradeButton.gameObject.SetActive(false);
@@ -78,7 +82,7 @@ public class Level1Scene : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
             if (hit.collider != null && hit.collider.gameObject != null && 
-                hit.collider.gameObject.name.Contains("Turret"))
+                hit.collider.gameObject.name.Contains("Turrets"))
             {
                 GameObject clickedTower = hit.collider.gameObject.GetComponent<TowerManager>().getActiveTower().gameObject;
 

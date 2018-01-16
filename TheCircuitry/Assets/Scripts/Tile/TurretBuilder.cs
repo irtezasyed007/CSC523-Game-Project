@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class TurretBuilder : MonoBehaviour
 {
@@ -13,37 +14,23 @@ public class TurretBuilder : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
-            if(hit.collider != null && hit.collider.gameObject != null)
-            {
-                string colliderName = hit.collider.name;
 
-                if (colliderName.Contains("turretConstructor"))
-                {
-                    loadPurchaseTurretPanel();
-                }
-            }
-        }
     }
 
-    private void loadPurchaseTurretPanel()
+    public void loadPurchaseTurretPanel()
     {
         Text[] textArray = purchaseTurretPanel.GetComponentsInChildren<Text>(true);
 
         foreach(Text text in textArray)
         {
-            if(text.gameObject.name == "RocketTurretPrice")
+            if(text.name == "RocketPriceText")
             {
                 text.text = RocketTower.price.ToString();
             }
 
-            else if(text.gameObject.name == "BulletTurretPrice")
+            else if(text.name == "BulletPriceText")
             {
                 text.text = BulletTower.price.ToString();
             }
@@ -53,7 +40,6 @@ public class TurretBuilder : MonoBehaviour
 
         foreach(Button btn in buttonArray)
         {
-            Debug.Log("Name: " + btn.gameObject.name);
             if(btn.gameObject.name == "RocketPurchaseButton")
             {
                 btn.GetComponent<PurchaseTurretButton>().spawnTurretHere = gameObject;
