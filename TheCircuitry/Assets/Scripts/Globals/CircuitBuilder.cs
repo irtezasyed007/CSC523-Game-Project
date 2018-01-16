@@ -10,6 +10,8 @@ internal class CircuitBuilder : MonoBehaviour {
     private static string INPUT_NAME = "Input";
 
     public UnityEngine.UI.Button submit;
+    public UnityEngine.UI.Button gatesRef;
+    public UnityEngine.UI.Button logicRef;
     public LayerMask Mask = new LayerMask();
     private GameObject redCircle;
     private GameObject redCircleHolder;
@@ -21,6 +23,7 @@ internal class CircuitBuilder : MonoBehaviour {
     public CSC_523_Game.BooleanStringGenerator.Equation equation;
     public Function func;
     public DrawLines draw;
+    internal List<Collider2D[]> drawColliders;
 
     internal string TestUserCircuit()
     {
@@ -309,6 +312,8 @@ internal class CircuitBuilder : MonoBehaviour {
     public void InitializeSceneParameters()
     {
         GameManager.Manager.activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+        // Submit button calls the relevant functions to check the user's circuit and decide how to handle the outcome
         submit = GameObject.Find("SubmitButton").GetComponent<UnityEngine.UI.Button>();
         submit.onClick.AddListener(() => {
             GameObject panel = Instantiate(Resources.Load<GameObject>("UIItems/ResultsPanel"));
@@ -330,10 +335,24 @@ internal class CircuitBuilder : MonoBehaviour {
                 panel.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(() => {
                     panel.SetActive(false);
                     Destroy(panel);
+                    UnpreserveSceneBeforeLoad();
                     new ButtonHandler().LoadScene("level1");
                 });
             }
         });
+
+        gatesRef = GameObject.Find("GatesRefButton").GetComponent<UnityEngine.UI.Button>();
+        logicRef = GameObject.Find("LogicRefButton").GetComponent<UnityEngine.UI.Button>();
+        gatesRef.onClick.AddListener(() => {
+            PreserveSceneBeforeLoad();
+            SceneManager.LoadScene("tutorialCircuitScene");
+        });
+
+        GameObject.Find("BackButton").GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {
+            UnpreserveSceneBeforeLoad();
+            SceneManager.LoadScene("level1");
+        });
+
         draw = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DrawLines>();
         listOfGates = new List<GameObject>();
         Mask.value = 1 << LayerMask.NameToLayer("Default");
@@ -341,18 +360,21 @@ internal class CircuitBuilder : MonoBehaviour {
         if (GameManager.Manager.score >= 30 && GameManager.Manager.score < 60) diff = 2;
         else if (GameManager.Manager.score >= 60 && GameManager.Manager.score < 100) diff = 3;
         else if (GameManager.Manager.score >= 100) diff = 4;
-        equation = CSC_523_Game.BooleanStringGenerator.generateBooleanString(diff);
-        func = new Function(equation.StackString);
-        func.viewTruthTable();
-        bool[] stringArr = func.getTruthResults();
-        char[] charArr = new char[stringArr.Length];
-        for (int i = 0; i < stringArr.Length; ++i)
+        if (equation == null)
         {
-            Debug.Log(stringArr[i]);
+            equation = CSC_523_Game.BooleanStringGenerator.generateBooleanString(diff);
+            func = new Function(equation.StackString);
+            func.viewTruthTable();
+            bool[] stringArr = func.getTruthResults();
+            char[] charArr = new char[stringArr.Length];
+            for (int i = 0; i < stringArr.Length; ++i)
+            {
+                Debug.Log(stringArr[i]);
+            }
+            InitializeInputsAndOutput();
         }
         GameObject.FindGameObjectWithTag("Function").GetComponent<UnityEngine.UI.Text>().text = "Function: \n"
-            + equation.BooleanFunction;
-        InitializeInputsAndOutput();
+                + equation.BooleanFunction;
     }
     public void InitializeInputsAndOutput()
     {
@@ -558,6 +580,7 @@ internal class CircuitBuilder : MonoBehaviour {
     internal void InstantiateGate(string gateType)
     {
         GameObject gate = Instantiate(Resources.Load<GameObject>("Prefabs/" + gateType + "_dynamic"));
+        gate.tag = "Gate Clone";
         AddGateToList(gate);
         CarryGate(gate);
     }
@@ -632,5 +655,45 @@ internal class CircuitBuilder : MonoBehaviour {
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void PreserveSceneBeforeLoad()
+    {
+        DontDestroyOnLoad(this);
+        drawColliders = new List<Collider2D[]>(draw.collidersToDraw);
+        DontDestroyOnLoad(redCircle);
+        DontDestroyOnLoad(redCircleHolder);
+        DontDestroyOnLoad(selectedGateCollider);
+        DontDestroyOnLoad(heldGate);
+        foreach (GameObject gate in listOfGates)
+        {
+            DontDestroyOnLoad(gate);
+        }
+        DontDestroyOnLoad(output);
+        foreach(GameObject input in inputs)
+        {
+            DontDestroyOnLoad(input);
+        }
+        DontDestroyOnLoad(GameObject.FindGameObjectWithTag("Function"));
+    }
+
+    private void UnpreserveSceneBeforeLoad()
+    {
+        drawColliders = null;
+        Destroy(redCircle);
+        Destroy(redCircleHolder);
+        Destroy(selectedGateCollider);
+        Destroy(heldGate);
+        foreach (GameObject gate in GameObject.FindGameObjectsWithTag("Gate Clone"))
+        {
+            Destroy(gate);
+        }
+        Destroy(output);
+        foreach (GameObject input in inputs)
+        {
+            Destroy(input);
+        }
+        Destroy(GameObject.FindGameObjectWithTag("Function"));
+        Destroy(this);
     }
 }

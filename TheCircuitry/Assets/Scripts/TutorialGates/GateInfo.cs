@@ -11,15 +11,40 @@ public class GateInfo : MonoBehaviour {
         dict = new Dictionary<string, string>();
         foreach(string gate in gates)
         {
-            if (gate != "Inverter")
+            if (gate == "AND")
             {
-                dict.Add(gate, "The " + gate + " gate, shown below, takes in two inputs and outputs the values" +
-                      " shown in the truth table to the right.");
+                dict.Add(gate, "The AND gate, shown below, outputs a 1 (true) only if both inputs are 1," +
+                      " as shown in the truth table to the right. Otherwise, it outputs a 0 (false).");
             }
-            else
+            else if(gate == "OR")
             {
-                dict.Add(gate, "The inverter, shown below, takes in one input and inverts the value" +
-                    " as shown in the truth table to the right");
+                dict.Add(gate, "The OR gate, shown below, returns a 1 (true) only if at least one input is a 1," +
+                      " as shown in the truth table to the right. Otherwise, it outputs a 0 (false).");
+            }
+            else if(gate == "XOR")
+            {
+                dict.Add(gate, "The XOR gate, shown below, outputs a 1 (true) only if exactly one input is a 1," +
+                      " as shown in the truth table to the right. Otherwise, it outputs a 0 (false).");
+            }
+            else if(gate == "NAND")
+            {
+                dict.Add(gate, "The NAND gate, shown below, outputs a 1 (true) only if at least one input is a 0," +
+                      " as shown in the truth table to the right. Otherwise, it outputs a 0 (false).");
+            }
+            else if(gate == "NOR")
+            {
+                dict.Add(gate, "The NOR gate, shown below, outputs a 1 (true) only if both inputs are 0," +
+                      " as shown in the truth table to the right. Otherwise, it outputs a 0 (false).");
+            }
+            else if(gate == "XNOR")
+            {
+                dict.Add(gate, "The AND gate, shown below, outputs a 1 (true) only if boths inputs are 1 or both are 0," +
+                      " as shown in the truth table to the right. Otherwise, it outputs a 0 (false).");
+            }
+            else if(gate == "Inverter")
+            {
+                dict.Add(gate, "The inverter, shown below, outputs a 1 (true) if the input is a 0 (false), and outputs a 0 " +
+                    "if the input is a 1, as shown in the truth table to the right.");
             }
         }
 	}

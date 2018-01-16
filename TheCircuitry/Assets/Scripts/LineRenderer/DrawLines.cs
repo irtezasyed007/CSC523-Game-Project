@@ -13,11 +13,19 @@ public class DrawLines : MonoBehaviour
     public Material lineMat;
     public GameObject point1;
     public GameObject point2;
-    internal List<Collider2D[]> collidersToDraw = new List<Collider2D[]>();
+    internal List<Collider2D[]> collidersToDraw;
 
     private void Awake()
     {
         lineMat = Resources.Load<Material>("Materials/Background");
+        if(GameManager.Manager.circuitBuilder.drawColliders == null)
+        {
+            collidersToDraw = new List<Collider2D[]>();
+        }
+        else
+        {
+            collidersToDraw = new List<Collider2D[]>(GameManager.Manager.circuitBuilder.drawColliders);
+        }
     }
 
     // Connect all of the `points` to the `mainPoint`
