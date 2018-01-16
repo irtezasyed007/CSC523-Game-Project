@@ -17,15 +17,20 @@ public class RocketTower : Tower
     private new void Start()
     {
         init();
+        initComponents();
 
-        foreach(Component comp1 in GetComponentsInChildren<Component>(true))
+    }
+
+    private void initComponents()
+    {
+        foreach (Component comp1 in GetComponentsInChildren<Component>(true))
         {
             GameObject go = comp1.gameObject;
 
             //Implies more than one head and you must switch between them!
-            if(go.name == "turretHeads")
+            if (go.name == "turretHeads")
             {
-                foreach(Component comp2 in go.GetComponentsInChildren<Component>(true))
+                foreach (Component comp2 in go.GetComponentsInChildren<Component>(true))
                 {
                     if (comp2.gameObject.name.Contains("armed") && loadedTurret == null)
                     {
@@ -42,23 +47,30 @@ public class RocketTower : Tower
         }
     }
 
+    private void initTieredTurrets()
+    {
+        tier1Tower = Resources.Load<GameObject>("Turrets/tier1RocketTurret");
+        tier2Tower = Resources.Load<GameObject>("Turrets/tier2RocketTurret");
+        tier3Tower = Resources.Load<GameObject>("Turrets/tier3RocketTurret");
+    }
+
     private void Update()
     {
         //DEBUG FEATURE TO FIX ALL TOWERS IN A LEVEL
-        if (Input.GetMouseButtonDown(1) && base.towerTier == 3)
-        {
-            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 dir = (activeGameObject.transform.position - pos);
-            activeGameObject.transform.right = dir;
-            activeGameObject.transform.eulerAngles = new Vector3(
-                                                    activeGameObject.transform.eulerAngles.x,
-                                                    activeGameObject.transform.eulerAngles.y,
-                                                    activeGameObject.transform.eulerAngles.z + 90
-                                                    );
+        //if (Input.GetMouseButtonDown(1) && base.towerTier == 3)
+        //{
+        //    Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //    Vector2 dir = (activeGameObject.transform.position - pos);
+        //    activeGameObject.transform.right = dir;
+        //    activeGameObject.transform.eulerAngles = new Vector3(
+        //                                            activeGameObject.transform.eulerAngles.x,
+        //                                            activeGameObject.transform.eulerAngles.y,
+        //                                            activeGameObject.transform.eulerAngles.z + 90
+        //                                            );
 
-            this.dir = dir.normalized;
-            this.isBroken = !this.isBroken;
-        }
+        //    this.dir = dir.normalized;
+        //    this.isBroken = !this.isBroken;
+        //}
 
         if (isBroken)
         {
@@ -76,23 +88,23 @@ public class RocketTower : Tower
             brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
 
             //DEBUG FEATURE FOR SHOOTING
-            if (Input.GetKeyDown(KeyCode.Space) && base.towerTier == 3)
-            {
-                Vector2 pos1 = (Vector2)activeGameObject.transform.position + offset * activeGameObject.transform.localScale.y;
-                Vector2 pos2 = (Vector2)activeGameObject.transform.position - offset * activeGameObject.transform.localScale.y;
-                Vector2 newVelocity = this.dir * velocity;
-                Vector3 rotation = new Vector3(
-                                            activeGameObject.transform.eulerAngles.x,
-                                            activeGameObject.transform.eulerAngles.y,
-                                            activeGameObject.transform.eulerAngles.z
-                                            );
+            //if (Input.GetKeyDown(KeyCode.Space) && base.towerTier == 3)
+            //{
+            //    Vector2 pos1 = (Vector2)activeGameObject.transform.position + offset * activeGameObject.transform.localScale.y;
+            //    Vector2 pos2 = (Vector2)activeGameObject.transform.position - offset * activeGameObject.transform.localScale.y;
+            //    Vector2 newVelocity = this.dir * velocity;
+            //    Vector3 rotation = new Vector3(
+            //                                activeGameObject.transform.eulerAngles.x,
+            //                                activeGameObject.transform.eulerAngles.y,
+            //                                activeGameObject.transform.eulerAngles.z
+            //                                );
 
-                weapon.FireWeapon(rotation, pos1, newVelocity);
-                weapon.FireWeapon(rotation, pos2, newVelocity);
+            //    weapon.FireWeapon(rotation, pos1, newVelocity);
+            //    weapon.FireWeapon(rotation, pos2, newVelocity);
 
-                StartCoroutine(WeaponReload());
-                StartCoroutine(WeaponCooldown());
-            }
+            //    StartCoroutine(WeaponReload());
+            //    StartCoroutine(WeaponCooldown());
+            //}
 
             List<Enemy> nearEnemies = getNearEntities(60);
 
@@ -101,7 +113,7 @@ public class RocketTower : Tower
                 if (canFire && isReloaded)
                 {
                     int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
-                    faceEnemy(nearEnemies[enemyIndex], activeGameObject);
+                    faceEnemy(nearEnemies[enemyIndex], this.activeGameObject);
 
                     Vector2 pos1 = (Vector2)activeGameObject.transform.position + offset * activeGameObject.transform.localScale.y;
                     Vector2 pos2 = (Vector2)activeGameObject.transform.position - offset * activeGameObject.transform.localScale.y;
@@ -173,4 +185,20 @@ public class RocketTower : Tower
                                             );
     }
 
+    public override string getTowerType()
+    {
+        return "Rocket";
+    }
+
+    public override bool upgradeTower()
+    {
+        if (this.towerTier == 3) return false;
+
+        else
+        {
+            this.towerTier++;
+
+            return true;
+        }
+    }
 }

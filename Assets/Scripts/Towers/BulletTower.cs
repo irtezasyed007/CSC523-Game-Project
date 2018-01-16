@@ -13,20 +13,32 @@ public class BulletTower : Tower
     void Start()
     {
         init();
+        initComponents();
+        initTieredTurrets();
+    }
+
+    private void initComponents()
+    {
         foreach (Component go in gameObject.GetComponentsInChildren<Component>(true))
         {
-            if(go.gameObject.name.Contains("muzzleFlash"))
+            if (go.gameObject.name.Contains("muzzleFlash"))
             {
                 if (muzzleFlash1 == null) muzzleFlash1 = go.gameObject;
                 else muzzleFlash2 = go.gameObject;
             }
 
-            if(go.gameObject.name == "turretHead")
+            if (go.gameObject.name == "turretHead")
             {
                 this.turretToRotate = go.gameObject;
             }
         }
+    }
 
+    private void initTieredTurrets()
+    {
+        tier1Tower = Resources.Load<GameObject>("Turrets/tier1BulletTurret");
+        tier2Tower = Resources.Load<GameObject>("Turrets/tier2BulletTurret");
+        tier3Tower = Resources.Load<GameObject>("Turrets/tier3BulletTurret");
     }
 
     // Update is called once per frame
@@ -87,7 +99,7 @@ public class BulletTower : Tower
                 if (canFire)
                 {
                     int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
-                    faceEnemy(nearEnemies[enemyIndex], this.gameObject);
+                    faceEnemy(nearEnemies[enemyIndex], this.turretToRotate);
 
                     Vector2 pos1 = (Vector2)turretToRotate.transform.position + offset * turretToRotate.transform.localScale.y;
                     Vector2 pos2 = (Vector2)turretToRotate.transform.position - offset * turretToRotate.transform.localScale.y;
@@ -140,6 +152,25 @@ public class BulletTower : Tower
 
         muzzleFlash1.SetActive(false);
         if (muzzleFlash2 != null) muzzleFlash2.SetActive(false);
+    }
+
+    public override string getTowerType()
+    {
+        return "Bullet";
+    }
+
+    public override bool upgradeTower()
+    {
+        if (this.towerTier == 3) return false;
+
+        else
+        {
+            this.towerTier++;
+            string towerType = "tier" + this.towerTier.ToString() + "BulletTurret";
+            GameObject newTower = Resources.Load<GameObject>("Turrets/" + towerType);
+            
+            return true;
+        }
     }
 
 }
