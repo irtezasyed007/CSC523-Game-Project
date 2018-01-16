@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 224586696981143400}
   - component: {fileID: 222342539362119660}
   - component: {fileID: 114357919393750480}
+  - component: {fileID: 114688770207227460}
   m_Layer: 5
   m_Name: UpgradeSuccessfulText
   m_TagString: Untagged
@@ -61,6 +62,18 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Upgrade Successful!
+--- !u!114 &114688770207227460
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1070624330770226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7324f5367e451504898f6587f8f619be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeOutTime: 1
 --- !u!222 &222342539362119660
 CanvasRenderer:
   m_ObjectHideFlags: 1

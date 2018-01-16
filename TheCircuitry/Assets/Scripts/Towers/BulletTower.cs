@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class BulletTower : Tower
 {
+    public static int price = 150;
 
     private TowerManager towerManager;
     private GameObject turretHead;

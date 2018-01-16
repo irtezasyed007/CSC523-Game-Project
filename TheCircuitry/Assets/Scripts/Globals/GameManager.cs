@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
+
     public static GameManager Manager;
     public static Level1Scene level1Scene;
 
@@ -169,7 +170,6 @@ public class GameManager : MonoBehaviour {
         refreshScoreText();
         refreshGoldText();
         refreshWaveText();
-        Debug.Log("Gold: " + gold);
     }
 
     public void decrementHealth()
@@ -217,7 +217,7 @@ public class GameManager : MonoBehaviour {
 
     public void refreshWaveText()
     {
-        Text text = GameObject.Find("WavePanel").GetComponentInChildren<Text>();
+        Text text = GameObject.Find("WaveText").GetComponentInChildren<Text>();
         text.text = "Wave: " + wave.ToString();
     }
 
@@ -271,9 +271,14 @@ public class GameManager : MonoBehaviour {
         return null;
     }
 
-    public bool hasEnoughToUpgrade(double amt)
+    public bool hasEnoughGold(int amt)
     {
         if (amt > gold) return false;
         else return true;
+    }
+
+    public void doGoldTransaction(int amount)
+    {
+        gold -= amount;
     }
 }

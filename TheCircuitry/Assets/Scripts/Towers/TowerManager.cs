@@ -41,7 +41,6 @@ public class TowerManager : MonoBehaviour
         }
 
         activeTower = allTowers[0]; //The First Tower (tier1)
-        Debug.Log("Called!");
     }
 
 

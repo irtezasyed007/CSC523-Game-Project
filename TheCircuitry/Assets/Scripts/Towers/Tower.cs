@@ -1,9 +1,10 @@
-﻿    using Assets.Scripts;
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
+﻿using Assets.Scripts;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-    public class Tower : MonoBehaviour {
+
+public class Tower : MonoBehaviour {
 
     protected static bool loaded = false;
 

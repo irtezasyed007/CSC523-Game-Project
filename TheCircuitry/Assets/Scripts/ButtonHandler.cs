@@ -26,17 +26,16 @@ public class ButtonHandler : MonoBehaviour {
     public void upgradeTower()
     {
         Tower towerToUpgrade = GameManager.level1Scene.getTowerToUpgrade();
-        double amt = towerToUpgrade.getTier() * 1000;
+        int amt = towerToUpgrade.getTier() * 1000;
 
-        if (!GameManager.Manager.hasEnoughToUpgrade(amt))
+        if (!GameManager.Manager.hasEnoughGold(amt))
         {
-            GameManager.level1Scene.doTextFadeOut(1);
+            doNotEnoughGoldText(transform.position);
         }
 
         else if (towerToUpgrade.canUpgrade())
         {
-            GameManager.level1Scene.doTextFadeOut(2);
-
+            doUpgradeSuccessfulText(transform.position);
             towerToUpgrade.upgradeTower();
             GameManager.Manager.addToGold((int)amt * -1);
             GameManager.level1Scene.upgradeButton.gameObject.SetActive(false);
@@ -51,5 +50,22 @@ public class ButtonHandler : MonoBehaviour {
     private IEnumerator wait()
     {
         yield return new WaitForSeconds(1);
+    }
+
+
+    private void doNotEnoughGoldText(Vector2 position)
+    {
+        GameObject go = Resources.Load<GameObject>("Prefabs/Text GameObjects/NotEnoughGoldText");
+        go = Instantiate(go, GameObject.Find("Canvas").transform);
+        go.transform.position = new Vector2(position.x, position.y);
+        go.GetComponent<TextFadeOut>().FadeOut();
+    }
+
+    private void doUpgradeSuccessfulText(Vector2 position)
+    {
+        GameObject go = Resources.Load<GameObject>("Prefabs/Text GameObjects/UpgradeSuccessfulText");
+        go = Instantiate(go, GameObject.Find("Canvas").transform);
+        go.transform.position = new Vector2(position.x, position.y);
+        go.GetComponent<TextFadeOut>().FadeOut();
     }
 }

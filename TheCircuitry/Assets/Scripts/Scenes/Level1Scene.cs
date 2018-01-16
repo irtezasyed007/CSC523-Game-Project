@@ -7,20 +7,18 @@ public class Level1Scene : MonoBehaviour
 {
 
     public Button upgradeButton;
-    private GameObject[] textFadeOut = new GameObject[4];
+    public Wave wave;
     private GameObject previousClickedTower; //The previous clicked tower
     private Tower towerToUpgrade; //The tower the player clicked on to upgrade
 
-    private void Start()
+    void Start()
     {
-        GameManager.level1Scene = this;
-
-        int index = 0;
-        foreach(TextFadeOut tmp in GameObject.Find("FadeOutText").GetComponentsInChildren<TextFadeOut>(true))
+        if (GameManager.level1Scene == null)
         {
-            textFadeOut[index] = tmp.gameObject;
-            index++;
+            GameManager.level1Scene = this;
+            DontDestroyOnLoad(gameObject);
         }
+        else Destroy(gameObject);
     }
 
     void OnEnable()
@@ -111,7 +109,7 @@ public class Level1Scene : MonoBehaviour
                     //Max tier has been reached
                     else
                     {
-                        doTextFadeOut(0);
+                        doMaxTierReachedText((Vector2) Input.mousePosition);
                     }
                 }
             }
@@ -140,10 +138,11 @@ public class Level1Scene : MonoBehaviour
         }
     }
 
-    public void doTextFadeOut(int index)
+    private void doMaxTierReachedText(Vector2 position)
     {
-        GameObject clone = Instantiate(textFadeOut[index], textFadeOut[index].transform.parent);
-        clone.GetComponent<TextFadeOut>().FadeOut();
+        GameObject go = Resources.Load<GameObject>("Prefabs/Text GameObjects/MaxTierReachedText");
+        go = Instantiate(go, GameObject.Find("Canvas").transform);
+        go.transform.position = new Vector2(position.x, position.y);
     }
 
     public Tower getTowerToUpgrade()

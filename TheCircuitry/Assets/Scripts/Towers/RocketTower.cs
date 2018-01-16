@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class RocketTower : Tower
 {
+    public static int price = 250;
 
     private TowerManager towerManager;
     private GameObject turretHead; //Basically what we are rotating (the turret-head)

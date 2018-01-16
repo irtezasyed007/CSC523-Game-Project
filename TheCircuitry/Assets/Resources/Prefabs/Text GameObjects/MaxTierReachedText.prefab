@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 224753921872217158}
   - component: {fileID: 222537634456043102}
   - component: {fileID: 114322625617856622}
+  - component: {fileID: 114464171951918750}
   m_Layer: 5
   m_Name: MaxTierReachedText
   m_TagString: Untagged
@@ -61,6 +62,18 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Max tier reached!
+--- !u!114 &114464171951918750
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1088830665960268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7324f5367e451504898f6587f8f619be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeOutTime: 1
 --- !u!222 &222537634456043102
 CanvasRenderer:
   m_ObjectHideFlags: 1
