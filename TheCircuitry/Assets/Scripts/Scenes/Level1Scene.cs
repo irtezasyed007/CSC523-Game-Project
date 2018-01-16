@@ -42,7 +42,10 @@ public class Level1Scene : MonoBehaviour
             if (GameManager.Manager.tipShown) GameObject.Find("StartPanel").SetActive(false);
 
             this.upgradeButton = GameObject.Find("UpgradeTurretPanel").GetComponentInChildren<Button>();
-            this.upgradeButton.gameObject.SetActive(false);
+            if(upgradeButton != null)
+            {
+                this.upgradeButton.gameObject.SetActive(false);
+            }
         }
     }
 
