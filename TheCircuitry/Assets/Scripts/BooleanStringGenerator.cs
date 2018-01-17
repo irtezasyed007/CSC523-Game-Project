@@ -114,7 +114,7 @@ public class BooleanStringGenerator
             }
             else if(generateOperation >= 4 && generateOperation <= 7)
             {
-                operation = '*';
+                operation = '×';
             }
             else
             {
@@ -140,7 +140,7 @@ public class BooleanStringGenerator
             }
             else if(generateOperation >= 4 && generateOperation <= 7)
             {
-                operation = '*';
+                operation = '×';
             }
             else
             {
@@ -163,7 +163,7 @@ public class BooleanStringGenerator
             }
             else if (generateOperation >= 4 && generateOperation <= 7)
             {
-                operation = '*';
+                operation = '×';
             }
             else
             {

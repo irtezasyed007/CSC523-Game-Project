@@ -347,6 +347,10 @@ internal class CircuitBuilder : MonoBehaviour {
             PreserveSceneBeforeLoad();
             SceneManager.LoadScene("gatesReference");
         });
+        logicRef.onClick.AddListener(() => {
+            PreserveSceneBeforeLoad();
+            SceneManager.LoadScene("logicReference");
+        });
 
         GameObject.Find("BackButton").GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => {
             UnpreserveSceneBeforeLoad();
@@ -383,7 +387,7 @@ internal class CircuitBuilder : MonoBehaviour {
             }
         }
         GameObject.FindGameObjectWithTag("Function").GetComponent<UnityEngine.UI.Text>().text = "Function: \n"
-                + outputFunction;
+                + new string(outputFunction);
     }
     public void InitializeInputsAndOutput()
     {
