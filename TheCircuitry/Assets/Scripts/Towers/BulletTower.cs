@@ -49,22 +49,6 @@ public class BulletTower : Tower
     // Update is called once per frame
     void Update()
     {
-        //DEBUG FEATURE TO FIX ALL TOWERS IN A LEVEL
-        //if (Input.GetMouseButtonDown(1) && base.towerTier == 3)
-        //{
-        //    Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //    Vector2 dir = (turretToRotate.transform.position - pos);
-        //    this.turretToRotate.transform.right = dir;
-        //    this.turretToRotate.transform.eulerAngles = new Vector3(
-        //                                this.turretToRotate.transform.eulerAngles.x,
-        //                                this.turretToRotate.transform.eulerAngles.y,
-        //                                this.turretToRotate.transform.eulerAngles.z + 90
-        //                                );
-
-        //    this.dir = dir.normalized;
-        //    this.isBroken = !this.isBroken;
-        //}
-
         if (isBroken)
         {
             brokenTowerParticles.GetComponent<ParticleSystem>().Play();
@@ -79,23 +63,6 @@ public class BulletTower : Tower
             }
 
             brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
-
-            //DEBUG FEATURE FOR SHOOTING
-            //if (Input.GetKeyDown(KeyCode.Space) && base.towerTier == 3)
-            //{
-            //    Vector2 pos1 = (Vector2)turretToRotate.transform.position + offset * turretToRotate.transform.localScale.y;
-            //    Vector2 pos2 = (Vector2)turretToRotate.transform.position - offset * turretToRotate.transform.localScale.y;
-            //    Vector2 newVelocity = this.dir * velocity;
-            //    Vector3 newRotation = new Vector3(
-            //                                    this.transform.eulerAngles.x,
-            //                                    this.transform.eulerAngles.y,
-            //                                    this.transform.eulerAngles.z
-            //                                    );
-
-            //    weapon.FireWeapon(newRotation, pos1, newVelocity);
-            //    weapon.FireWeapon(newRotation, pos2, newVelocity);
-            //    StartCoroutine(MuzzleFlash());
-            //}
 
             List<Enemy> nearEnemies = getNearEntities(175);
 

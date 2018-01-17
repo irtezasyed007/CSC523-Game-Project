@@ -55,22 +55,6 @@ public class RocketTower : Tower
 
     private void Update()
     {
-        //DEBUG FEATURE TO FIX ALL TOWERS IN A LEVEL
-        //if (Input.GetMouseButtonDown(1) && base.towerTier == 3)
-        //{
-        //    Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //    Vector2 dir = (activeGameObject.transform.position - pos);
-        //    activeGameObject.transform.right = dir;
-        //    activeGameObject.transform.eulerAngles = new Vector3(
-        //                                            activeGameObject.transform.eulerAngles.x,
-        //                                            activeGameObject.transform.eulerAngles.y,
-        //                                            activeGameObject.transform.eulerAngles.z + 90
-        //                                            );
-
-        //    this.dir = dir.normalized;
-        //    this.isBroken = !this.isBroken;
-        //}
-
         if (isBroken)
         {
             brokenTowerParticles.GetComponent<ParticleSystem>().Play();
@@ -85,25 +69,6 @@ public class RocketTower : Tower
             }
 
             brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
-
-            //DEBUG FEATURE FOR SHOOTING
-            //if (Input.GetKeyDown(KeyCode.Space) && base.towerTier == 3)
-            //{
-            //    Vector2 pos1 = (Vector2)activeGameObject.transform.position + offset * activeGameObject.transform.localScale.y;
-            //    Vector2 pos2 = (Vector2)activeGameObject.transform.position - offset * activeGameObject.transform.localScale.y;
-            //    Vector2 newVelocity = this.dir * velocity;
-            //    Vector3 rotation = new Vector3(
-            //                                activeGameObject.transform.eulerAngles.x,
-            //                                activeGameObject.transform.eulerAngles.y,
-            //                                activeGameObject.transform.eulerAngles.z
-            //                                );
-
-            //    weapon.FireWeapon(rotation, pos1, newVelocity);
-            //    weapon.FireWeapon(rotation, pos2, newVelocity);
-
-            //    StartCoroutine(WeaponReload());
-            //    StartCoroutine(WeaponCooldown());
-            //}
 
             List<Enemy> nearEnemies = getNearEntities(175);
 

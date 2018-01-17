@@ -32,19 +32,32 @@ public class TurretButtonHandler : MonoBehaviour
             {
                 if (text.gameObject.name == "OperationalText")
                 {
-                    if (tower.isBroken)
+                    //They are currently still fighting enemies
+                    if (!Wave.wave.isWaveFinished())
                     {
-                        btn.interactable = true;
-                        text.text = "Nonoperational";
-                        text.color = new Color(255.0f / 255.0f, 0.0f / 255.0f, 0.0f / 255.0f, 255.0f / 255.0f);
+                        if (tower.isBroken)
+                        {
+                            btn.interactable = true;
+                            text.text = "Nonoperational";
+                            text.color = new Color(255.0f / 255.0f, 0.0f / 255.0f, 0.0f / 255.0f, 255.0f / 255.0f);
+                        }
+
+                        else
+                        {
+                            btn.interactable = false;
+                            text.text = "Operational";
+                            text.color = new Color(32.0f / 255.0f, 150.0f / 255.0f, 52.0f / 255.0f, 255.0f / 255.0f);
+                        }
                     }
 
+                    //The wave of enemies is over
                     else
                     {
                         btn.interactable = false;
-                        text.text = "Operational";
-                        text.color = new Color(32.0f / 255.0f, 150.0f / 255.0f, 52.0f / 255.0f, 255.0f / 255.0f);
+                        text.text = "Start Next Round!";
+                        text.color = new Color(255.0f / 255.0f, 0.0f / 255.0f, 0.0f / 255.0f, 255.0f / 255.0f);
                     }
+
                 }
             }
         }

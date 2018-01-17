@@ -44,7 +44,6 @@ public class SpawnTile : MonoBehaviour {
         {
             int wait = Random.Range(minYieldTime, maxYieldTime);
             GameObject go = Instantiate(getRandomEnemy(), transform.position, Quaternion.identity);
-            go.GetComponent<Enemy>().maxHealth = Random.Range(minEnemyHealth, maxEnemyHealth);
             totalEnemiesSpawned++;
             StartCoroutine(waitUntilNextSpawn(wait));
         }

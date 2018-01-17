@@ -7,15 +7,16 @@ public class TurretBuilder : MonoBehaviour
 {
     public const int MAX_INSTANCES = 15;
     public static List<GameObject> instantiatedTiles = new List<GameObject>();
-
+    public static int totalTiles = 0;
     public GameObject purchaseTurretPanel;
 
     // Use this for initialization
     void Start()
     {
-        if(instantiatedTiles.Count < MAX_INSTANCES)
+        if(totalTiles < MAX_INSTANCES)
         {
             instantiatedTiles.Add(gameObject);
+            totalTiles++;
             Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
             DontDestroyOnLoad(gameObject);
         }

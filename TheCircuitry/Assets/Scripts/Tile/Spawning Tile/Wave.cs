@@ -4,7 +4,7 @@ using System.Collections;
 
 public class Wave : MonoBehaviour
 {
-    private static Wave instance;
+    public static Wave wave;
     public GameObject spawnTileGameObject;
     public GameObject waveScaleGameObject;
 
@@ -27,8 +27,9 @@ public class Wave : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        if(instance == null)
+        if(wave == null)
         {
+            wave = this;
             DontDestroyOnLoad(gameObject);
             Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
             spawnTile = spawnTileGameObject.GetComponent<SpawnTile>();
@@ -65,7 +66,7 @@ public class Wave : MonoBehaviour
         }
     }
 
-    private bool isWaveFinished()
+    public bool isWaveFinished()
     {
         return spawnTile.EnemiesSpawned >= spawnTile.MaxEnemies && Enemy.instantiedEnemies.Count == 0;
     }

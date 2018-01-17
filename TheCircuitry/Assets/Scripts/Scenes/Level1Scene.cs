@@ -113,6 +113,8 @@ public class Level1Scene : MonoBehaviour
 
     private void OnDestroy()
     {
+        TurretBuilder.totalTiles = 0;
+        TurretBuilder.instantiatedTiles.Clear();
         foreach (GameObject go in instantiedLevel1GameObjects) Destroy(go);
     }
 }

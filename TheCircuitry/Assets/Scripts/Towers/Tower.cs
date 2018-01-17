@@ -21,6 +21,7 @@ public class Tower : MonoBehaviour {
     protected Vector2 dir;
     protected int noWeaponFireCount = 0;
     protected int noTowerCountdownCount = 0;
+    protected int secondsWaited = 0;
     protected bool startCountdown = false;
 
     // Use this for initialization
@@ -43,22 +44,6 @@ public class Tower : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        //DEBUG FEATURE TO FIX ALL TOWERS IN A LEVEL
-        //if (Input.GetMouseButtonDown(1))
-        //{
-        //    Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //    Vector2 dir = (transform.position - pos);
-        //    this.transform.right = dir;
-        //    this.transform.eulerAngles = new Vector3(
-        //                                this.transform.eulerAngles.x,
-        //                                this.transform.eulerAngles.y,
-        //                                this.transform.eulerAngles.z + 90
-        //                                );
-
-        //    this.dir = dir.normalized;
-        //    this.isBroken = !this.isBroken;
-        //}
-
         if (isBroken)
         {
             brokenTowerParticles.GetComponent<ParticleSystem>().Play();
@@ -73,18 +58,6 @@ public class Tower : MonoBehaviour {
             }
 
             brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
-
-            //DEBUG FEATURE FOR SHOOTING
-            //if (Input.GetKeyDown(KeyCode.Space))
-            //{
-            //    GameObject go = (GameObject)Instantiate(projectile, (Vector2)transform.position + offset * transform.localScale.y, Quaternion.identity);
-            //    go.GetComponent<Rigidbody2D>().velocity = this.dir * velocity;
-            //    go.transform.eulerAngles = new Vector3(
-            //                                    this.transform.eulerAngles.x,
-            //                                    this.transform.eulerAngles.y,
-            //                                    this.transform.eulerAngles.z
-            //                                    );
-            //}
 
             List<Enemy> nearEnemies = getNearEntities(100);
 
@@ -115,7 +88,7 @@ public class Tower : MonoBehaviour {
                     noWeaponFireCount = 0;
                 }
 
-                if(noTowerCountdownCount > 1000)
+                if (noTowerCountdownCount > 1000)
                 {
                     startCountdown = false;
                     noTowerCountdownCount = 0;
