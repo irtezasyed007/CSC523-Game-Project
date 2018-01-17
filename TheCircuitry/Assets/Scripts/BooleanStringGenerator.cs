@@ -67,7 +67,7 @@ public class BooleanStringGenerator
     class Term
     {
         private BoolVar[] vars;
-        private bool operation;
+        private char operation;
         private string stackString;
 
         public Term()
@@ -76,7 +76,7 @@ public class BooleanStringGenerator
             stackString = null;
         }
 
-        public Term(BoolVar[] vars, bool operation, string stackString)
+        public Term(BoolVar[] vars, char operation, string stackString)
         {
             this.vars = vars;
             this.operation = operation;
@@ -93,7 +93,7 @@ public class BooleanStringGenerator
             get { return stackString; }
         }
 
-        public bool Operation
+        public int Operation
         {
             get { return operation; }
         }
@@ -105,18 +105,23 @@ public class BooleanStringGenerator
             list.Remove(var1);
             BoolVar var2 = list.ElementAt(rng.Next(0, list.Count));
 
-            bool operation = Convert.ToBoolean(rng.Next(0, 2));    // 0 means addition, 1 means multiplication
+            int generateOperation = rng.Next(0, 9);    // 0-3 = addition, 4-7 = multiplication, 8-9 = exclusive or
             string newStackString;
-            if (operation)
+            char operation;
+            if (generateOperation >= 0 && generateOperation <= 3)
             {
-                newStackString = '(' + var1.var.ToString() + '*' + var2.var.ToString() + ')';
+                operation = '+';
+            }
+            else if(generateOperation >= 4 && generateOperation <= 7)
+            {
+                operation = '*';
             }
             else
             {
-                newStackString = '(' + var1.var.ToString() + '+' + var2.var.ToString() +  ')';
+                operation = '^';
             }
+            newStackString = '(' + var1.var.ToString() + operation + var2.var.ToString() + ')';
             Console.WriteLine(newStackString);
-                
 
             return new Term(arr, operation, newStackString);
         }
@@ -125,33 +130,46 @@ public class BooleanStringGenerator
         {
             BoolVar var1 = arr[rng.Next(0, arr.Length)];
 
-            bool operation = Convert.ToBoolean(rng.Next(0, 2));    // 0 means addition, 1 means multiplication
+            int generateOperation = rng.Next(0, 9);    // 0-3 = addition, 4-7 = multiplication, 8-9 = exclusive or
             string newStackString;
-            if (operation)
+            char operation;
+            if (generateOperation >= 0 && generateOperation <= 3)
             {
-                newStackString = '(' + aTerm.StackString + '*' + var1.var.ToString() + ')';
+                operation = '+';
+                
+            }
+            else if(generateOperation >= 4 && generateOperation <= 7)
+            {
+                operation = '*';
             }
             else
             {
-                newStackString = '(' + aTerm.StackString + '+' + var1.var.ToString() + ')';
+                operation = '^';
             }
+            newStackString = '(' + aTerm.StackString + operation + var1.var.ToString() + ')';
             Console.WriteLine(newStackString);
-
 
             return new Term(arr, operation, newStackString);
         }
         public Term combineTerms(System.Random rng, BoolVar[] arr, Term anotherTerm)
         {
-            bool operation = Convert.ToBoolean(rng.Next(0, 2));
+            int generateOperation = rng.Next(0, 9);    // 0-3 = addition, 4-7 = multiplication, 8-9 = exclusive or
             string newStackString;
-            if (operation)  // multiplication
+            char operation;
+            if (generateOperation >= 0 && generateOperation <= 3)
             {
+                operation = '+';
                 newStackString = '(' + this.stackString + '*' + anotherTerm.StackString + ')';
+            }
+            else if (generateOperation >= 4 && generateOperation <= 7)
+            {
+                operation = '*';
             }
             else
             {
-                newStackString = '(' + this.stackString + '+' + anotherTerm.StackString + ')';
+                operation = '^';
             }
+            newStackString = '(' + this.stackString + operation + anotherTerm.StackString + ')';
             Console.WriteLine(newStackString);
             return new Term(arr, operation, newStackString);
         }

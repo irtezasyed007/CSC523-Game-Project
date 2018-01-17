@@ -373,8 +373,17 @@ internal class CircuitBuilder : MonoBehaviour {
             }
             InitializeInputsAndOutput();
         }
+
+        char[] outputFunction = equation.BooleanFunction.ToCharArray();
+        for(int i = 0; i < outputFunction.Length; ++i)
+        {
+            if(outputFunction[i] == '^')
+            {
+                outputFunction[i] = '⊕';
+            }
+        }
         GameObject.FindGameObjectWithTag("Function").GetComponent<UnityEngine.UI.Text>().text = "Function: \n"
-                + equation.BooleanFunction;
+                + outputFunction;
     }
     public void InitializeInputsAndOutput()
     {
