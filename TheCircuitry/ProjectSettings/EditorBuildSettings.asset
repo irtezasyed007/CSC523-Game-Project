@@ -38,3 +38,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/logicReference.unity
     guid: ab6a9fd524cc3d5419791d5ac8cec70d
+  - enabled: 1
+    path: Assets/circuitBuilderTutorial.unity
+    guid: 6d3a4ddb6fb5da34ab5c6b37945daa58

@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour {
     void Start () {
         activeScene = SceneManager.GetActiveScene().name;
 
-        if (activeScene == "circuitBuilderScene")
+        if (activeScene == "circuitBuilderScene" || activeScene == "circuitBuilderTutorial")
         {
             loadAndPrepScene(activeScene);
         }
@@ -51,9 +51,12 @@ public class GameManager : MonoBehaviour {
         startAudioIfAllowed();
         activeScene = SceneManager.GetActiveScene().name;
 
-        if (activeScene == "circuitBuilderScene")
+        if (activeScene == "circuitBuilderScene" || activeScene == "circuitBuilderTutorial")
         {
-
+            if(circuitBuilder == null)
+            {
+                loadAndPrepScene("circuitBuilderTutorial");
+            }
             if (Input.GetMouseButtonDown(1))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -85,7 +88,6 @@ public class GameManager : MonoBehaviour {
                     
                 }
             }
-
         }
 
     }
@@ -124,22 +126,23 @@ public class GameManager : MonoBehaviour {
         else
         {
             audio = searchAudioSourceByName(go, "Defense Line");
-            if (!audio.isPlaying)
-            {
-                audio.Play();
-                musicPlaying = true;
-            }
+            //if (!audio.isPlaying)
+            //{
+            //    audio.Play();
+            //    musicPlaying = true;
+            //}
             
         }
     }
 
     internal void loadAndPrepScene(string sceneName)
     {
-        if(sceneName == "circuitBuilderScene")
+        if(sceneName == "circuitBuilderScene" || sceneName == "circuitBuilderTutorial")
         {
             if(circuitBuilder == null)
             {
                 circuitBuilder = gameObject.AddComponent<CircuitBuilder>();
+                //circuitBuilder.enabled = true;
             }
 
             else

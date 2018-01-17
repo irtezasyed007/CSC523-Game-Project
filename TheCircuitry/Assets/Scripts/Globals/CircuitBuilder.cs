@@ -312,7 +312,6 @@ internal class CircuitBuilder : MonoBehaviour {
     public void InitializeSceneParameters()
     {
         GameManager.Manager.activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-
         // Submit button calls the relevant functions to check the user's circuit and decide how to handle the outcome
         submit = GameObject.Find("SubmitButton").GetComponent<UnityEngine.UI.Button>();
         submit.onClick.AddListener(() => {
@@ -375,7 +374,25 @@ internal class CircuitBuilder : MonoBehaviour {
             {
                 Debug.Log(stringArr[i]);
             }
-            InitializeInputsAndOutput();
+            if(SceneManager.GetActiveScene().name == "circuitBuilderTutorial")
+            {
+                inputs = new GameObject[2];
+                inputs[0] = Instantiate(Resources.Load<GameObject>("Prefabs/Input"));
+                inputs[0].GetComponentInChildren<TextMesh>().text = "A";
+                inputs[1] = Instantiate(Resources.Load<GameObject>("Prefabs/Input"));
+                inputs[1].GetComponentInChildren<TextMesh>().text = "B";
+
+                inputs[0].transform.position = new Vector3(inputs[0].transform.position.x,
+                inputs[0].transform.position.y - 96, 0);    // Remember, 96 x 96 is size for inputs and dynamic gates
+                inputs[1].transform.position = new Vector3(inputs[1].transform.position.x,
+                    inputs[1].transform.position.y - (3 * 96), 0);
+
+                output = Instantiate(Resources.Load<GameObject>("Prefabs/Output"));
+            }
+            else
+            {
+                InitializeInputsAndOutput();
+            }       
         }
 
         char[] outputFunction = equation.BooleanFunction.ToCharArray();
@@ -651,7 +668,7 @@ internal class CircuitBuilder : MonoBehaviour {
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if(scene.name == "circuitBuilderScene")
+        if(scene.name == "circuitBuilderScene" || scene.name == "circuitBuilderTutorial")
             InitializeSceneParameters();
     }
 

@@ -18,7 +18,12 @@ public class DrawLines : MonoBehaviour
     private void Awake()
     {
         lineMat = Resources.Load<Material>("Materials/Background");
-        if(GameManager.Manager.circuitBuilder.drawColliders == null)
+        
+    }
+
+    private void Start()
+    {
+        if (GameManager.Manager.circuitBuilder.drawColliders == null)
         {
             collidersToDraw = new List<Collider2D[]>();
         }
