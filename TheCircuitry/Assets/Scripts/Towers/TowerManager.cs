@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
 public class TowerManager : MonoBehaviour
 {
-    public static List<TowerManager> activeTowers = new List<TowerManager>();
+    public static List<GameObject> activeTowers = new List<GameObject>();
     public const int ALLOWED_TOWERS = 15;
 
     private GameObject activeTower;
@@ -20,10 +21,10 @@ public class TowerManager : MonoBehaviour
 
         else
         {
-            DontDestroyOnLoad(this.gameObject);
             initTowers();
-
-            activeTowers.Add(this);
+            DontDestroyOnLoad(gameObject);
+            activeTowers.Add(gameObject);
+            Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
         }
     }
 
@@ -43,6 +44,31 @@ public class TowerManager : MonoBehaviour
         activeTower = allTowers[0]; //The First Tower (tier1)
     }
 
+    public void openTurretOptionsPanel()
+    {
+        GameObject canvas = GameObject.Find("Canvas");
+
+        foreach(RectTransform go in canvas.GetComponentsInChildren<RectTransform>(true))
+        {
+            //Activating the "TowerOptionsPanel" so the player can upgrade/repair their turrets
+            if(go.gameObject.name == "TowerOptionsPanel")
+            {
+                initButtons(go.gameObject);
+                go.gameObject.SetActive(true);
+                break;
+            }
+        }
+    }
+
+    private void initButtons(GameObject panelGameObject)
+    {
+        //Assigning the instance of the tower-to-upgrade to the buttons
+        foreach (Button btn in panelGameObject.GetComponentsInChildren<Button>(true))
+        {
+            TurretButtonHandler btnHandler = btn.GetComponent<TurretButtonHandler>();
+            if (btnHandler != null) btnHandler.clickedTurret = gameObject;
+        }
+    }
 
     public void activateNextTower(int index)
     {
@@ -54,5 +80,10 @@ public class TowerManager : MonoBehaviour
     public Tower getActiveTower()
     {
         return this.activeTower.GetComponent<Tower>();
+    }
+
+    private void OnDestroy()
+    {
+        activeTowers.Remove(gameObject);
     }
 }

@@ -23,25 +23,6 @@ public class ButtonHandler : MonoBehaviour {
         }
     }
 
-    public void upgradeTower()
-    {
-        Tower towerToUpgrade = GameManager.level1Scene.getTowerToUpgrade();
-        int amt = towerToUpgrade.getTier() * 1000;
-
-        if (!GameManager.Manager.hasEnoughGold(amt))
-        {
-            doNotEnoughGoldText(transform.position);
-        }
-
-        else if (towerToUpgrade.canUpgrade())
-        {
-            doUpgradeSuccessfulText(transform.position);
-            towerToUpgrade.upgradeTower();
-            GameManager.Manager.addToGold((int)amt * -1);
-            GameManager.level1Scene.upgradeButton.gameObject.SetActive(false);
-        }
-    }
-
     public void setGameManagerTipShown(bool val)
     {
         GameManager.Manager.tipShown = val;
@@ -52,25 +33,17 @@ public class ButtonHandler : MonoBehaviour {
         GameManager.Manager.musicEnabled = !GameManager.Manager.musicEnabled;
     }
 
+    public void playRandomCoinSound()
+    {
+        string num = Random.Range(0, 22).ToString("D2");
+        GameObject go = Instantiate(Resources.Load<GameObject>("Sounds/Coins_Several/Coins_Several_" + num));
+        AudioSource audioSource = go.GetComponent<AudioSource>();
+        AudioSource.PlayClipAtPoint(audioSource.clip, transform.position);
+        Destroy(go);
+    }
+
     private IEnumerator wait()
     {
         yield return new WaitForSeconds(1);
-    }
-
-
-    private void doNotEnoughGoldText(Vector2 position)
-    {
-        GameObject go = Resources.Load<GameObject>("Prefabs/Text GameObjects/NotEnoughGoldText");
-        go = Instantiate(go, GameObject.Find("Canvas").transform);
-        go.transform.position = new Vector2(position.x, position.y);
-        go.GetComponent<TextFadeOut>().FadeOut();
-    }
-
-    private void doUpgradeSuccessfulText(Vector2 position)
-    {
-        GameObject go = Resources.Load<GameObject>("Prefabs/Text GameObjects/UpgradeSuccessfulText");
-        go = Instantiate(go, GameObject.Find("Canvas").transform);
-        go.transform.position = new Vector2(position.x, position.y);
-        go.GetComponent<TextFadeOut>().FadeOut();
     }
 }

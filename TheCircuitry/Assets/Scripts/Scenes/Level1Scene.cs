@@ -6,19 +6,21 @@ using UnityEngine.UI;
 
 public class Level1Scene : MonoBehaviour
 {
-    public static List<GameObject> instantiedLevel1GameObjects = new List<GameObject>();
+    public static Level1Scene level1Scene;
 
-    public Button upgradeButton;
+    public List<GameObject> instantiedLevel1GameObjects = new List<GameObject>();
+
     private GameObject previousClickedTower; //The previous clicked tower
     private Tower towerToUpgrade; //The tower the player clicked on to upgrade
 
-    void Start()
+    void Awake()
     {
-        if (GameManager.level1Scene == null)
+        if (level1Scene == null)
         {
-            GameManager.level1Scene = this;
+            level1Scene = this;
             DontDestroyOnLoad(gameObject);
         }
+
         else Destroy(gameObject);
     }
 
@@ -38,97 +40,18 @@ public class Level1Scene : MonoBehaviour
     {
         if(scene.name == "level1")
         {
-            gameObject.SetActive(true);
-
             GameManager.Manager.setIsActiveForLevelGameObjects(true);
 
             if (GameManager.Manager.tipShown) GameObject.Find("StartPanel").SetActive(false);
-
-            GameObject waveManager = GameObject.Find("waveManager");
-            if (GameManager.Manager.waveManager == null) GameManager.Manager.waveManager = waveManager.GetComponent<Wave>();
-            else waveManager = GameManager.Manager.waveManager.gameObject;
-            
-
-            this.upgradeButton = GameObject.Find("UpgradeTurretPanel").GetComponentInChildren<Button>();
-            if(upgradeButton != null)
-            {
-                this.upgradeButton.gameObject.SetActive(false);
-            }
-        }
-
-        else
-        {
-            gameObject.SetActive(false);
         }
     }
 
     private void Update()
     {
-        updateMusicButton();
-
-        GameManager.Manager.loadAndRenderStats();
-
-        //Player clicks on broken circuit
-        if (Input.GetMouseButtonDown(0))
+        if(SceneManager.GetActiveScene().name == "level1")
         {
-            //If they click on a broken tower/turrent then load the "circuitBuilderScene"
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
-            if (hit.collider != null && hit.collider.gameObject != null && 
-                hit.collider.gameObject.name.Contains("Turret"))
-            {
-                if (hit.collider.gameObject.GetComponent<TowerManager>().getActiveTower().isBroken)
-                {
-                    GameManager.Manager.loadAndPrepScene("circuitBuilderScene");
-                    CircuitBuilder.instance = hit.collider.gameObject.GetComponent<TowerManager>().getActiveTower();
-                    GameManager.Manager.setIsActiveForLevelGameObjects(false);
-                }
-                
-            }
-        }
-
-        //Player right-clicks on a tower they wish to upgrade
-        else if (Input.GetMouseButtonDown(1))
-        {
-            //If they click on a broken tower/turrent then load the "circuitBuilderScene"
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
-            if (hit.collider != null && hit.collider.gameObject != null && 
-                hit.collider.gameObject.name.Contains("Turrets"))
-            {
-                GameObject clickedTower = hit.collider.gameObject.GetComponent<TowerManager>().getActiveTower().gameObject;
-
-                //If they right-click on the same turret, clear the upgrade prompt
-                if (upgradeButton.IsActive() && previousClickedTower == clickedTower)
-                {
-                    upgradeButton.gameObject.SetActive(false);
-                }
-
-                //If they right-click on a different turret, update the upgrade prompt
-                else
-                {
-                    previousClickedTower = clickedTower;
-
-                    Tower tower = clickedTower.GetComponent<Tower>();
-                    this.towerToUpgrade = tower;
-                    string towerType = tower.getTowerType();
-                    
-                    if(tower.getTier() < 3)
-                    {
-                        int cost = tower.getTier() * 1000;
-                        Text[] upgradeTexts = upgradeButton.GetComponentsInChildren<Text>();
-                        upgradeTexts[0].text = "Upgrade " + towerType + " Tower";
-                        upgradeTexts[1].text = cost.ToString();
-                        upgradeButton.gameObject.SetActive(true);
-                    }
-
-                    //Max tier has been reached
-                    else
-                    {
-                        doMaxTierReachedText((Vector2) Input.mousePosition);
-                    }
-                }
-            }
+            updateMusicButton();
+            loadAndRenderStats();
         }
     }
 
@@ -145,6 +68,7 @@ public class Level1Scene : MonoBehaviour
                 musicState[0].text = "Music";
                 musicState[1].text = "On";
             }
+
             else
             {
                 musicState[0].text = "Music";
@@ -154,15 +78,41 @@ public class Level1Scene : MonoBehaviour
         }
     }
 
-    private void doMaxTierReachedText(Vector2 position)
+    //Updates the health and score Text to the Game's recorded values
+    private void loadAndRenderStats()
     {
-        GameObject go = Resources.Load<GameObject>("Prefabs/Text GameObjects/MaxTierReachedText");
-        go = Instantiate(go, GameObject.Find("Canvas").transform);
-        go.transform.position = new Vector2(position.x, position.y);
+        refreshHealthText();
+        refreshScoreText();
+        refreshGoldText();
+        refreshWaveText();
     }
 
-    public Tower getTowerToUpgrade()
+    private void refreshHealthText()
     {
-        return this.towerToUpgrade;
+        Text healthText = GameObject.Find("HealthPanel").GetComponentInChildren<Text>();
+        healthText.text = "Health: " + GameManager.Manager.health;
+    }
+
+    private void refreshScoreText()
+    {
+        Text scoreText = GameObject.Find("ScorePanel").GetComponentInChildren<Text>();
+        scoreText.text = "Score: " + GameManager.Manager.score;
+    }
+
+    private void refreshGoldText()
+    {
+        Text goldText = GameObject.Find("GoldText").GetComponentInChildren<Text>();
+        goldText.text = GameManager.Manager.gold.ToString();
+    }
+
+    private void refreshWaveText()
+    {
+        Text text = GameObject.Find("WaveText").GetComponentInChildren<Text>();
+        text.text = "Wave: " + GameManager.Manager.wave;
+    }
+
+    private void OnDestroy()
+    {
+        foreach (GameObject go in instantiedLevel1GameObjects) Destroy(go);
     }
 }

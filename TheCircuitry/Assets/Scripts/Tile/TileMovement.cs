@@ -19,15 +19,7 @@ public class TileMovement : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D collision)
     {
 
-        Enemy enemy = null;
-        foreach (Enemy e in Enemy.instantiedEnemies)
-        {
-            if (e.gameObject.Equals(collision.gameObject))
-            {
-                enemy = e;
-                break;
-            }
-        }
+        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
 
         if (enemy != null)
         {

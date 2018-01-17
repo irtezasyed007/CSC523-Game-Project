@@ -6,18 +6,17 @@ using UnityEngine.EventSystems;
 public class TurretBuilder : MonoBehaviour
 {
     public const int MAX_INSTANCES = 15;
-    public static List<TurretBuilder> instantiatedTiles = new List<TurretBuilder>();
-    private static int currentNumberofInstances = 0;
+    public static List<GameObject> instantiatedTiles = new List<GameObject>();
 
     public GameObject purchaseTurretPanel;
 
     // Use this for initialization
     void Start()
     {
-        if(currentNumberofInstances <= MAX_INSTANCES)
+        if(instantiatedTiles.Count < MAX_INSTANCES)
         {
-            currentNumberofInstances++;
-            instantiatedTiles.Add(this);
+            instantiatedTiles.Add(gameObject);
+            Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
             DontDestroyOnLoad(gameObject);
         }
 
@@ -55,12 +54,12 @@ public class TurretBuilder : MonoBehaviour
         {
             if(btn.gameObject.name == "RocketPurchaseButton")
             {
-                btn.GetComponent<PurchaseTurretButton>().spawnTurretHere = gameObject;
+                btn.GetComponent<TurretButtonHandler>().spawnTurretHere = gameObject;
             }
 
             else if(btn.gameObject.name == "BulletPurchaseButton")
             {
-                btn.GetComponent<PurchaseTurretButton>().spawnTurretHere = gameObject;
+                btn.GetComponent<TurretButtonHandler>().spawnTurretHere = gameObject;
             }
         }
 
@@ -69,6 +68,7 @@ public class TurretBuilder : MonoBehaviour
 
     private void OnDestroy()
     {
-        instantiatedTiles.Remove(this);
+        instantiatedTiles.Remove(gameObject);
+        Level1Scene.level1Scene.instantiedLevel1GameObjects.Remove(gameObject);
     }
 }

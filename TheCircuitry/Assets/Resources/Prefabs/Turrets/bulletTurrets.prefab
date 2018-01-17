@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 4192288728940214}
   - component: {fileID: 114017467520070254}
   - component: {fileID: 61403954489728352}
+  - component: {fileID: 114333277735140532}
   m_Layer: 0
   m_Name: bulletTurrets
   m_TagString: Untagged
@@ -670,6 +671,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fb047218c4a3a4428398d0eebf2a120, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114333277735140532
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1358164766935058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 114017467520070254}
+          m_MethodName: openTurretOptionsPanel
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
+        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  delegates: []
 --- !u!114 &114343436063269408
 MonoBehaviour:
   m_ObjectHideFlags: 1

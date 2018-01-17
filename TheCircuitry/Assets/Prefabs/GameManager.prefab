@@ -58,4 +58,3 @@ MonoBehaviour:
   health: 100
   musicEnabled: 1
   musicPlaying: 0
-  waveManager: {fileID: 0}

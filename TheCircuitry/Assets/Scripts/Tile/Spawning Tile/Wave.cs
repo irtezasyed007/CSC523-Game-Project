@@ -4,8 +4,9 @@ using System.Collections;
 
 public class Wave : MonoBehaviour
 {
-    public SpawnTile spawnTile; //The tile that is in charge of spawning enemies
-    public WaveScale waveScale;
+    private static Wave instance;
+    public GameObject spawnTileGameObject;
+    public GameObject waveScaleGameObject;
 
     public int numberOfEnemiesToSpawn;
     public int baseScoreIncrementOnKill;
@@ -17,31 +18,41 @@ public class Wave : MonoBehaviour
     public int baseGoldIncrementOnWaveComplete;
 
     //The tile that is currently active (Changes with waves)
-    private GameObject currentSpawnTile;
-    private bool isReadyForNextWave = true;
+    private bool isReadyForNextWave = false;
+    //The tile that is in charge of spawning enemies
+    private SpawnTile spawnTile;
+    //In charge of scaling the waves as the player progresses
+    private WaveScale waveScale;
 
     // Use this for initialization
     void Start()
     {
-        currentSpawnTile = Instantiate(spawnTile.gameObject, transform);
-        spawnTile.gameObject.SetActive(false);
+        if(instance == null)
+        {
+            DontDestroyOnLoad(gameObject);
+            Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
+            spawnTile = spawnTileGameObject.GetComponent<SpawnTile>();
+            waveScale = waveScaleGameObject.GetComponent<WaveScale>();
+        }
+
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(1))
+        if (isWaveFinished())
         {
-            isReadyForNextWave = false;
 
             if (isReadyForNextWave)
             {
-                GameManager.Manager.wave++;
-                Destroy(currentSpawnTile.gameObject);
-                currentSpawnTile = Instantiate(spawnTile.gameObject, transform);
-                currentSpawnTile.SetActive(true);
-                scaleToNextWave();
                 GameObject.Find("BeginNextWave").GetComponentInChildren<Button>(true).gameObject.SetActive(false);
+                GameManager.Manager.wave++;
+                scaleToNextWave();
+                spawnTile.startEnemySpawning();
                 isReadyForNextWave = false;
             }
 
@@ -49,13 +60,19 @@ public class Wave : MonoBehaviour
             {
                 //Prompt user for input for when they are ready for the next wave to start
                 GameObject.Find("BeginNextWave").GetComponentInChildren<Button>(true).gameObject.SetActive(true);
+                spawnTile.stopEnemySpawning();
             }
         }
     }
 
     private bool isWaveFinished()
     {
-        return spawnTile.EnemiesSpawned == spawnTile.MaxEnemies && Enemy.instantiedEnemies.Count == 0;
+        return spawnTile.EnemiesSpawned >= spawnTile.MaxEnemies && Enemy.instantiedEnemies.Count == 0;
+    }
+
+    public void startNextWave()
+    {
+        isReadyForNextWave = true;
     }
 
     private void scaleToNextWave()
@@ -74,8 +91,11 @@ public class Wave : MonoBehaviour
 
     private void scaleSpawnTileToWave()
     {
-        SpawnTile tmp = currentSpawnTile.GetComponent<SpawnTile>();
+        spawnTile.MaxEnemies = numberOfEnemiesToSpawn;
+    }
 
-        tmp.maxEnemies = numberOfEnemiesToSpawn;
+    private void OnDestroy()
+    {
+        Level1Scene.level1Scene.instantiedLevel1GameObjects.Remove(gameObject);
     }
 }

@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour {
 
     public static GameManager Manager;
-    public static Level1Scene level1Scene;
 
     public bool tipShown = false;
     public int score = 0;
@@ -16,7 +15,6 @@ public class GameManager : MonoBehaviour {
     public double health = 100;
     public bool musicEnabled = true;
     public bool musicPlaying = false;
-    public Wave waveManager;
 
     internal CircuitBuilder circuitBuilder;
     internal string activeScene;
@@ -154,40 +152,19 @@ public class GameManager : MonoBehaviour {
         
     }
 
-    //Updates the health and score Text to the Game's recorded values
-    public void loadAndRenderStats()
-    {
-        refreshHealthText();
-        refreshScoreText();
-        refreshGoldText();
-        refreshWaveText();
-    }
-
     public void decrementHealth()
     {
         health -= 1;
     }
     
-    public void refreshHealthText()
-    {
-        Text healthText = GameObject.Find("HealthPanel").GetComponentInChildren<Text>();
-        healthText.text = "Health: " + health;
-    }
-
     public void incrementScore()
     {
-        score += 1;
+        score++;
     }
 
-    public void appendToScore(int val)
+    public void appendToScore(int amt)
     {
-        score += val;
-    }
-
-    public void refreshScoreText()
-    {
-        Text scoreText = GameObject.Find("ScorePanel").GetComponentInChildren<Text>();
-        scoreText.text = "Score: " + score;
+        score += amt;
     }
 
     public void addToGold(int amount)
@@ -195,65 +172,28 @@ public class GameManager : MonoBehaviour {
         this.gold += amount;
     }
 
-    public void refreshGoldText()
-    {
-        Text goldText = GameObject.Find("GoldText").GetComponentInChildren<Text>();
-        goldText.text = this.gold.ToString();
-    }
-
     public void incrementWave()
     {
         wave += 1;
     }
 
-    public void refreshWaveText()
-    {
-        Text text = GameObject.Find("WaveText").GetComponentInChildren<Text>();
-        text.text = "Wave: " + wave.ToString();
-    }
-
     public void setIsActiveForLevelGameObjects(bool active)
     {
 
-        foreach (GameObject go in Enemy.enemyGameObject)
+        foreach (GameObject go in Level1Scene.level1Scene.instantiedLevel1GameObjects)
         {
             go.SetActive(active);
         }
 
-        foreach (TowerManager towerManager in TowerManager.activeTowers)
-        {
-            foreach(Tower tower in towerManager.gameObject.GetComponentsInChildren<Tower>(true))
-            {
-                tower.gameObject.SetActive(false);
-            }
-
-            towerManager.getActiveTower().gameObject.SetActive(active);
-        }
-
-        foreach (TurretBuilder turretTile in TurretBuilder.instantiatedTiles)
-        {
-            turretTile.gameObject.SetActive(active);
-        }
 
     }
 
     public void resetGame()
     {
-        foreach (Enemy enemy in Enemy.instantiedEnemies) Destroy(enemy.gameObject);
-        foreach (TowerManager tower in TowerManager.activeTowers) Destroy(tower.gameObject);
-        foreach (TurretBuilder turretTile in TurretBuilder.instantiatedTiles) Destroy(turretTile.gameObject);
-
-        Enemy.instantiedEnemies.Clear();
-        Enemy.enemyGameObject.Clear();
-
-        TowerManager.activeTowers.Clear();
-
-        TurretBuilder.instantiatedTiles.Clear();
-
-        Destroy(waveManager.gameObject);
+        Destroy(Level1Scene.level1Scene.gameObject);
 
         score = 0;
-        wave = 0;
+        wave = 1;
         health = 100;
         tipShown = false;
         gold = 150;

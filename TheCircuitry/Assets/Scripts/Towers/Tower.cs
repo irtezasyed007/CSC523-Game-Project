@@ -147,14 +147,14 @@ public class Tower : MonoBehaviour {
 
         //Loops through all spawned entities to find the nearest one
         //NOTE: Could potentially be a source for lag if to many enemies are spawned
-        foreach(Enemy enemy in Enemy.instantiedEnemies)
+        foreach(GameObject enemy in Enemy.instantiedEnemies)
         {
-            Vector2 enemyPosition = enemy.gameObject.transform.position;
+            Vector2 enemyPosition = enemy.transform.position;
 
             //If the enemy is within the tower's range capabilities
             if (isNear(towerPosition, enemyPosition, range))
             {
-                nearEnemies.Add(enemy);
+                nearEnemies.Add(enemy.GetComponent<Enemy>());
             }
         }
 

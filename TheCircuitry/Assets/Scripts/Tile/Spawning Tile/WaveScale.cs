@@ -13,12 +13,12 @@ public class WaveScale : MonoBehaviour
     public int nextGoldIncrementOnCircuitComplete;
     public int nextGoldIncrementOnWaveComplete;
 
-    public int NextNumEnemiesSpawn { get; set; }
-    public int NextScoreOnKill { get; set; }
-    public int NextScoreOnCircuitComplete { get; set; }
-    public int NextScoreOnCircuitFailed { get; set; }
-    public int NextScoreOnWaveComplete { get; set; }
-    public int NextGoldOnKill { get; set; }
-    public int NextGoldOnCircuitComplete { get; set; }
-    public int NextGoldOnWaveComplete { get; set; }
+    public int NextNumEnemiesSpawn { get { return nextNumberOfEnemiesToSpawn; } set { nextNumberOfEnemiesToSpawn = value; } }
+    public int NextScoreOnKill { get { return nextScoreIncrementOnKill; } set { nextScoreIncrementOnKill = value; } }
+    public int NextScoreOnCircuitComplete { get {return nextScoreIncrementOnCircuitComplete; } set {nextScoreIncrementOnCircuitComplete = value; } }
+    public int NextScoreOnCircuitFailed { get { return nextScoreDecrementOnCircuitFailed; } set {nextScoreDecrementOnCircuitFailed = value; } }
+    public int NextScoreOnWaveComplete { get {return nextScoreIncrementOnWaveComplete; } set {nextScoreIncrementOnWaveComplete = value; } }
+    public int NextGoldOnKill { get {return nextGoldIncrementOnKill; } set {nextGoldIncrementOnKill = value; } }
+    public int NextGoldOnCircuitComplete { get {return nextGoldIncrementOnCircuitComplete; } set {nextGoldIncrementOnCircuitComplete = value; } }
+    public int NextGoldOnWaveComplete { get {return nextGoldIncrementOnWaveComplete; } set {nextGoldIncrementOnWaveComplete = value; } }
 }

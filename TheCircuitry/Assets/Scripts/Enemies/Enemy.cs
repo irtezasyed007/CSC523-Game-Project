@@ -6,8 +6,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour {
 
     //All the current enemies that spawned
-    public static List<Enemy> instantiedEnemies = new List<Enemy>();
-    public static List<GameObject> enemyGameObject = new List<GameObject>();
+    public static List<GameObject> instantiedEnemies = new List<GameObject>();
 
     private static int movementSpeedAddition = 0;
 
@@ -27,14 +26,14 @@ public class Enemy : MonoBehaviour {
 	void Start () {
         direction = Vector2.right;
         movementSpeed += movementSpeedAddition;
-        DontDestroyOnLoad(this);
+        instantiedEnemies.Add(gameObject);
+        Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
+        DontDestroyOnLoad(gameObject);
 	}
 
     void Awake()
     {
-        instantiedEnemies.Add(this);
-        enemyGameObject.Add(this.gameObject);
-        SpriteRenderer[] tmpSprites = this.GetComponentsInChildren<SpriteRenderer>();
+        SpriteRenderer[] tmpSprites = GetComponentsInChildren<SpriteRenderer>();
         sprites = new SpriteRenderer[tmpSprites.Length - 1];
 
         //First sprite is always the enemy sprite and not its health...
@@ -66,10 +65,7 @@ public class Enemy : MonoBehaviour {
         if (currentHealth <= 0.0)
         {
             GameManager.Manager.incrementScore();
-
-            instantiedEnemies.Remove(this);
-            enemyGameObject.Remove(this.gameObject);
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
 	}
 
@@ -91,10 +87,7 @@ public class Enemy : MonoBehaviour {
         //Enemy reaches end of the path
         if(tag == "EndCollider")
         {
-            instantiedEnemies.Remove(this);
-            enemyGameObject.Remove(this.gameObject);
-            Destroy(this);
-            this.gameObject.SetActive(false);
+            Destroy(gameObject);
 
             GameManager.Manager.decrementHealth();
 
@@ -105,11 +98,6 @@ public class Enemy : MonoBehaviour {
                 txt[1].text = "Score: " + GameManager.Manager.score;
             }
 
-            else
-            {
-                GameManager.Manager.refreshHealthText();
-            }
-            
         }
     }
 
@@ -121,38 +109,44 @@ public class Enemy : MonoBehaviour {
     public void applyDamage(double damage)
     {
         this.currentHealth -= damage;
-        this.appliedDamage += damage;
 
-        if (this.appliedDamage >= this.damageThreshold)
+        if (currentHealth <= 0.0 || damage >= currentHealth) Destroy(gameObject);
+
+        else
         {
-            this.appliedDamage -= this.damageThreshold;
+            this.appliedDamage += damage;
 
-            if (selector > 0)
+            if (this.appliedDamage >= this.damageThreshold)
             {
-                switch (selector)
-                {
-                    case 1: //1 Sprite
-                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                        sprites[4].gameObject.SetActive(true);
-                        break;
-                    case 2: //2 Sprite
-                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                        sprites[3].gameObject.SetActive(true);
-                        break;
-                    case 3: //3 Sprite
-                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                        sprites[2].gameObject.SetActive(true);
-                        break;
-                    case 4: //4 Sprite
-                        this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                        sprites[1].gameObject.SetActive(true);
-                        break;
-                    default:
-                        Debug.Log("Error");
-                        break;
-                }
+                this.appliedDamage -= this.damageThreshold;
 
-                selector--;
+                if (selector > 0)
+                {
+                    switch (selector)
+                    {
+                        case 1: //1 Sprite
+                            this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
+                            sprites[4].gameObject.SetActive(true);
+                            break;
+                        case 2: //2 Sprite
+                            this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
+                            sprites[3].gameObject.SetActive(true);
+                            break;
+                        case 3: //3 Sprite
+                            this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
+                            sprites[2].gameObject.SetActive(true);
+                            break;
+                        case 4: //4 Sprite
+                            this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
+                            sprites[1].gameObject.SetActive(true);
+                            break;
+                        default:
+                            Debug.Log("Error");
+                            break;
+                    }
+
+                    selector--;
+                }
             }
         }
 
@@ -165,6 +159,7 @@ public class Enemy : MonoBehaviour {
 
     private void OnDestroy()
     {
-
+        instantiedEnemies.Remove(gameObject);
+        Level1Scene.level1Scene.instantiedLevel1GameObjects.Remove(gameObject);
     }
 }

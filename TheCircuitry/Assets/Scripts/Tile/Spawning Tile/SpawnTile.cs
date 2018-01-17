@@ -19,6 +19,8 @@ public class SpawnTile : MonoBehaviour {
     private bool canSpawn = true;
     private bool readyToSpawn = true;
     private int totalEnemiesSpawned = 0;
+    private int minEnemyHealth = 1;
+    private int maxEnemyHealth = 5;
 
 	// Use this for initialization
 	void Start () {
@@ -28,6 +30,7 @@ public class SpawnTile : MonoBehaviour {
         this.x = gameObjectPos.x;
         this.y = gameObjectPos.y;
 
+        //Easiest to Hardest
         enemies[0] = Resources.Load<GameObject>("Prefabs/Enemies/enemy1");
         enemies[1] = Resources.Load<GameObject>("Prefabs/Enemies/enemy2");
         enemies[2] = Resources.Load<GameObject>("Prefabs/Enemies/enemy3");
@@ -40,7 +43,8 @@ public class SpawnTile : MonoBehaviour {
         if (enemyCanSpawn())
         {
             int wait = Random.Range(minYieldTime, maxYieldTime);
-            Instantiate(getRandomEnemy(), transform.position, Quaternion.identity);
+            GameObject go = Instantiate(getRandomEnemy(), transform.position, Quaternion.identity);
+            go.GetComponent<Enemy>().maxHealth = Random.Range(minEnemyHealth, maxEnemyHealth);
             totalEnemiesSpawned++;
             StartCoroutine(waitUntilNextSpawn(wait));
         }
@@ -48,7 +52,7 @@ public class SpawnTile : MonoBehaviour {
 
     private bool enemyCanSpawn()
     {
-        return canSpawn && (totalEnemiesSpawned <= maxEnemies || maxEnemies == -1) && GameManager.Manager.tipShown;
+        return canSpawn && (totalEnemiesSpawned < maxEnemies || maxEnemies == -1) && GameManager.Manager.tipShown;
     }
 
     private IEnumerator waitUntilNextSpawn(int time)
@@ -64,10 +68,15 @@ public class SpawnTile : MonoBehaviour {
         return enemies[index];
     }
 
-    public void activateEnemySpawning()
+    public void stopEnemySpawning()
     {
-        GameManager.Manager.tipShown = true;
-        canSpawn = true;
+        canSpawn = false;
+    }
+
+    public void startEnemySpawning()
+    {
+        totalEnemiesSpawned = 0;
+        canSpawn = true;       
     }
 
     public int EnemiesSpawned

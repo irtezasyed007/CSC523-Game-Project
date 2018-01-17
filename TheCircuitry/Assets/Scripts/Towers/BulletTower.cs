@@ -65,16 +65,6 @@ public class BulletTower : Tower
         //    this.isBroken = !this.isBroken;
         //}
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            foreach(Enemy e in Enemy.instantiedEnemies)
-            {
-                Vector2 tower = (Vector2)transform.position;
-                Vector2 enemy = (Vector2)e.gameObject.transform.position;
-                Debug.Log("Diff: " + Vector2.Distance(tower, enemy));
-            }
-        }
-
         if (isBroken)
         {
             brokenTowerParticles.GetComponent<ParticleSystem>().Play();

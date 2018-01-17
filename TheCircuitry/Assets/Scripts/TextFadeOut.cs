@@ -34,9 +34,4 @@ class TextFadeOut : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void updateTextPosition(Text text, Transform newPos)
-    {
-        text.transform.position = new Vector3(newPos.position.x, newPos.position.y, newPos.position.z);
-    }
-
 }
