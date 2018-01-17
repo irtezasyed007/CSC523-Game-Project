@@ -19,7 +19,7 @@ public class ButtonHandler : MonoBehaviour {
         //they wish to load a scene other than level1
         if (sceneName != "level1")
         {
-            GameManager.Manager.setIsActiveForEnemiesAndTowers(false);
+            GameManager.Manager.setIsActiveForLevelGameObjects(false);
         }
     }
 

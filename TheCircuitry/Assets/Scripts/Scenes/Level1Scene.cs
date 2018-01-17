@@ -1,10 +1,12 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Level1Scene : MonoBehaviour
 {
+    public static List<GameObject> instantiedLevel1GameObjects = new List<GameObject>();
 
     public Button upgradeButton;
     private GameObject previousClickedTower; //The previous clicked tower
@@ -12,9 +14,6 @@ public class Level1Scene : MonoBehaviour
 
     void Start()
     {
-        string function = "((A+b)*c^b)";
-        new Function(function).viewTruthTable();
-
         if (GameManager.level1Scene == null)
         {
             GameManager.level1Scene = this;
@@ -39,7 +38,9 @@ public class Level1Scene : MonoBehaviour
     {
         if(scene.name == "level1")
         {
-            GameManager.Manager.setIsActiveForEnemiesAndTowers(true);
+            gameObject.SetActive(true);
+
+            GameManager.Manager.setIsActiveForLevelGameObjects(true);
 
             if (GameManager.Manager.tipShown) GameObject.Find("StartPanel").SetActive(false);
 
@@ -53,6 +54,11 @@ public class Level1Scene : MonoBehaviour
             {
                 this.upgradeButton.gameObject.SetActive(false);
             }
+        }
+
+        else
+        {
+            gameObject.SetActive(false);
         }
     }
 
@@ -75,7 +81,7 @@ public class Level1Scene : MonoBehaviour
                 {
                     GameManager.Manager.loadAndPrepScene("circuitBuilderScene");
                     CircuitBuilder.instance = hit.collider.gameObject.GetComponent<TowerManager>().getActiveTower();
-                    GameManager.Manager.setIsActiveForEnemiesAndTowers(false);
+                    GameManager.Manager.setIsActiveForLevelGameObjects(false);
                 }
                 
             }

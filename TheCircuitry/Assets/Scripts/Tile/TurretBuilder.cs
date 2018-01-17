@@ -1,17 +1,30 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
 public class TurretBuilder : MonoBehaviour
 {
+    public const int MAX_INSTANCES = 15;
+    public static List<TurretBuilder> instantiatedTiles = new List<TurretBuilder>();
+    private static int currentNumberofInstances = 0;
 
     public GameObject purchaseTurretPanel;
 
     // Use this for initialization
     void Start()
     {
+        if(currentNumberofInstances <= MAX_INSTANCES)
+        {
+            currentNumberofInstances++;
+            instantiatedTiles.Add(this);
+            DontDestroyOnLoad(gameObject);
+        }
 
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     void Update()
@@ -52,5 +65,10 @@ public class TurretBuilder : MonoBehaviour
         }
 
         purchaseTurretPanel.SetActive(true);
+    }
+
+    private void OnDestroy()
+    {
+        instantiatedTiles.Remove(this);
     }
 }

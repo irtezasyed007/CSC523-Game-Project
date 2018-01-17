@@ -212,7 +212,7 @@ public class GameManager : MonoBehaviour {
         text.text = "Wave: " + wave.ToString();
     }
 
-    public void setIsActiveForEnemiesAndTowers(bool active)
+    public void setIsActiveForLevelGameObjects(bool active)
     {
 
         foreach (GameObject go in Enemy.enemyGameObject)
@@ -230,17 +230,25 @@ public class GameManager : MonoBehaviour {
             towerManager.getActiveTower().gameObject.SetActive(active);
         }
 
+        foreach (TurretBuilder turretTile in TurretBuilder.instantiatedTiles)
+        {
+            turretTile.gameObject.SetActive(active);
+        }
+
     }
 
     public void resetGame()
     {
         foreach (Enemy enemy in Enemy.instantiedEnemies) Destroy(enemy.gameObject);
         foreach (TowerManager tower in TowerManager.activeTowers) Destroy(tower.gameObject);
-
-        TowerManager.activeTowers.Clear();
+        foreach (TurretBuilder turretTile in TurretBuilder.instantiatedTiles) Destroy(turretTile.gameObject);
 
         Enemy.instantiedEnemies.Clear();
         Enemy.enemyGameObject.Clear();
+
+        TowerManager.activeTowers.Clear();
+
+        TurretBuilder.instantiatedTiles.Clear();
 
         Destroy(waveManager.gameObject);
 
