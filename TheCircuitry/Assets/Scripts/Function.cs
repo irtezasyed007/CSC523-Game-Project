@@ -71,7 +71,15 @@ public class Function
                     break;
                 case '*':
                     //Invariant: LET k=operands.Peek()  Precedence of k MUST: (k = *)  
-                    while (operands.Peek() == '*')
+                    while (operands.Peek() == '*' || operands.Peek() == '^')
+                    {
+                        output += operands.Pop().ToString();
+                    }
+
+                    operands.Push(c);
+                    break;
+                case '^':
+                    while(operands.Peek() == '^' || operands.Peek() == '*' || operands.Peek() == '+')
                     {
                         output += operands.Pop().ToString();
                     }

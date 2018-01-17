@@ -12,6 +12,9 @@ public class Level1Scene : MonoBehaviour
 
     void Start()
     {
+        string function = "((A+b)*c^b)";
+        new Function(function).viewTruthTable();
+
         if (GameManager.level1Scene == null)
         {
             GameManager.level1Scene = this;

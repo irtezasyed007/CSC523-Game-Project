@@ -122,10 +122,18 @@ public class TruthTable
                     infixStack.Push(term);
                 }
 
-                else
+                else if(token == '*')
                 {
                     string newTerm = t1.getExpression() + '*' + t2.getExpression();
                     bool newTermValue = t1.getValue() && t2.getValue();
+                    Term term = new Term(newTerm, newTermValue);
+                    infixStack.Push(term);
+                }
+
+                else if (token == '^')
+                {
+                    string newTerm = t1.getExpression() + '^' + t2.getExpression();
+                    bool newTermValue = t1.getValue() ^ t2.getValue();
                     Term term = new Term(newTerm, newTermValue);
                     infixStack.Push(term);
                 }
@@ -155,7 +163,7 @@ public class TruthTable
 
     private bool isOperator(char c)
     {
-        if (c == '+' || c == '*') return true;
+        if (c == '+' || c == '*' || c == '^') return true;
         else return false;
     }
 
