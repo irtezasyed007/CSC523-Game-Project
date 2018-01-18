@@ -8,17 +8,16 @@ public class TurretBuilder : MonoBehaviour
     public const int MAX_INSTANCES = 15;
     public static List<GameObject> instantiatedTiles = new List<GameObject>();
     public static int totalTiles = 0;
-    public GameObject purchaseTurretPanel;
 
-    // Use this for initialization
-    void Start()
+    private void Start()
     {
-        if(totalTiles < MAX_INSTANCES)
+        if (totalTiles != 15)
         {
             instantiatedTiles.Add(gameObject);
-            totalTiles++;
             Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
             DontDestroyOnLoad(gameObject);
+
+            totalTiles++;
         }
 
         else
@@ -34,6 +33,18 @@ public class TurretBuilder : MonoBehaviour
 
     public void loadPurchaseTurretPanel()
     {
+        GameObject canvas = GameObject.Find("Canvas");
+        GameObject purchaseTurretPanel = null;
+
+        foreach(RectTransform rt in canvas.GetComponentsInChildren<RectTransform>(true))
+        {
+            if(rt.gameObject.name == "PurchaseTurretPanel")
+            {
+                purchaseTurretPanel = rt.gameObject;
+                break;
+            }
+        }
+
         Text[] textArray = purchaseTurretPanel.GetComponentsInChildren<Text>(true);
 
         foreach(Text text in textArray)

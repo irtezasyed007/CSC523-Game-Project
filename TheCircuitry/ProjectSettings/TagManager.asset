@@ -20,6 +20,7 @@ TagManager:
   - PictureButton
   - Output
   - Gate Clone
+  - Music Player
   layers:
   - Default
   - TransparentFX

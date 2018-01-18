@@ -14,13 +14,13 @@ public class ButtonHandler : MonoBehaviour {
 
 	public void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
-
         //they wish to load a scene other than level1
         if (sceneName != "level1")
         {
             GameManager.Manager.setIsActiveForLevelGameObjects(false);
         }
+
+        SceneManager.LoadScene(sceneName);
     }
 
     public void setGameManagerTipShown(bool val)
@@ -31,6 +31,11 @@ public class ButtonHandler : MonoBehaviour {
     public void stopMusic()
     {
         GameManager.Manager.musicEnabled = !GameManager.Manager.musicEnabled;
+    }
+
+    public void startNextWave()
+    {
+        Wave.wave.startNextWave();
     }
 
     public void playRandomCoinSound()

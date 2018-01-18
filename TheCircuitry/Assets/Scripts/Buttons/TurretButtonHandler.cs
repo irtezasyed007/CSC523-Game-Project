@@ -191,6 +191,5 @@ public class TurretButtonHandler : MonoBehaviour
     {
         GameManager.Manager.loadAndPrepScene("circuitBuilderScene");
         CircuitBuilder.instance = clickedTurret.GetComponent<TowerManager>().getActiveTower();
-        GameManager.Manager.setIsActiveForLevelGameObjects(false);
     }
 }

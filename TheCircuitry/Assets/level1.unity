@@ -3054,6 +3054,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minYieldTime: 3
   maxYieldTime: 4
+  enemyTier: 0
   maxEnemies: 3
 --- !u!1 &539963825
 GameObject:
@@ -9275,6 +9276,7 @@ GameObject:
   - component: {fileID: 1448227739}
   - component: {fileID: 1448227738}
   - component: {fileID: 1448227737}
+  - component: {fileID: 1448227740}
   m_Layer: 5
   m_Name: BeginNextWaveButton
   m_TagString: Untagged
@@ -9340,7 +9342,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1579198434}
+      - m_Target: {fileID: 1448227740}
         m_MethodName: startNextWave
         m_Mode: 1
         m_Arguments:
@@ -9386,6 +9388,17 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1448227735}
+--- !u!114 &1448227740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1448227735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da547b2ddb2654540aa502b4ee3e3293, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1507975516
 GameObject:
   m_ObjectHideFlags: 0
@@ -9717,7 +9730,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnTileGameObject: {fileID: 535417471}
   waveScaleGameObject: {fileID: 747191138}
-  numberOfEnemiesToSpawn: 3
+  baseNumberOfEnemiesToSpawn: 3
   baseScoreIncrementOnKill: 2
   baseScoreIncrementOnCircuitComplete: 10
   baseScoreDecrementOnCircuitFailed: -2

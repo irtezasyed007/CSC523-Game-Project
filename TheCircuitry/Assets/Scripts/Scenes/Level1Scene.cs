@@ -44,6 +44,11 @@ public class Level1Scene : MonoBehaviour
 
             if (GameManager.Manager.tipShown) GameObject.Find("StartPanel").SetActive(false);
         }
+
+        else
+        {
+            GameManager.Manager.setIsActiveForLevelGameObjects(false);
+        }
     }
 
     private void Update()
@@ -113,8 +118,11 @@ public class Level1Scene : MonoBehaviour
 
     private void OnDestroy()
     {
-        TurretBuilder.totalTiles = 0;
-        TurretBuilder.instantiatedTiles.Clear();
-        foreach (GameObject go in instantiedLevel1GameObjects) Destroy(go);
+        if(this == level1Scene)
+        {
+            TurretBuilder.totalTiles = 0;
+            TurretBuilder.instantiatedTiles.Clear();
+            foreach (GameObject go in instantiedLevel1GameObjects) Destroy(go);
+        }
     }
 }

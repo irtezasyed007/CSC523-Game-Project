@@ -64,7 +64,7 @@ public class Enemy : MonoBehaviour {
 
         if (currentHealth <= 0.0)
         {
-            GameManager.Manager.incrementScore();
+            killEnemy();
             Destroy(gameObject);
         }
 	}
@@ -110,7 +110,7 @@ public class Enemy : MonoBehaviour {
     {
         this.currentHealth -= damage;
 
-        if (currentHealth <= 0.0 || damage >= currentHealth) Destroy(gameObject);
+        if (currentHealth <= 0.0 || damage >= currentHealth) killEnemy();
 
         else
         {
@@ -150,6 +150,13 @@ public class Enemy : MonoBehaviour {
             }
         }
 
+    }
+
+    private void killEnemy()
+    {
+        GameManager.Manager.addToScore(Wave.wave.baseScoreIncrementOnKill);
+        GameManager.Manager.addToGold(Wave.wave.baseGoldIncrementOnKill);
+        Destroy(gameObject);
     }
 
     public void playDamageEffect()

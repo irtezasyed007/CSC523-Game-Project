@@ -15,11 +15,18 @@ public class RocketTower : Tower
     private GameObject turretBase;
     private bool isReloaded = true;
 
-    private new void Start()
+    private void OnEnable()
     {
-        init();
-        initComponents();
-        this.towerManager = this.GetComponentInParent<TowerManager>();
+        if (!initialized)
+        {
+            init();
+            initComponents();
+            this.towerManager = this.GetComponentInParent<TowerManager>();
+            initialized = true;
+        }
+
+        StartCoroutine(FireWeapon());
+        StartCoroutine(TowerBreak());
     }
 
     private void initComponents()
@@ -62,82 +69,55 @@ public class RocketTower : Tower
 
         else
         {
-            //If it didnt start the countdown yet, start it.
-            if (!startCountdown)
-            {
-                StartCoroutine(TowerBreak());
-            }
-
             brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
-
-            List<Enemy> nearEnemies = getNearEntities(175);
-
-            if (nearEnemies.Count != 0)
-            {
-                if (canFire && isReloaded)
-                {
-                    int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
-                    faceEnemy(nearEnemies[enemyIndex], this.turretHead);
-
-                    Vector2 pos1 = (Vector2)turretHead.transform.position + offset * turretHead.transform.localScale.y;
-                    Vector2 pos2 = (Vector2)turretHead.transform.position - offset * turretHead.transform.localScale.y;
-                    Vector2 newVelocity = this.dir * velocity;
-                    Vector3 rotation = new Vector3(
-                                                turretHead.transform.eulerAngles.x,
-                                                turretHead.transform.eulerAngles.y,
-                                                turretHead.transform.eulerAngles.z
-                                                );
-
-                    StartCoroutine(WeaponReload());
-                    weapon.FireWeapon(rotation, pos1, newVelocity);
-                    if(base.towerTier >= 2) weapon.FireWeapon(rotation, pos2, newVelocity);                   
-                    
-                    StartCoroutine(WeaponCooldown());
-
-                    noWeaponFireCount = 0;
-                }
-                noWeaponFireCount++;
-                noTowerCountdownCount++;
-
-                if (noWeaponFireCount > 75)
-                {
-                    canFire = true;
-                    noWeaponFireCount = 0;
-                }
-
-                if (noTowerCountdownCount > 1000)
-                {
-                    startCountdown = false;
-                    noTowerCountdownCount = 0;
-                }
-            }
         }
     }
 
-    private IEnumerator WeaponCooldown()
+    private IEnumerator FireWeapon()
     {
-        canFire = false;
+        while (true)
+        {
+            List<Enemy> nearEnemies = getNearEntities(175);
 
-        yield return new WaitForSeconds(weaponFireRate);
-        
-        canFire = true;
+            if (nearEnemies.Count > 0 && !isBroken)
+            {
+                int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
+                faceEnemy(nearEnemies[enemyIndex], this.turretHead);
+
+                Vector2 pos1 = (Vector2)turretHead.transform.position + offset * turretHead.transform.localScale.y;
+                Vector2 pos2 = (Vector2)turretHead.transform.position - offset * turretHead.transform.localScale.y;
+                Vector2 newVelocity = this.dir * velocity;
+                Vector3 rotation = new Vector3(
+                                            turretHead.transform.eulerAngles.x,
+                                            turretHead.transform.eulerAngles.y,
+                                            turretHead.transform.eulerAngles.z
+                                            );
+
+                StartCoroutine(WeaponReload());
+                weapon.FireWeapon(rotation, pos1, newVelocity);
+                if (base.towerTier >= 2) weapon.FireWeapon(rotation, pos2, newVelocity);
+
+                yield return new WaitForSeconds(weaponFireRate);
+            }
+
+            else yield return null;
+        }
+
     }
 
     private IEnumerator WeaponReload()
     {
-        isReloaded = false;
         loadedTurretHead.SetActive(false);
         updateTransform(unloadedTurretHead);
         unloadedTurretHead.SetActive(true);
         turretHead = unloadedTurretHead;
 
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(weaponFireRate/2);
 
         unloadedTurretHead.SetActive(false);
         updateTransform(loadedTurretHead);
         loadedTurretHead.SetActive(true);
         turretHead = loadedTurretHead;
-        isReloaded = true;
     }
 
     private void updateTransform(GameObject go)

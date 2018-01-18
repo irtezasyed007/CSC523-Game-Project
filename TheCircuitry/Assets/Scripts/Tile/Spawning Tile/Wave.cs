@@ -8,7 +8,7 @@ public class Wave : MonoBehaviour
     public GameObject spawnTileGameObject;
     public GameObject waveScaleGameObject;
 
-    public int numberOfEnemiesToSpawn;
+    public int baseNumberOfEnemiesToSpawn;
     public int baseScoreIncrementOnKill;
     public int baseScoreIncrementOnCircuitComplete;
     public int baseScoreDecrementOnCircuitFailed;
@@ -23,6 +23,7 @@ public class Wave : MonoBehaviour
     private SpawnTile spawnTile;
     //In charge of scaling the waves as the player progresses
     private WaveScale waveScale;
+    private bool rewardedOnWaveComplete = false;
 
     // Use this for initialization
     void Start()
@@ -47,6 +48,12 @@ public class Wave : MonoBehaviour
     {
         if (isWaveFinished())
         {
+            if (!rewardedOnWaveComplete)
+            {
+                GameManager.Manager.addToGold(baseGoldIncrementOnWaveComplete);
+                GameManager.Manager.addToScore(baseScoreIncrementOnWaveComplete);
+                rewardedOnWaveComplete = true;
+            } 
 
             if (isReadyForNextWave)
             {
@@ -55,6 +62,7 @@ public class Wave : MonoBehaviour
                 scaleToNextWave();
                 spawnTile.startEnemySpawning();
                 isReadyForNextWave = false;
+                rewardedOnWaveComplete = false;
             }
 
             else
@@ -68,7 +76,7 @@ public class Wave : MonoBehaviour
 
     public bool isWaveFinished()
     {
-        return spawnTile.EnemiesSpawned >= spawnTile.MaxEnemies && Enemy.instantiedEnemies.Count == 0;
+        return spawnTile.allEnemiesSpawnedForWave() && Enemy.instantiedEnemies.Count == 0;
     }
 
     public void startNextWave()
@@ -78,7 +86,7 @@ public class Wave : MonoBehaviour
 
     private void scaleToNextWave()
     {
-        numberOfEnemiesToSpawn += waveScale.NextNumEnemiesSpawn;
+        baseNumberOfEnemiesToSpawn += waveScale.NextNumEnemiesSpawn;
         baseScoreIncrementOnKill += waveScale.NextScoreOnKill;
         baseScoreIncrementOnCircuitComplete += waveScale.NextScoreOnCircuitComplete;
         baseScoreDecrementOnCircuitFailed += waveScale.NextScoreOnCircuitFailed;
@@ -92,7 +100,12 @@ public class Wave : MonoBehaviour
 
     private void scaleSpawnTileToWave()
     {
-        spawnTile.MaxEnemies = numberOfEnemiesToSpawn;
+        spawnTile.MaxEnemies = baseNumberOfEnemiesToSpawn;
+
+        //Makes it so harder enemies spawn every 7 waves
+        if (GameManager.Manager.wave == 7) spawnTile.enemyTier = 1;
+        if (GameManager.Manager.wave == 14) spawnTile.enemyTier = 2;
+        if (GameManager.Manager.wave == 21) spawnTile.enemyTier = 3;
     }
 
     private void OnDestroy()

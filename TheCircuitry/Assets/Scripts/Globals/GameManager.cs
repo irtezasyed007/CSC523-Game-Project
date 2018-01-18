@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour {
     public int gold = 150;
     public double health = 100;
     public bool musicEnabled = true;
-    public bool musicPlaying = false;
 
     internal CircuitBuilder circuitBuilder;
     internal string activeScene;
@@ -48,7 +47,6 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        startAudioIfAllowed();
         activeScene = SceneManager.GetActiveScene().name;
 
         if (activeScene == "circuitBuilderScene" || activeScene == "circuitBuilderTutorial")
@@ -92,49 +90,6 @@ public class GameManager : MonoBehaviour {
 
     }
 
-     private void startAudioIfAllowed()
-    {
-        string activeScene = SceneManager.GetActiveScene().name;
-        GameObject[] go = GameObject.FindGameObjectsWithTag("Music");
-        AudioSource audio = null;
-
-        if (!musicEnabled)
-        {
-            if (musicPlaying)
-            {
-                foreach (GameObject g in go)
-                {
-                    g.GetComponent<AudioSource>().Stop();
-                }
-
-                musicPlaying = false;
-            }         
-
-            return;
-        }
-
-        if (activeScene == "welcome")
-        {
-            audio = searchAudioSourceByName(go, "8-bit-Arcade4");
-            if (!audio.isPlaying)
-            {
-                audio.Play();
-                musicPlaying = true;
-            }
-        }
-
-        else
-        {
-            audio = searchAudioSourceByName(go, "Defense Line");
-            //if (!audio.isPlaying)
-            //{
-            //    audio.Play();
-            //    musicPlaying = true;
-            //}
-            
-        }
-    }
-
     internal void loadAndPrepScene(string sceneName)
     {
         if(sceneName == "circuitBuilderScene" || sceneName == "circuitBuilderTutorial")
@@ -159,13 +114,8 @@ public class GameManager : MonoBehaviour {
     {
         health -= 1;
     }
-    
-    public void incrementScore()
-    {
-        score++;
-    }
 
-    public void appendToScore(int amt)
+    public void addToScore(int amt)
     {
         score += amt;
     }
@@ -183,9 +133,12 @@ public class GameManager : MonoBehaviour {
     public void setIsActiveForLevelGameObjects(bool active)
     {
 
-        foreach (GameObject go in Level1Scene.level1Scene.instantiedLevel1GameObjects)
+        if(Level1Scene.level1Scene != null)
         {
-            go.SetActive(active);
+            foreach (GameObject go in Level1Scene.level1Scene.instantiedLevel1GameObjects)
+            {
+                go.SetActive(active);
+            }
         }
 
 
@@ -193,13 +146,16 @@ public class GameManager : MonoBehaviour {
 
     public void resetGame()
     {
-        Destroy(Level1Scene.level1Scene.gameObject);
+        if(Level1Scene.level1Scene != null)
+        {
+            Destroy(Level1Scene.level1Scene.gameObject);
 
-        score = 0;
-        wave = 1;
-        health = 100;
-        tipShown = false;
-        gold = 150;
+            score = 0;
+            wave = 1;
+            health = 100;
+            tipShown = false;
+            gold = 150;
+        }
     }
 
     public static AudioSource searchAudioSourceByName(GameObject[] audioSources, string audioToFind)

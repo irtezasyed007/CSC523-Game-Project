@@ -302,7 +302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 1, y: 0}
-  maxHealth: 100
+  maxHealth: 20
   movementSpeed: 100
   damageEffect: {fileID: 198352724636934160}
 --- !u!198 &198300480254005784

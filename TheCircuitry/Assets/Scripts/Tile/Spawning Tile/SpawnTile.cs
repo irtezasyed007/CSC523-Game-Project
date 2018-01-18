@@ -8,6 +8,9 @@ public class SpawnTile : MonoBehaviour {
     public int minYieldTime;
     public int maxYieldTime;
 
+    //The highest (hardest) tier of enemy that will spawn (0-3)
+    public int enemyTier = 0;
+
     //Total number of enemies to spawn (-1 means infinite)
     public int maxEnemies = -1;
 
@@ -18,12 +21,19 @@ public class SpawnTile : MonoBehaviour {
     private GameObject[] enemies = new GameObject[4];
     private bool canSpawn = true;
     private bool readyToSpawn = true;
+    private bool updatedEnemiesWavesAliveFor = false;
     private int totalEnemiesSpawned = 0;
     private int minEnemyHealth = 1;
     private int maxEnemyHealth = 5;
 
-	// Use this for initialization
-	void Start () {
+    //Helps enemies scale appropriately this way newly introduced enemies don't immediately scale up
+    private int tier0EnemiesWavesAliveFor = 0;
+    private int tier1EnemiesWavesAliveFor = 0;
+    private int tier2EnemiesWavesAliveFor = 0;
+    private int tier3EnemiesWavesAliveFor = 0;
+
+    // Use this for initialization
+    void Start () {
         //Point of collider in space
         Vector2 gameObjectPos = (Vector2)gameObject.transform.position;
 
@@ -37,15 +47,30 @@ public class SpawnTile : MonoBehaviour {
         enemies[3] = Resources.Load<GameObject>("Prefabs/Enemies/enemy4");
     }
 
+    private void OnEnable()
+    {
+        StartCoroutine(SpawnEnemy());
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if (enemyCanSpawn())
+        if (allEnemiesSpawnedForWave()) updateEnemiesWavesAliveFor();
+    }
+
+    private IEnumerator SpawnEnemy()
+    {
+        while (true)
         {
-            int wait = Random.Range(minYieldTime, maxYieldTime);
-            GameObject go = Instantiate(getRandomEnemy(), transform.position, Quaternion.identity);
-            totalEnemiesSpawned++;
-            StartCoroutine(waitUntilNextSpawn(wait));
+            if (enemyCanSpawn())
+            {
+                int wait = Random.Range(minYieldTime, maxYieldTime);
+                spawnRandomEnemy();
+                totalEnemiesSpawned++;
+                yield return new WaitForSeconds(wait);
+            }
+
+            else yield return null;
         }
     }
 
@@ -54,17 +79,75 @@ public class SpawnTile : MonoBehaviour {
         return canSpawn && (totalEnemiesSpawned < maxEnemies || maxEnemies == -1) && GameManager.Manager.tipShown;
     }
 
-    private IEnumerator waitUntilNextSpawn(int time)
+    public bool allEnemiesSpawnedForWave()
     {
-        canSpawn = false;
-        yield return new WaitForSeconds((float) time);
-        canSpawn = true;
+        return totalEnemiesSpawned == maxEnemies;
     }
 
-    private GameObject getRandomEnemy()
+    private void spawnRandomEnemy()
     {
-        int index = Random.Range(0, 3);
-        return enemies[index];
+        int index = Random.Range(0, enemyTier);
+        if(enemies[index] != null)
+        {
+            GameObject go = Instantiate(enemies[index], transform.position, Quaternion.identity);
+            scaleEnemy(go.GetComponent<Enemy>(), index);
+        }
+    }
+
+    private void scaleEnemy(Enemy enemy, int tier)
+    {
+        int scale = 0;
+
+        if (tier == 0)
+        {
+            scale = tier0EnemiesWavesAliveFor;
+        }
+        else if (tier == 1)
+        {
+            scale = tier1EnemiesWavesAliveFor;
+        } 
+        else if (tier == 2)
+        {
+            scale = tier2EnemiesWavesAliveFor;
+        }
+        else if (tier == 3)
+        {
+            scale = tier3EnemiesWavesAliveFor;
+        }
+
+        enemy.maxHealth = enemy.maxHealth + (scale * .2);
+    }
+
+    private void updateEnemiesWavesAliveFor()
+    {
+        if (updatedEnemiesWavesAliveFor) return;
+
+        if (enemyTier == 0)
+        {
+            tier0EnemiesWavesAliveFor++;
+            updatedEnemiesWavesAliveFor = true;
+        }
+        else if (enemyTier == 1)
+        {
+            tier0EnemiesWavesAliveFor++;
+            tier1EnemiesWavesAliveFor++;
+            updatedEnemiesWavesAliveFor = true;
+        }
+        else if (enemyTier == 2)
+        {
+            tier0EnemiesWavesAliveFor++;
+            tier1EnemiesWavesAliveFor++;
+            tier2EnemiesWavesAliveFor++;
+            updatedEnemiesWavesAliveFor = true;
+        }
+        else if (enemyTier == 3)
+        {
+            tier0EnemiesWavesAliveFor++;
+            tier1EnemiesWavesAliveFor++;
+            tier2EnemiesWavesAliveFor++;
+            tier3EnemiesWavesAliveFor++;
+            updatedEnemiesWavesAliveFor = true;
+        }
     }
 
     public void stopEnemySpawning()
@@ -72,10 +155,12 @@ public class SpawnTile : MonoBehaviour {
         canSpawn = false;
     }
 
+    //Resets the spawn tile
     public void startEnemySpawning()
     {
         totalEnemiesSpawned = 0;
-        canSpawn = true;       
+        canSpawn = true;
+        updatedEnemiesWavesAliveFor = false;
     }
 
     public int EnemiesSpawned

@@ -62,15 +62,15 @@ internal class CircuitBuilder : MonoBehaviour {
             if (truthBools[i] != results[i])
             {
                 instance.GetComponent<Tower>().isBroken = true;
-                GameManager.Manager.appendToScore(-2);
+                GameManager.Manager.addToScore(Wave.wave.baseScoreDecrementOnCircuitFailed);
                 return "Sorry, your answer isn't correct! Make sure there are no extra gates and all wires are properly connected.";
             }
                 
         }
 
         instance.GetComponent<Tower>().isBroken = false;
-        GameManager.Manager.appendToScore(10);
-        GameManager.Manager.addToGold(250);
+        GameManager.Manager.addToScore(Wave.wave.baseScoreIncrementOnCircuitComplete);
+        GameManager.Manager.addToGold(Wave.wave.baseGoldIncrementOnCircuitComplete);
         return "Answer is correct!";
     }
     

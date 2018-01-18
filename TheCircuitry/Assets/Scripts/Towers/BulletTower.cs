@@ -12,12 +12,18 @@ public class BulletTower : Tower
     private GameObject muzzleFlash2;
     private GameObject turretBase;
 
-    // Use this for initialization
-    void Start()
+    private void OnEnable()
     {
-        init();
-        initComponents();
-        this.towerManager = this.GetComponentInParent<TowerManager>();
+        if (!initialized)
+        {
+            init();
+            initComponents();
+            this.towerManager = this.GetComponentInParent<TowerManager>();
+            initialized = true;
+        }
+
+        StartCoroutine(FireWeapon());
+        StartCoroutine(TowerBreak());
     }
 
     private void initComponents()
@@ -56,63 +62,39 @@ public class BulletTower : Tower
 
         else
         {
-            //If it didnt start the countdown yet, start it.
-            if (!startCountdown)
-            {
-                StartCoroutine(TowerBreak());
-            }
-
             brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
-
-            List<Enemy> nearEnemies = getNearEntities(175);
-
-            if (nearEnemies.Count != 0)
-            {
-                if (canFire)
-                {
-                    int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
-                    faceEnemy(nearEnemies[enemyIndex], this.turretHead);
-
-                    Vector2 pos1 = (Vector2)turretHead.transform.position + offset * turretHead.transform.localScale.y;
-                    Vector2 pos2 = (Vector2)turretHead.transform.position - offset * turretHead.transform.localScale.y;
-                    Vector2 newVelocity = this.dir * velocity;
-                    Vector3 rotation = new Vector3(
-                                                turretHead.transform.eulerAngles.x,
-                                                turretHead.transform.eulerAngles.y,
-                                                turretHead.transform.eulerAngles.z
-                                                );
-
-                    StartCoroutine(MuzzleFlash());
-                    weapon.FireWeapon(rotation, pos1, newVelocity);
-                    if (base.towerTier >= 2) weapon.FireWeapon(rotation, pos2, newVelocity);
-                    StartCoroutine(WeaponCooldown());
-                    noWeaponFireCount = 0;
-                }
-                noWeaponFireCount++;
-                noTowerCountdownCount++;
-
-                if (noWeaponFireCount > 75)
-                {
-                    canFire = true;
-                    noWeaponFireCount = 0;
-                }
-
-                if (noTowerCountdownCount > 1000)
-                {
-                    startCountdown = false;
-                    noTowerCountdownCount = 0;
-                }
-            }
         }
     }
 
-    private IEnumerator WeaponCooldown()
+    private IEnumerator FireWeapon()
     {
-        canFire = false;
+        while (true)
+        {
+            List<Enemy> nearEnemies = getNearEntities(175);
 
-        yield return new WaitForSeconds(weaponFireRate);
+            if (nearEnemies.Count > 0 && !isBroken)
+            {
+                int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
+                faceEnemy(nearEnemies[enemyIndex], this.turretHead);
 
-        canFire = true;
+                Vector2 pos1 = (Vector2)turretHead.transform.position + offset * turretHead.transform.localScale.y;
+                Vector2 pos2 = (Vector2)turretHead.transform.position - offset * turretHead.transform.localScale.y;
+                Vector2 newVelocity = this.dir * velocity;
+                Vector3 rotation = new Vector3(
+                                            turretHead.transform.eulerAngles.x,
+                                            turretHead.transform.eulerAngles.y,
+                                            turretHead.transform.eulerAngles.z
+                                            );
+
+                StartCoroutine(MuzzleFlash());
+                weapon.FireWeapon(rotation, pos1, newVelocity);
+                if (base.towerTier >= 2) weapon.FireWeapon(rotation, pos2, newVelocity);
+
+                yield return new WaitForSeconds(weaponFireRate);
+            }
+
+            else yield return null;
+        }
     }
 
     private IEnumerator MuzzleFlash()

@@ -13,7 +13,9 @@ public class Tower : MonoBehaviour {
     public Vector2 offset = new Vector2(0.4f, 0.1f);
     public GameObject brokenTowerParticles;
     public float weaponFireRate;
+    protected int fireRateCnt = 0;
     public int towerTimeToLive;
+    protected int ttlCnt = 0;
     public int towerTier;
     internal bool isBroken = false;
     protected bool canFire = true;
@@ -23,10 +25,11 @@ public class Tower : MonoBehaviour {
     protected int noTowerCountdownCount = 0;
     protected int secondsWaited = 0;
     protected bool startCountdown = false;
+    protected bool initialized = false;
 
     // Use this for initialization
     protected void Start () {
-        init();
+
     }
 
     protected void init()
@@ -34,11 +37,12 @@ public class Tower : MonoBehaviour {
         velocity *= -1; //So tower isn't shooting backwards
 
         this.weapon = projectile.GetComponent<Weapon>();
+
     }
 
-    void Awake()
+    private void OnEnable()
     {
-
+        StartCoroutine(TowerBreak());
     }
 
     // Update is called once per frame
@@ -51,66 +55,35 @@ public class Tower : MonoBehaviour {
 
         else
         {
-            //If it didnt start the countdown yet, start it.
-            if (!startCountdown)
-            {
-                StartCoroutine(TowerBreak());               
-            }
-
-            brokenTowerParticles.GetComponent<ParticleSystem>().Stop();
-
-            List<Enemy> nearEnemies = getNearEntities(100);
-
-            if (nearEnemies.Count != 0)
-            {
-                if (canFire)
-                {
-                    int enemyIndex = Random.Range(0, nearEnemies.Count - 1);
-                    faceEnemy(nearEnemies[enemyIndex], this.gameObject);
-
-                    GameObject go = (GameObject)Instantiate(projectile, (Vector2)transform.position + offset * transform.localScale.y, Quaternion.identity);
-                    go.GetComponent<Rigidbody2D>().velocity = this.dir * velocity;
-                    go.transform.eulerAngles = new Vector3(
-                                                    this.transform.eulerAngles.x,
-                                                    this.transform.eulerAngles.y,
-                                                    this.transform.eulerAngles.z
-                                                    );
-
-                    StartCoroutine(WeaponCooldown());
-                    noWeaponFireCount = 0;
-                }
-                noWeaponFireCount++;
-                noTowerCountdownCount++;
-
-                if (noWeaponFireCount > 75)
-                {
-                    canFire = true;
-                    noWeaponFireCount = 0;
-                }
-
-                if (noTowerCountdownCount > 1000)
-                {
-                    startCountdown = false;
-                    noTowerCountdownCount = 0;
-                }
-            }
+            brokenTowerParticles.GetComponent<ParticleSystem>().Stop();           
         }
     }
 
     private IEnumerator WeaponCooldown()
     {
-        canFire = false;
         yield return new WaitForSeconds(weaponFireRate);
-        canFire = true;
     }
 
+    //Only breaks the towers when they are active and a wave is going on
     protected IEnumerator TowerBreak()
     {
-        noTowerCountdownCount = 0;
-        startCountdown = true;
-        yield return new WaitForSeconds(towerTimeToLive);
-        isBroken = true;
-        startCountdown = false;
+        while (true)
+        {
+            yield return new WaitForSeconds(1);
+            if (!Wave.wave.isWaveFinished())
+            {
+                if (isBroken) ttlCnt = 0;
+
+                if (ttlCnt >= towerTimeToLive && !isBroken)
+                {
+                    isBroken = true;
+                }
+                else if (!isBroken)
+                {
+                    ttlCnt++;
+                }
+            }
+        }
     }
 
     protected List<Enemy> getNearEntities(float range)
