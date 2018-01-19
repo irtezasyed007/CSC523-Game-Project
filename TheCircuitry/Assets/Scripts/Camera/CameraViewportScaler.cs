@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraViewportScaler : MonoBehaviour {
 
-    public float orthographicSize = 5;
+    public float orthographicSize = 23;
     public float aspect = 1.33333f;
     void Start()
     {

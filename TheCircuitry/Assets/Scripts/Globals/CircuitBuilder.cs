@@ -66,7 +66,8 @@ internal class CircuitBuilder : MonoBehaviour {
                 if(GameManager.Manager.activeScene == "circuitBuilderScene")
                 {
                     instance.GetComponent<Tower>().isBroken = true;
-                    GameManager.Manager.addToScore(Wave.wave.baseScoreDecrementOnCircuitFailed);
+                    GameManager.Manager.addToScore(Level1Scene.level1Scene.getRandomValue(
+                        Wave.wave.baseScoreDecrementOnCircuitFailed));
                 }
                 return "Sorry, your answer isn't correct! Make sure there are no extra gates and all wires are properly connected.";
             }
@@ -76,8 +77,10 @@ internal class CircuitBuilder : MonoBehaviour {
         if(GameManager.Manager.activeScene == "circuitBuilderScene")
         {
             instance.GetComponent<Tower>().isBroken = false;
-            GameManager.Manager.addToScore(Wave.wave.baseScoreIncrementOnCircuitComplete);
-            GameManager.Manager.addToGold(Wave.wave.baseGoldIncrementOnCircuitComplete);
+            GameManager.Manager.addToScore(Level1Scene.level1Scene.getRandomValue(
+                Wave.wave.baseScoreDecrementOnCircuitFailed));
+            GameManager.Manager.addToGold(Level1Scene.level1Scene.getRandomValue(
+                Wave.wave.baseScoreDecrementOnCircuitFailed));
         }
         return "Answer is correct!";
     }
