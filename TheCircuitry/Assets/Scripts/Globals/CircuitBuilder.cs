@@ -24,6 +24,7 @@ internal class CircuitBuilder : MonoBehaviour {
     public Function func;
     public DrawLines draw;
     internal List<Collider2D[]> drawColliders;
+    internal int tutorialSectionIndex = -1;   // Intended for the circuitBuilderTutorial scene only
 
     internal string TestUserCircuit()
     {
@@ -36,10 +37,11 @@ internal class CircuitBuilder : MonoBehaviour {
                 collidersConnectedToInputs.Add(draw.GetPairedColliders(inputs[i].GetComponent<Collider2D>()));
             }
         }
-        if(collidersConnectedToInputs.Count == 0)
+        if(collidersConnectedToInputs.Count == 0 || draw.GetPairedCollider(output.GetComponent<Collider2D>()) == null)
         {
-            return "You haven't connected any inputs!";
+            return "You haven't connected your inputs and/or output!";
         }
+        
         Collider2D[][] wires2DArray = collidersConnectedToInputs.ToArray();
         foreach(Collider2D[] colArray in wires2DArray)
         {
@@ -306,7 +308,7 @@ internal class CircuitBuilder : MonoBehaviour {
         Dictionary<Collider2D, bool> copyDict = new Dictionary<Collider2D, bool>(wireVals);
         foreach(Collider2D col in wireVals.Keys)
         {
-            if (!gates.Contains(col.gameObject))
+            if (!gates.Contains(col.gameObject) && draw.GetPairedCollider(col) != null)
             {
                 copyDict.Add(draw.GetPairedCollider(col), wireVals[col]);
                 copyDict.Remove(col);
@@ -316,20 +318,26 @@ internal class CircuitBuilder : MonoBehaviour {
     }
     public void InitializeSceneParameters()
     {
+        if (tutorialSectionIndex != -1)
+        {
+            GameObject.FindGameObjectWithTag("TutorialPanel").GetComponent<TutorialScript>().SectionIndex = tutorialSectionIndex;
+        }
+
         GameManager.Manager.activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         // Submit button calls the relevant functions to check the user's circuit and decide how to handle the outcome
         submit = GameObject.Find("SubmitButton").GetComponent<UnityEngine.UI.Button>();
         submit.onClick.AddListener(() => {
             GameObject panel = Instantiate(Resources.Load<GameObject>("UIItems/ResultsPanel"));
-            panel.transform.parent = GameObject.Find("Canvas").transform;
+            panel.transform.SetParent(GameObject.Find("Canvas").transform);
 
             panel.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(() => {
                 panel.SetActive(false);
                 Destroy(panel);
             });
 
-            panel.GetComponent<RectTransform>().offsetMax = new Vector3(100, 100, 0);
-            panel.GetComponent<RectTransform>().offsetMin = new Vector3(100, 100, 0);
+            panel.GetComponent<RectTransform>().offsetMax = new Vector3();
+            panel.GetComponent<RectTransform>().offsetMin = new Vector3();
+            panel.GetComponent<RectTransform>().position = new Vector3(512, 384);
             string result = TestUserCircuit();
             panel.GetComponentInChildren<UnityEngine.UI.Text>().text = result;
             panel.GetComponentInChildren<UnityEngine.UI.Text>().fontSize = 35;
@@ -634,8 +642,10 @@ internal class CircuitBuilder : MonoBehaviour {
     internal Vector3 DetermineCollider2DPosition(Collider2D col)
     {
         // Offset is scaled by 75 because the red-circle sprite is also scaled by 75
-        return new Vector3(col.gameObject.transform.position.x + col.offset.x * 75,
+        if(col != null)
+            return new Vector3(col.gameObject.transform.position.x + col.offset.x * 75,
                 col.gameObject.transform.position.y + col.offset.y * 75, 0);
+        return new Vector3();
     }
 
     public List<GameObject> ListOfGates
@@ -713,7 +723,7 @@ internal class CircuitBuilder : MonoBehaviour {
         {
             DontDestroyOnLoad(input);
         }
-        DontDestroyOnLoad(GameObject.FindGameObjectWithTag("Function"));
+        tutorialSectionIndex = GameObject.FindGameObjectWithTag("TutorialPanel").GetComponent<TutorialScript>().SectionIndex;
     }
 
     private void UnpreserveSceneBeforeLoad()
@@ -732,7 +742,6 @@ internal class CircuitBuilder : MonoBehaviour {
         {
             Destroy(input);
         }
-        Destroy(GameObject.FindGameObjectWithTag("Function"));
         Destroy(this);
     }
 }

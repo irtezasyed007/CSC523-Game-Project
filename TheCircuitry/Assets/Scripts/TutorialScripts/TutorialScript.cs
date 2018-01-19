@@ -24,22 +24,33 @@ public class TutorialScript : MonoBehaviour {
         "Once everything is connected properly, click the Submit button. If you did it correctly, the popup message will let you know.",       //16
         "This tutorial is now over. Whenever you're ready, simply press the back button to return to the main menu. Thanks for playing!"       //17
     };
-    private int sectionIndex;
+    private int sectionIndex = 0;
+
+    internal int SectionIndex
+    {
+        get { return sectionIndex; }
+        set
+        {
+            sectionIndex = value;
+            Start();
+            GoUpsideDown();
+        }
+    }
 
     private GameObject tutorialPanel;
     private UnityEngine.UI.Text tutorialText;
     private UnityEngine.UI.Button tutorialButton;
     private Quaternion upsideDownQuaternion = new Quaternion(0, 0, 180, 0);
-    private Vector3 initialPos;
+    private Vector3 defaultPos;
 	// Use this for initialization
 	void Start () {
         tutorialPanel = GameObject.FindGameObjectWithTag("TutorialPanel");
-        initialPos = tutorialPanel.transform.position;
+        defaultPos = new Vector3(512, 384);     // This is the center of the screen
         tutorialText = tutorialPanel.GetComponentInChildren<UnityEngine.UI.Text>();
         tutorialButton = tutorialPanel.GetComponentInChildren<UnityEngine.UI.Button>();
-        sectionIndex = 0;
-        tutorialText.text = tutorialSections[sectionIndex];
-	}
+        sectionIndex--;
+        GoToNextSection();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -53,7 +64,6 @@ public class TutorialScript : MonoBehaviour {
             tutorialText.text = tutorialSections[++sectionIndex];
             if (sectionIndex == 3)      // Index for FunctionText
             {
-                GoUpsideDown();
                 MoveNearNewSection();
             }
             else if (sectionIndex == 4)  // Index for Submit Button
@@ -67,7 +77,6 @@ public class TutorialScript : MonoBehaviour {
             else if (sectionIndex == 7)  // Index for Inputs
             {
                 MoveNearNewSection();
-                GoRightSideUp();
             }
             else if (sectionIndex == 10) // Index for Output
             {
@@ -75,7 +84,7 @@ public class TutorialScript : MonoBehaviour {
             }
             else if (sectionIndex == 11) // Index for Gates
             {
-                tutorialPanel.transform.position = initialPos;
+                tutorialPanel.transform.position = defaultPos;
             }
             else if (sectionIndex == 12) // Index for part of tutorial where we make the first simple circuit
             {
@@ -86,9 +95,9 @@ public class TutorialScript : MonoBehaviour {
 
     private void GoUpsideDown()
     {
-        tutorialText.transform.rotation = upsideDownQuaternion;
-        tutorialButton.transform.rotation = upsideDownQuaternion;
         tutorialPanel.transform.rotation = upsideDownQuaternion;
+        tutorialText.transform.localRotation = upsideDownQuaternion;
+        tutorialButton.transform.localRotation = upsideDownQuaternion;
     }
 
     private void GoRightSideUp()
@@ -102,6 +111,7 @@ public class TutorialScript : MonoBehaviour {
     {
         if(sectionIndex == 3)       // Index for FunctionText
         {
+            GoUpsideDown();
             GameObject func = GameObject.FindGameObjectWithTag("Function");
             tutorialPanel.transform.position = new Vector3(func.transform.position.x - 36, func.transform.position.y - 160);
         }
@@ -119,6 +129,7 @@ public class TutorialScript : MonoBehaviour {
         }
         else if (sectionIndex == 7)  // Index for Inputs
         {
+            GoRightSideUp();
             GameObject[] inputs = GameManager.Manager.circuitBuilder.inputs;
             float midpoint = (inputs[0].transform.position.y + inputs[1].transform.position.y) / 2;
             tutorialPanel.transform.position = new Vector3(inputs[0].transform.position.x + 300, midpoint - 768);
