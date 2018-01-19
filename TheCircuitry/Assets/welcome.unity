@@ -3184,6 +3184,11 @@ Prefab:
       propertyPath: ShapeModule.radiusThickness
       value: 1.0000
       objectReference: {fileID: 0}
+    - target: {fileID: 198000012283690144, guid: 96b2ec0239d11fa4b9792311efceb8ed,
+        type: 2}
+      propertyPath: ShapeModule.radiusThickness
+      value: 1.0000
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 96b2ec0239d11fa4b9792311efceb8ed, type: 2}
   m_IsPrefabParent: 0
@@ -4885,6 +4890,7 @@ GameObject:
   - component: {fileID: 638801113}
   - component: {fileID: 638801112}
   - component: {fileID: 638801111}
+  - component: {fileID: 638801115}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4955,6 +4961,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &638801115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 638801110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b03798a4fe0842c47af2357fb44a2601, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orthographicSize: 5
+  aspect: 1.33333
 --- !u!1 &641223810
 GameObject:
   m_ObjectHideFlags: 0
