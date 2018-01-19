@@ -21,6 +21,11 @@ public class Rocket : Weapon
         base.FireWeapon(rotation, position, velocity);
     }
 
+    public override void FireWeapon(Vector2 position, Vector2 velocity)
+    {
+        base.FireWeapon(position, velocity);
+    }
+
     protected override void OnTriggerEnter2D(Collider2D collision)
     {
         GameObject go = collision.gameObject;

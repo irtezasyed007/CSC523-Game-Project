@@ -70,6 +70,7 @@ public class Tower : MonoBehaviour {
         while (true)
         {
             yield return new WaitForSeconds(1);
+
             if (!Wave.wave.isWaveFinished())
             {
                 if (isBroken) ttlCnt = 0;

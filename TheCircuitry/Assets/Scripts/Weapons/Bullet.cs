@@ -21,6 +21,12 @@ public class Bullet : Weapon
         base.FireWeapon(rotation, position, velocity);
     }
 
+    public override void FireWeapon(Vector2 position, Vector2 velocity)
+    {
+        GameObject go = Instantiate(this.gameObject, position, Quaternion.identity);
+        go.GetComponent<Rigidbody2D>().velocity = velocity;
+    }
+
     protected override void OnTriggerEnter2D(Collider2D collision)
     {
         GameObject go = collision.gameObject;

@@ -8,8 +8,10 @@ public class Enemy : MonoBehaviour {
     //All the current enemies that spawned
     public static List<GameObject> instantiedEnemies = new List<GameObject>();
 
+    //Gradually makes the enemies faster
     private static int movementSpeedAddition = 0;
 
+    //A unit vector in the direction you want the enemy to move
     public Vector2 direction;
     public double maxHealth;
     public int movementSpeed;
@@ -154,8 +156,8 @@ public class Enemy : MonoBehaviour {
 
     private void killEnemy()
     {
-        GameManager.Manager.addToScore(Wave.wave.baseScoreIncrementOnKill);
-        GameManager.Manager.addToGold(Wave.wave.baseGoldIncrementOnKill);
+        GameManager.Manager.addToScore(Level1Scene.level1Scene.getRandomValue(Wave.wave.baseScoreIncrementOnKill));
+        GameManager.Manager.addToGold(Level1Scene.level1Scene.getRandomValue(Wave.wave.baseGoldIncrementOnKill));
         Destroy(gameObject);
     }
 

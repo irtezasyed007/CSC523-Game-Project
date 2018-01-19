@@ -20,7 +20,7 @@ public class TileMovement : MonoBehaviour {
     {
 
         Enemy enemy = collision.gameObject.GetComponent<Enemy>();
-
+        
         if (enemy != null)
         {
             //Manipulate the game object's velocity

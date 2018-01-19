@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class TurretButtonHandler : MonoBehaviour
+public class TurretButtonHandler : ButtonHandler
 {
     public GameObject spawnTurretHere;
     public GameObject clickedTurret;
@@ -116,6 +116,7 @@ public class TurretButtonHandler : MonoBehaviour
                 Instantiate(rocketTurret, spawnTurretHere.transform.position, Quaternion.identity);
                 Destroy(spawnTurretHere);
                 transform.parent.parent.gameObject.SetActive(false);
+                base.playRandomCoinSound();
             }
 
             //Not enough gold
@@ -139,6 +140,7 @@ public class TurretButtonHandler : MonoBehaviour
                 Instantiate(bulletTurret, spawnTurretHere.transform.position, Quaternion.identity);
                 Destroy(spawnTurretHere);
                 transform.parent.parent.gameObject.SetActive(false);
+                base.playRandomCoinSound();
             }
 
             //Not enough gold

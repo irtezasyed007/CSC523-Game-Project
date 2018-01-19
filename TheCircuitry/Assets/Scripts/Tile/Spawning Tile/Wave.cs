@@ -50,8 +50,8 @@ public class Wave : MonoBehaviour
         {
             if (!rewardedOnWaveComplete)
             {
-                GameManager.Manager.addToGold(baseGoldIncrementOnWaveComplete);
-                GameManager.Manager.addToScore(baseScoreIncrementOnWaveComplete);
+                GameManager.Manager.addToGold(Level1Scene.level1Scene.getRandomValue(baseGoldIncrementOnWaveComplete));
+                GameManager.Manager.addToScore(Level1Scene.level1Scene.getRandomValue(baseScoreIncrementOnWaveComplete));
                 rewardedOnWaveComplete = true;
             } 
 

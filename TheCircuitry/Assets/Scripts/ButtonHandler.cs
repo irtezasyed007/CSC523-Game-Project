@@ -43,8 +43,68 @@ public class ButtonHandler : MonoBehaviour {
         string num = Random.Range(0, 22).ToString("D2");
         GameObject go = Instantiate(Resources.Load<GameObject>("Sounds/Coins_Several/Coins_Several_" + num));
         AudioSource audioSource = go.GetComponent<AudioSource>();
+        audioSource.volume = 1.0f;
         AudioSource.PlayClipAtPoint(audioSource.clip, transform.position);
         Destroy(go);
+    }
+
+    public void startPlaneRun(int amt)
+    {
+        if(amt > GameManager.Manager.gold)
+        {
+            GameObject go = Resources.Load<GameObject>("Prefabs/Text GameObjects/NotEnoughGoldText");
+            go = Instantiate(go, gameObject.transform.position, Quaternion.identity, gameObject.transform);
+            go.GetComponent<TextFadeOut>().FadeOut();
+        }
+
+        else
+        {
+            GameObject plane = Resources.Load<GameObject>("Prefabs/Planes/GreenPlane");
+
+            Vector2 pos1 = new Vector2(1229, 199);
+            Vector2 pos2 = new Vector2(1204, 420);
+            Vector2 pos3 = new Vector2(1229, 632);
+
+            Instantiate(plane, pos1, Quaternion.identity);
+            Instantiate(plane, pos2, Quaternion.identity);
+            Instantiate(plane, pos3, Quaternion.identity);
+
+            transform.parent.parent.gameObject.SetActive(false);
+            playRandomCoinSound();
+        }
+    }
+
+    public void startTankRun(int amt)
+    {
+        if (amt > GameManager.Manager.gold)
+        {
+            GameObject go = Resources.Load<GameObject>("Prefabs/Text GameObjects/NotEnoughGoldText");
+            go = Instantiate(go, gameObject.transform.position, Quaternion.identity, gameObject.transform);
+            go.GetComponent<TextFadeOut>().FadeOut();
+        }
+
+        else
+        {
+            GameObject tank = Resources.Load<GameObject>("Prefabs/Tanks/GreenTank");
+
+            //Starting points for tank
+            Vector2 pos1 = new Vector2(718, 948);
+            Vector2 pos2 = new Vector2(499, 948);
+            Vector2 pos3 = new Vector2(274, 948);
+
+            //Instantiating and endpoints for tank (where it should stop)
+            GameObject tank1 = Instantiate(tank, pos1, tank.transform.rotation);
+            tank1.GetComponent<Tank>().endPoint = new Vector2(718, 785);
+
+            GameObject tank2 = Instantiate(tank, pos2, tank.transform.rotation);
+            tank2.GetComponent<Tank>().endPoint = new Vector2(499, 785);
+
+            GameObject tank3 = Instantiate(tank, pos3, tank.transform.rotation);
+            tank3.GetComponent<Tank>().endPoint = new Vector2(274, 785);
+
+            transform.parent.parent.gameObject.SetActive(false);
+            playRandomCoinSound();
+        }
     }
 
     private IEnumerator wait()

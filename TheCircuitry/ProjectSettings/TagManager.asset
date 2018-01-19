@@ -67,3 +67,6 @@ TagManager:
   - name: UI
     uniqueID: 1450366913
     locked: 0
+  - name: Aerial Sprite
+    uniqueID: 2200672261
+    locked: 0

@@ -55,31 +55,7 @@ public class Level1Scene : MonoBehaviour
     {
         if(SceneManager.GetActiveScene().name == "level1")
         {
-            updateMusicButton();
             loadAndRenderStats();
-        }
-    }
-
-    private void updateMusicButton()
-    {
-        GameObject musicButton = GameObject.Find("MusicToggleButton");
-
-        if (musicButton != null)
-        {
-            Text[] musicState = GameObject.Find("MusicToggleButton").GetComponentsInChildren<Text>();
-
-            if (GameManager.Manager.musicEnabled)
-            {
-                musicState[0].text = "Music";
-                musicState[1].text = "On";
-            }
-
-            else
-            {
-                musicState[0].text = "Music";
-                musicState[1].text = "Off";
-            }
-
         }
     }
 
@@ -116,6 +92,11 @@ public class Level1Scene : MonoBehaviour
         text.text = "Wave: " + GameManager.Manager.wave;
     }
 
+    public int getRandomValue(int value)
+    {
+        return Random.Range(value / 2, value);
+    }
+
     private void OnDestroy()
     {
         if(this == level1Scene)
@@ -125,4 +106,5 @@ public class Level1Scene : MonoBehaviour
             foreach (GameObject go in instantiedLevel1GameObjects) Destroy(go);
         }
     }
+
 }
