@@ -12,12 +12,12 @@ public class TutorialScript : MonoBehaviour {
         "This is the Submit button. When you think your circuit is good to go, click this button to see if your circuit correctly works.",     //4
         "These are the Logic and Gates Reference buttons. If there is something you're not sure of, click these buttons to get help.",         //5
         "Gates Reference will tell you how each gate works. Logic Reference will tell you how the operations work and offers advanced info.",  //6
-        "These are the variable inputs. You can connect wires from these by left clicking the black square next to them to make a point.",     //7
+        "To the left are the variable inputs. You can connect wires from them by left clicking the black square next to them to make a point.",//7
         "You can connect this point to another (valid) black square by left clicking on it. This will make a wire between the two points. ",   //8
         "Note that only the inputs are allowed to have multiple wires coming from them. Every other connection point is limited to one wire.", //9
-        "This is the final output. A single wire will connect here. When you submit, your output will be compared to the expected one.",       //10
+        "To the right is the main output. A single wire will connect here. When you submit, your output will be compared to the actual one.",  //10
         "At the bottom of the screen are the gates you can use. Left clicking a gate will make a useable copy of it, which you can place.",    //11
-        "Now, the function above is (A + B). The OR gate represents the '+' operation. Click on the OR gate and place it in the red area.",    //12
+        "Now, the function is (A + B). The OR gate represents the '+' operation. Click on the OR gate and place it in the area below.",    //12
         "If you want to move the gate, click on the body to pick it up to place it somewhere else. You can also right click to delete it.",    //13
         "Click the variable inputs and connect them to the OR gate inputs. Then, click the OR gate output and connect it to the final output.",//14
         "You can delete wires you don't want. To delete, left click on the black square to select a connection point and then right click it.",//15
@@ -26,19 +26,31 @@ public class TutorialScript : MonoBehaviour {
     };
     private int sectionIndex = 0;
 
+    internal int SectionIndex
+    {
+        get { return sectionIndex; }
+        set
+        {
+            sectionIndex = value;
+            Start();
+            GoUpsideDown();
+        }
+    }
+
     private GameObject tutorialPanel;
     private UnityEngine.UI.Text tutorialText;
     private UnityEngine.UI.Button tutorialButton;
     private Quaternion upsideDownQuaternion = new Quaternion(0, 0, 180, 0);
-    private Vector3 initialPos;
+    private Vector3 defaultPos;
 	// Use this for initialization
 	void Start () {
         tutorialPanel = GameObject.FindGameObjectWithTag("TutorialPanel");
-        initialPos = tutorialPanel.transform.position;
+        defaultPos = new Vector3(512, 384);     // This is the center of the screen
         tutorialText = tutorialPanel.GetComponentInChildren<UnityEngine.UI.Text>();
         tutorialButton = tutorialPanel.GetComponentInChildren<UnityEngine.UI.Button>();
-        tutorialText.text = tutorialSections[sectionIndex];
-	}
+        sectionIndex--;
+        GoToNextSection();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -47,34 +59,45 @@ public class TutorialScript : MonoBehaviour {
 
     private void GoToNextSection()
     {
-        tutorialText.text = tutorialSections[++sectionIndex];
-        if (sectionIndex == 3)      // Index for FunctionText
+        if(sectionIndex < 17)
         {
-            GoUpsideDown();
-            MoveNearNewSection();
+            tutorialText.text = tutorialSections[++sectionIndex];
+            if (sectionIndex == 3)      // Index for FunctionText
+            {
+                MoveNearNewSection();
+            }
+            else if (sectionIndex == 4)  // Index for Submit Button
+            {
+                MoveNearNewSection();
+            }
+            else if (sectionIndex == 5)  // Index for Logic Reference and Gate Reference
+            {
+                MoveNearNewSection();
+            }
+            else if (sectionIndex == 7)  // Index for Inputs
+            {
+                MoveNearNewSection();
+            }
+            else if (sectionIndex == 10) // Index for Output
+            {
+                MoveNearNewSection();
+            }
+            else if (sectionIndex == 11) // Index for Gates
+            {
+                tutorialPanel.transform.position = defaultPos;
+            }
+            else if (sectionIndex == 12) // Index for part of tutorial where we make the first simple circuit
+            {
+                MoveNearNewSection();
+            }
         }
-        else if(sectionIndex == 4)  // Index for Submit Button
-        {
-            MoveNearNewSection();
-        }
-        else if(sectionIndex == 5)  // Index for Logic Reference and Gate Reference
-        {
-            MoveNearNewSection();
-        }
-        else if(sectionIndex == 7)  // Index for Inputs
-        {
-            MoveNearNewSection();
-            GoRightSideUp();
-            tutorialPanel.transform.position = initialPos;
-        }
-
     }
 
     private void GoUpsideDown()
     {
-        tutorialText.transform.rotation = upsideDownQuaternion;
-        tutorialButton.transform.rotation = upsideDownQuaternion;
         tutorialPanel.transform.rotation = upsideDownQuaternion;
+        tutorialText.transform.localRotation = upsideDownQuaternion;
+        tutorialButton.transform.localRotation = upsideDownQuaternion;
     }
 
     private void GoRightSideUp()
@@ -84,12 +107,13 @@ public class TutorialScript : MonoBehaviour {
         tutorialPanel.transform.rotation = new Quaternion();
     }
 
-    private void MoveNearNewSection()
+    private void MoveNearNewSection()   // Lots of magic numbers here, used to adjust the speech bubble to get it where it's needed
     {
         if(sectionIndex == 3)       // Index for FunctionText
         {
+            GoUpsideDown();
             GameObject func = GameObject.FindGameObjectWithTag("Function");
-            tutorialPanel.transform.position = new Vector3(func.transform.position.x, func.transform.position.y - 160);
+            tutorialPanel.transform.position = new Vector3(func.transform.position.x - 36, func.transform.position.y - 160);
         }
         else if(sectionIndex == 4)  // Index for Submit Button
         {
@@ -105,7 +129,24 @@ public class TutorialScript : MonoBehaviour {
         }
         else if (sectionIndex == 7)  // Index for Inputs
         {
-            
+            GoRightSideUp();
+            GameObject[] inputs = GameManager.Manager.circuitBuilder.inputs;
+            float midpoint = (inputs[0].transform.position.y + inputs[1].transform.position.y) / 2;
+            tutorialPanel.transform.position = new Vector3(inputs[0].transform.position.x + 300, midpoint - 768);
+        }
+        else if (sectionIndex == 10) // Index for Output
+        {
+            float outputX = GameManager.Manager.circuitBuilder.output.transform.position.x;
+            tutorialPanel.transform.position = new Vector3(outputX - 300, tutorialPanel.transform.position.y);
+        }
+        else if (sectionIndex == 12) // Index for part of tutorial where we make the first simple circuit
+        {
+            //  I decided to place the speech bubble in the top left, between the function and submit button, to give the user a lot of room.
+            GameObject func = GameObject.FindGameObjectWithTag("Function");
+            GameObject submit = GameObject.Find("Canvas/SubmitButton");
+            float midpoint = (func.transform.position.x + submit.transform.position.x) / 2 - 100;
+            tutorialPanel.transform.position = new Vector3(midpoint, func.transform.position.y - 50);
+            tutorialPanel.transform.localScale = new Vector3(0.40f, 0.40f);
         }
     }
 }

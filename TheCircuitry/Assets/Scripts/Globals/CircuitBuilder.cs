@@ -24,6 +24,7 @@ internal class CircuitBuilder : MonoBehaviour {
     public Function func;
     public DrawLines draw;
     internal List<Collider2D[]> drawColliders;
+    internal int tutorialSectionIndex = -1;   // Intended for the circuitBuilderTutorial scene only
 
     internal string TestUserCircuit()
     {
@@ -36,10 +37,11 @@ internal class CircuitBuilder : MonoBehaviour {
                 collidersConnectedToInputs.Add(draw.GetPairedColliders(inputs[i].GetComponent<Collider2D>()));
             }
         }
-        if(collidersConnectedToInputs.Count == 0)
+        if(collidersConnectedToInputs.Count == 0 || draw.GetPairedCollider(output.GetComponent<Collider2D>()) == null)
         {
-            return "You haven't connected any inputs!";
+            return "You haven't connected your inputs and/or output!";
         }
+        
         Collider2D[][] wires2DArray = collidersConnectedToInputs.ToArray();
         foreach(Collider2D[] colArray in wires2DArray)
         {
@@ -61,16 +63,22 @@ internal class CircuitBuilder : MonoBehaviour {
         {
             if (truthBools[i] != results[i])
             {
-                instance.GetComponent<Tower>().isBroken = true;
-                GameManager.Manager.addToScore(Level1Scene.level1Scene.getRandomValue(Wave.wave.baseScoreDecrementOnCircuitFailed));
+                if(GameManager.Manager.activeScene == "circuitBuilderScene")
+                {
+                    instance.GetComponent<Tower>().isBroken = true;
+                    GameManager.Manager.addToScore(Wave.wave.baseScoreDecrementOnCircuitFailed);
+                }
                 return "Sorry, your answer isn't correct! Make sure there are no extra gates and all wires are properly connected.";
             }
                 
         }
 
-        instance.GetComponent<Tower>().isBroken = false;
-        GameManager.Manager.addToScore(Level1Scene.level1Scene.getRandomValue(Wave.wave.baseScoreIncrementOnCircuitComplete));
-        GameManager.Manager.addToGold(Level1Scene.level1Scene.getRandomValue(Wave.wave.baseGoldIncrementOnCircuitComplete));
+        if(GameManager.Manager.activeScene == "circuitBuilderScene")
+        {
+            instance.GetComponent<Tower>().isBroken = false;
+            GameManager.Manager.addToScore(Wave.wave.baseScoreIncrementOnCircuitComplete);
+            GameManager.Manager.addToGold(Wave.wave.baseGoldIncrementOnCircuitComplete);
+        }
         return "Answer is correct!";
     }
     
@@ -301,7 +309,7 @@ internal class CircuitBuilder : MonoBehaviour {
         Dictionary<Collider2D, bool> copyDict = new Dictionary<Collider2D, bool>(wireVals);
         foreach(Collider2D col in wireVals.Keys)
         {
-            if (!gates.Contains(col.gameObject))
+            if (!gates.Contains(col.gameObject) && draw.GetPairedCollider(col) != null)
             {
                 copyDict.Add(draw.GetPairedCollider(col), wireVals[col]);
                 copyDict.Remove(col);
@@ -311,20 +319,26 @@ internal class CircuitBuilder : MonoBehaviour {
     }
     public void InitializeSceneParameters()
     {
+        if (tutorialSectionIndex != -1)
+        {
+            GameObject.FindGameObjectWithTag("TutorialPanel").GetComponent<TutorialScript>().SectionIndex = tutorialSectionIndex;
+        }
+
         GameManager.Manager.activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         // Submit button calls the relevant functions to check the user's circuit and decide how to handle the outcome
         submit = GameObject.Find("SubmitButton").GetComponent<UnityEngine.UI.Button>();
         submit.onClick.AddListener(() => {
             GameObject panel = Instantiate(Resources.Load<GameObject>("UIItems/ResultsPanel"));
-            panel.transform.parent = GameObject.Find("Canvas").transform;
+            panel.transform.SetParent(GameObject.Find("Canvas").transform);
 
             panel.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(() => {
                 panel.SetActive(false);
                 Destroy(panel);
             });
 
-            panel.GetComponent<RectTransform>().offsetMax = new Vector3(100, 100, 0);
-            panel.GetComponent<RectTransform>().offsetMin = new Vector3(100, 100, 0);
+            panel.GetComponent<RectTransform>().offsetMax = new Vector3();
+            panel.GetComponent<RectTransform>().offsetMin = new Vector3();
+            panel.GetComponent<RectTransform>().position = new Vector3(512, 384);
             string result = TestUserCircuit();
             panel.GetComponentInChildren<UnityEngine.UI.Text>().text = result;
             panel.GetComponentInChildren<UnityEngine.UI.Text>().fontSize = 35;
@@ -334,8 +348,11 @@ internal class CircuitBuilder : MonoBehaviour {
                 panel.GetComponentInChildren<UnityEngine.UI.Button>().onClick.AddListener(() => {
                     panel.SetActive(false);
                     Destroy(panel);
-                    UnpreserveSceneBeforeLoad();
-                    new ButtonHandler().LoadScene("level1");
+                    if(GameManager.Manager.activeScene == "circuitBuilderScene")
+                    {
+                        UnpreserveSceneBeforeLoad();
+                        new ButtonHandler().LoadScene("level1");
+                    }
                 });
             }
         });
@@ -365,32 +382,26 @@ internal class CircuitBuilder : MonoBehaviour {
         else if (GameManager.Manager.score >= 100) diff = 4;
         if (equation == null)
         {
-            equation = CSC_523_Game.BooleanStringGenerator.generateBooleanString(diff);
-            func = new Function(equation.StackString);
-            func.viewTruthTable();
-            bool[] stringArr = func.getTruthResults();
-            char[] charArr = new char[stringArr.Length];
-            for (int i = 0; i < stringArr.Length; ++i)
-            {
-                Debug.Log(stringArr[i]);
-            }
             if(SceneManager.GetActiveScene().name == "circuitBuilderTutorial")
             {
                 inputs = new GameObject[2];
-                inputs[0] = Instantiate(Resources.Load<GameObject>("Prefabs/Input"));
-                inputs[0].GetComponentInChildren<TextMesh>().text = "A";
-                inputs[1] = Instantiate(Resources.Load<GameObject>("Prefabs/Input"));
-                inputs[1].GetComponentInChildren<TextMesh>().text = "B";
-
-                inputs[0].transform.position = new Vector3(inputs[0].transform.position.x,
-                inputs[0].transform.position.y - 96, 0);    // Remember, 96 x 96 is size for inputs and dynamic gates
-                inputs[1].transform.position = new Vector3(inputs[1].transform.position.x,
-                    inputs[1].transform.position.y - (3 * 96), 0);
-
-                output = Instantiate(Resources.Load<GameObject>("Prefabs/Output"));
+                equation = new CSC_523_Game.BooleanStringGenerator.Equation("(a+b)");
+                func = new Function(equation.StackString);
+                func.viewTruthTable();
+                InitializeInputsAndOutput();
+                
             }
             else
             {
+                equation = CSC_523_Game.BooleanStringGenerator.generateBooleanString(1);
+                func = new Function(equation.StackString);
+                func.viewTruthTable();
+                bool[] stringArr = func.getTruthResults();
+                char[] charArr = new char[stringArr.Length];
+                for (int i = 0; i < stringArr.Length; ++i)
+                {
+                    Debug.Log(stringArr[i]);
+                }
                 InitializeInputsAndOutput();
             }       
         }
@@ -402,6 +413,10 @@ internal class CircuitBuilder : MonoBehaviour {
             {
                 outputFunction[i] = '⊕';
             }
+            else if(outputFunction[i] == '*')
+            {
+                outputFunction[i] = '×';
+            }
         }
         GameObject.FindGameObjectWithTag("Function").GetComponent<UnityEngine.UI.Text>().text = "Function: \n"
                 + new string(outputFunction);
@@ -411,8 +426,11 @@ internal class CircuitBuilder : MonoBehaviour {
         List<char> sorter = new List<char>(equation.UniqueVars);
         sorter.Sort();
         char[] sortedVars = sorter.ToArray();
-        inputs = new GameObject[equation.UniqueVars.Length];
-        for (int i = 0; i < equation.UniqueVars.Length; ++i)
+        if(GameManager.Manager.activeScene == "circuitBuilderScene")
+        {
+            inputs = new GameObject[equation.UniqueVars.Length];
+        }
+        for (int i = 0; i < inputs.Length; ++i)
         {
             inputs[i] = Instantiate(Resources.Load<GameObject>("Prefabs/Input"));
             inputs[i].GetComponentInChildren<TextMesh>().text = sortedVars[i].ToString();
@@ -625,8 +643,10 @@ internal class CircuitBuilder : MonoBehaviour {
     internal Vector3 DetermineCollider2DPosition(Collider2D col)
     {
         // Offset is scaled by 75 because the red-circle sprite is also scaled by 75
-        return new Vector3(col.gameObject.transform.position.x + col.offset.x * 75,
+        if(col != null)
+            return new Vector3(col.gameObject.transform.position.x + col.offset.x * 75,
                 col.gameObject.transform.position.y + col.offset.y * 75, 0);
+        return new Vector3();
     }
 
     public List<GameObject> ListOfGates
@@ -704,7 +724,7 @@ internal class CircuitBuilder : MonoBehaviour {
         {
             DontDestroyOnLoad(input);
         }
-        DontDestroyOnLoad(GameObject.FindGameObjectWithTag("Function"));
+        tutorialSectionIndex = GameObject.FindGameObjectWithTag("TutorialPanel").GetComponent<TutorialScript>().SectionIndex;
     }
 
     private void UnpreserveSceneBeforeLoad()
@@ -723,7 +743,6 @@ internal class CircuitBuilder : MonoBehaviour {
         {
             Destroy(input);
         }
-        Destroy(GameObject.FindGameObjectWithTag("Function"));
         Destroy(this);
     }
 }

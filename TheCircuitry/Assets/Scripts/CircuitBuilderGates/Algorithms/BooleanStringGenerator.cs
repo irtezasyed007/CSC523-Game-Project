@@ -228,7 +228,7 @@ namespace CSC_523_Game
                         stack.Push(unpreppedString[i]);
                         stack.Push('\'');
                     }
-                    else if(unpreppedString[i] == '+' || unpreppedString[i] == '*')
+                    else if(unpreppedString[i] == '+' || unpreppedString[i] == '*' || unpreppedString[i] == '^')
                     {
                         numOperations++;
                         stack.Push(' ');
