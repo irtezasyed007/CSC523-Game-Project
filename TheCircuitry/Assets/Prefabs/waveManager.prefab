@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 4110638289767170}
   - component: {fileID: 212959630191743740}
   - component: {fileID: 114260569708596162}
-  - component: {fileID: 114201859510364112}
+  - component: {fileID: 114793394948654340}
   m_Layer: 0
   m_Name: spawnTile
   m_TagString: Untagged
@@ -72,7 +72,7 @@ Transform:
   m_LocalScale: {x: 115, y: 150, z: 1}
   m_Children: []
   m_Father: {fileID: 4228781959360038}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4228781959360038
 Transform:
@@ -84,8 +84,8 @@ Transform:
   m_LocalPosition: {x: -132, y: 188, z: -7.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4110638289767170}
   - {fileID: 4991391157689078}
+  - {fileID: 4110638289767170}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -100,19 +100,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4228781959360038}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114201859510364112
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1823238120856926}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114260569708596162
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -141,8 +130,10 @@ MonoBehaviour:
   nextScoreIncrementOnKill: 1
   nextScoreIncrementOnCircuitComplete: 5
   nextScoreDecrementOnCircuitFailed: -2
+  nextScoreIncrementOnWaveComplete: 100
   nextGoldIncrementOnKill: 3
   nextGoldIncrementOnCircuitComplete: 15
+  nextGoldIncrementOnWaveComplete: 50
 --- !u!114 &114643049152405328
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -154,14 +145,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97c0a2cb250c6784e84e6099509e5584, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTile: {fileID: 114201859510364112}
-  waveScale: {fileID: 114379345102535146}
-  numberOfEnemiesToSpawn: 3
+  spawnTileGameObject: {fileID: 1823238120856926}
+  waveScaleGameObject: {fileID: 1185375355983488}
+  baseNumberOfEnemiesToSpawn: 3
   baseScoreIncrementOnKill: 2
   baseScoreIncrementOnCircuitComplete: 10
   baseScoreDecrementOnCircuitFailed: -2
+  baseScoreIncrementOnWaveComplete: 100
   baseGoldIncrementOnKill: 3
   baseGoldIncrementOnCircuitComplete: 100
+  baseGoldIncrementOnWaveComplete: 100
+--- !u!114 &114793394948654340
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1823238120856926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce30c0bf0b5f4cf4fa336dfd1cb62a51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minYieldTime: 3
+  maxYieldTime: 4
+  enemyTier: 0
+  maxEnemies: 3
 --- !u!212 &212959630191743740
 SpriteRenderer:
   m_ObjectHideFlags: 1
