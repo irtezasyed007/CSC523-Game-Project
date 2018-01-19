@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Tank : MonoBehaviour
 {
     private static List<GameObject> targets = new List<GameObject>();
-    private const int timeToLive = 10; //In seconds
+    private const int timeToLive = 300; //In seconds
 
     public Weapon weapon;
     public int velocity;
@@ -35,6 +35,7 @@ public class Tank : MonoBehaviour
 
         muzzleFlash = tankHead.GetComponentInChildren<ParticleSystem>().gameObject;
 
+        StartCoroutine(Count());
         StartCoroutine(FireWeapon());
     }
 
@@ -56,43 +57,37 @@ public class Tank : MonoBehaviour
         while (true)
         {
             
-            if(movementSpeed == 0)
+            if(movementSpeed == 0 && ttlCnt < timeToLive)
             {
-                if (!Wave.wave.isWaveFinished())
+
+                //If the tank doesn't have a target
+                if (target == null)
                 {
-                    if (ttlCnt < timeToLive)
-                        StartCoroutine(Count());
-                    else
-                        GetComponent<Rigidbody2D>().velocity = new Vector2(0, 50);
+                    target = getNearestEnemy();
 
-                    //If the tank doesn't have a target
-                    if (target == null)
+                    if (target == null || targets.Contains(target))
                     {
-                        target = getNearestEnemy();
-
-                        if (target == null || targets.Contains(target))
-                        {
-                            target = null;
-                            yield return null;
-                        }
-
-                        else
-                        {
-                            targets.Add(target);
-                        }
+                        target = null;
+                        yield return null;
                     }
 
-                    //The tank does have a target
                     else
                     {
-                        faceEnemy(target, tankHead);
-                        Vector2 newVelocity = this.weaponDir * velocity;
-
-                        weapon.FireWeapon(target, muzzleFlash.transform.position, newVelocity * -1);
-                        StartCoroutine(MuzzleFlash());
-                        yield return new WaitForSeconds(7);
+                        targets.Add(target);
                     }
                 }
+
+                //The tank does have a target
+                else
+                {
+                    faceEnemy(target, tankHead);
+                    Vector2 newVelocity = this.weaponDir * velocity;
+
+                    weapon.FireWeapon(target, muzzleFlash.transform.position, newVelocity * -1);
+                    StartCoroutine(MuzzleFlash());
+                    yield return new WaitForSeconds(7);
+                }
+                
             }
 
             else yield return null;
@@ -108,8 +103,19 @@ public class Tank : MonoBehaviour
 
     private IEnumerator Count()
     {
-        yield return new WaitForSeconds(1);
-        ttlCnt++;
+
+        while (true)
+        {
+            if (!Wave.wave.isWaveFinished())
+            {
+                if (ttlCnt < timeToLive) ttlCnt++;
+
+                else GetComponent<Rigidbody2D>().velocity = new Vector2(0, 50);
+            }
+
+            yield return new WaitForSeconds(1);     
+        }
+
     }
 
     private GameObject getNearestEnemy()
@@ -143,6 +149,16 @@ public class Tank : MonoBehaviour
                                                 );
 
         this.weaponDir = dir.normalized;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        string tag = collision.tag;
+
+        if(tag == "OutOfBounds")
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnDestroy()

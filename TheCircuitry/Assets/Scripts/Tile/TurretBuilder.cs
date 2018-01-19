@@ -5,13 +5,13 @@ using UnityEngine.EventSystems;
 
 public class TurretBuilder : MonoBehaviour
 {
-    public const int MAX_INSTANCES = 15;
+    public const int MAX_INSTANCES = 12;
     public static List<GameObject> instantiatedTiles = new List<GameObject>();
     public static int totalTiles = 0;
 
     private void Start()
     {
-        if (totalTiles != 15)
+        if (totalTiles != MAX_INSTANCES)
         {
             instantiatedTiles.Add(gameObject);
             Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);

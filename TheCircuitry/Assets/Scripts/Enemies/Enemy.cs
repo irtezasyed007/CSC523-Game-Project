@@ -110,9 +110,16 @@ public class Enemy : MonoBehaviour {
 
     public void applyDamage(double damage)
     {
+
+        if (damage >= currentHealth)
+        {
+            killEnemy();
+            return;
+        }
+
         this.currentHealth -= damage;
 
-        if (currentHealth <= 0.0 || damage >= currentHealth) killEnemy();
+        if (currentHealth <= 0.0) killEnemy();
 
         else
         {
