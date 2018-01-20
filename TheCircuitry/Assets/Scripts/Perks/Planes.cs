@@ -8,24 +8,43 @@ public class Planes : MonoBehaviour
     public Weapon weapon;
     public int movementSpeed;
 
+    private const int MAX_PLANES = 3;
+    private static int planeCount = 0;
+
     private Vector2 direction = Vector2.left;
     private GameObject muzzleFlash;
+    private bool duplicateInstance = false;
 
     // Use this for initialization
     void Awake()
     {
-        SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>(true);
-        Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
-
-        foreach (SpriteRenderer sr in sprites)
+        if(planeCount < MAX_PLANES)
         {
-            if (sr.name == "planeMuzzleFlash")
+            SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>(true);
+            Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
+
+            foreach (SpriteRenderer sr in sprites)
             {
-                muzzleFlash = sr.gameObject;
-                break;
+                if (sr.name == "planeMuzzleFlash")
+                {
+                    muzzleFlash = sr.gameObject;
+                    break;
+                }
             }
+
+            planeCount++;
         }
 
+        else
+        {
+            duplicateInstance = true;
+            Destroy(gameObject);
+        }
+        
+    }
+
+    private void OnEnable()
+    {
         StartCoroutine(FireWeapon());
     }
 
@@ -65,6 +84,10 @@ public class Planes : MonoBehaviour
 
     private void OnDestroy()
     {
-        Level1Scene.level1Scene.instantiedLevel1GameObjects.Remove(gameObject);
+        if (!duplicateInstance)
+        {
+            Level1Scene.level1Scene.instantiedLevel1GameObjects.Remove(gameObject);
+            planeCount = 0;
+        }
     }
 }

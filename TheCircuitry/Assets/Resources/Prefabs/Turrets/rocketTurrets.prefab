@@ -658,7 +658,7 @@ MonoBehaviour:
   offset: {x: 0.09, y: 0}
   brokenTowerParticles: {fileID: 1090095403431306}
   weaponFireRate: 1.5
-  towerTimeToLive: 30
+  towerTimeToLive: 120
   towerTier: 2
 --- !u!114 &114383229671976974
 MonoBehaviour:
@@ -676,7 +676,7 @@ MonoBehaviour:
   offset: {x: 0.09, y: 0}
   brokenTowerParticles: {fileID: 1090095403431306}
   weaponFireRate: 1
-  towerTimeToLive: 45
+  towerTimeToLive: 180
   towerTier: 3
 --- !u!114 &114386196974594240
 MonoBehaviour:
@@ -735,7 +735,7 @@ MonoBehaviour:
   offset: {x: 0, y: 0}
   brokenTowerParticles: {fileID: 1090095403431306}
   weaponFireRate: 2
-  towerTimeToLive: 20
+  towerTimeToLive: 60
   towerTier: 1
 --- !u!198 &198305718441331710
 ParticleSystem:

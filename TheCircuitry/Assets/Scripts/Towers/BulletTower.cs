@@ -86,6 +86,7 @@ public class BulletTower : Tower
                                             turretHead.transform.eulerAngles.z
                                             );
 
+                ttlCnt++; //Added this in so towers break fast if they are shooting
                 StartCoroutine(MuzzleFlash());
                 weapon.FireWeapon(rotation, pos1, newVelocity);
                 if (base.towerTier >= 2) weapon.FireWeapon(rotation, pos2, newVelocity);

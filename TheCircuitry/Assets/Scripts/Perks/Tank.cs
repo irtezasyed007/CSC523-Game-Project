@@ -6,6 +6,7 @@ public class Tank : MonoBehaviour
 {
     private static List<GameObject> targets = new List<GameObject>();
     private const int timeToLive = 300; //In seconds
+    private static int tankCount = 0;
 
     public Weapon weapon;
     public int velocity;
@@ -18,13 +19,30 @@ public class Tank : MonoBehaviour
     private Vector3 weaponDir;
     private GameObject target;
     private int ttlCnt = 0;
+    private bool duplicateInstance = false;
 
-    // Use this for initialization
-    void Awake()
+    private void Start()
     {
-        Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
-        
-        foreach(Transform go in GetComponentsInChildren<Transform>())
+        if(tankCount < 3)
+        {
+            tankCount++;
+            Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
+            DontDestroyOnLoad(gameObject);
+        }
+
+        else
+        {
+            duplicateInstance = true;
+            Destroy(gameObject);
+        }
+    }
+    // Use this for initialization
+    void OnEnable()
+    {
+        StartCoroutine(Count());
+        StartCoroutine(FireWeapon());
+
+        foreach (Transform go in GetComponentsInChildren<Transform>())
         {
             if(go.name == "tankHead")
             {
@@ -34,9 +52,6 @@ public class Tank : MonoBehaviour
         }
 
         muzzleFlash = tankHead.GetComponentInChildren<ParticleSystem>().gameObject;
-
-        StartCoroutine(Count());
-        StartCoroutine(FireWeapon());
     }
 
     // Update is called once per frame
@@ -59,7 +74,6 @@ public class Tank : MonoBehaviour
             
             if(movementSpeed == 0 && ttlCnt < timeToLive)
             {
-
                 //If the tank doesn't have a target
                 if (target == null)
                 {
@@ -103,7 +117,6 @@ public class Tank : MonoBehaviour
 
     private IEnumerator Count()
     {
-
         while (true)
         {
             if (!Wave.wave.isWaveFinished())
@@ -163,7 +176,11 @@ public class Tank : MonoBehaviour
 
     private void OnDestroy()
     {
-        targets.Clear();
-        Level1Scene.level1Scene.instantiedLevel1GameObjects.Remove(gameObject);
+        if (!duplicateInstance)
+        {
+            tankCount = 0;
+            targets.Clear();
+            Level1Scene.level1Scene.instantiedLevel1GameObjects.Remove(gameObject);
+        }
     }
 }

@@ -15,14 +15,12 @@ public class Enemy : MonoBehaviour {
     public Vector2 direction;
     public double maxHealth;
     public int movementSpeed;
+    public int enemyTier = 1;
     public ParticleSystem damageEffect;
 
     private double currentHealth;
-    private double appliedDamage;
-    private double damageThreshold;
     private bool counting = false;
-    private int selector = 4;
-    private SpriteRenderer[] sprites; //The sprites used to display the enemies health (1, 2, 3, 4, 5)
+    private TextMesh healthTextMesh;
 
 	// Use this for initialization
 	void Start () {
@@ -30,33 +28,16 @@ public class Enemy : MonoBehaviour {
         movementSpeed += movementSpeedAddition;
         instantiedEnemies.Add(gameObject);
         Level1Scene.level1Scene.instantiedLevel1GameObjects.Add(gameObject);
+        currentHealth = maxHealth;
+
+        MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
+        meshRenderer.sortingOrder = 100;
+        TextMesh textMesh = GetComponentInChildren<TextMesh>();
+        healthTextMesh = textMesh;
+        textMesh.text = maxHealth.ToString("0");
+
         DontDestroyOnLoad(gameObject);
 	}
-
-    void Awake()
-    {
-        SpriteRenderer[] tmpSprites = GetComponentsInChildren<SpriteRenderer>();
-        sprites = new SpriteRenderer[tmpSprites.Length - 1];
-
-        //First sprite is always the enemy sprite and not its health...
-        //...so we skip over it
-        int index = -1;
-        foreach(SpriteRenderer sr in tmpSprites)
-        {
-            if (index != -1)
-            {
-                sprites[index] = sr;
-                if (index == 0) sr.gameObject.SetActive(true);
-                else sr.gameObject.SetActive(false);             
-            }
-                
-
-            index++;
-        }
-
-        this.damageThreshold = (this.maxHealth / 5);
-        this.currentHealth = this.maxHealth;
-    }
 
     // Update is called once per frame
     void Update () {
@@ -110,61 +91,25 @@ public class Enemy : MonoBehaviour {
 
     public void applyDamage(double damage)
     {
+        currentHealth -= damage;
 
-        if (damage >= currentHealth)
+        if (currentHealth < 1)
         {
+            healthTextMesh.text = "0";
             killEnemy();
-            return;
         }
-
-        this.currentHealth -= damage;
-
-        if (currentHealth <= 0.0) killEnemy();
 
         else
         {
-            this.appliedDamage += damage;
-
-            if (this.appliedDamage >= this.damageThreshold)
-            {
-                this.appliedDamage -= this.damageThreshold;
-
-                if (selector > 0)
-                {
-                    switch (selector)
-                    {
-                        case 1: //1 Sprite
-                            this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                            sprites[4].gameObject.SetActive(true);
-                            break;
-                        case 2: //2 Sprite
-                            this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                            sprites[3].gameObject.SetActive(true);
-                            break;
-                        case 3: //3 Sprite
-                            this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                            sprites[2].gameObject.SetActive(true);
-                            break;
-                        case 4: //4 Sprite
-                            this.GetComponentsInChildren<SpriteRenderer>()[1].gameObject.SetActive(false);
-                            sprites[1].gameObject.SetActive(true);
-                            break;
-                        default:
-                            Debug.Log("Error");
-                            break;
-                    }
-
-                    selector--;
-                }
-            }
+            string health = currentHealth.ToString("0");
+            healthTextMesh.text = health;
         }
-
     }
 
     private void killEnemy()
     {
-        GameManager.Manager.addToScore(Level1Scene.level1Scene.getRandomValue(Wave.wave.baseScoreIncrementOnKill));
-        GameManager.Manager.addToGold(Level1Scene.level1Scene.getRandomValue(Wave.wave.baseGoldIncrementOnKill));
+        GameManager.Manager.addToScore(Level1Scene.level1Scene.getRandomValue(Wave.wave.baseScoreIncrementOnKill) * enemyTier);
+        GameManager.Manager.addToGold(Level1Scene.level1Scene.getRandomValue(Wave.wave.baseGoldIncrementOnKill) * enemyTier);
         Destroy(gameObject);
     }
 

@@ -46,7 +46,7 @@ public class TowerManager : MonoBehaviour
 
     public void openTurretOptionsPanel()
     {
-        GameObject canvas = GameObject.Find("Canvas");
+        GameObject canvas = GameObject.Find("Level1Canvas");
 
         foreach(RectTransform go in canvas.GetComponentsInChildren<RectTransform>(true))
         {

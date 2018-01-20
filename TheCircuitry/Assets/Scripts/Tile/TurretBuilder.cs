@@ -33,7 +33,7 @@ public class TurretBuilder : MonoBehaviour
 
     public void loadPurchaseTurretPanel()
     {
-        GameObject canvas = GameObject.Find("Canvas");
+        GameObject canvas = GameObject.Find("Level1Canvas");
         GameObject purchaseTurretPanel = null;
 
         foreach(RectTransform rt in canvas.GetComponentsInChildren<RectTransform>(true))

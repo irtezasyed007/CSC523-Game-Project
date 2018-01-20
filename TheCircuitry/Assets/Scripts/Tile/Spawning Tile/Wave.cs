@@ -56,8 +56,7 @@ public class Wave : MonoBehaviour
             } 
 
             if (isReadyForNextWave)
-            {
-                GameObject.Find("BeginNextWave").GetComponentInChildren<Button>(true).gameObject.SetActive(false);
+            { 
                 GameManager.Manager.wave++;
                 scaleToNextWave();
                 spawnTile.startEnemySpawning();
@@ -84,6 +83,13 @@ public class Wave : MonoBehaviour
         isReadyForNextWave = true;
     }
 
+    public void beginGame()
+    {
+        spawnTile.startEnemySpawning();
+    }
+
+    public bool IsReadyForWave { get { return isReadyForNextWave; } set { isReadyForNextWave = value; } }
+
     private void scaleToNextWave()
     {
         baseNumberOfEnemiesToSpawn += waveScale.NextNumEnemiesSpawn;
@@ -103,9 +109,24 @@ public class Wave : MonoBehaviour
         spawnTile.MaxEnemies = baseNumberOfEnemiesToSpawn;
 
         //Makes it so harder enemies spawn every 7 waves
-        if (GameManager.Manager.wave == 7) spawnTile.enemyTier = 1;
-        if (GameManager.Manager.wave == 14) spawnTile.enemyTier = 2;
-        if (GameManager.Manager.wave == 21) spawnTile.enemyTier = 3;
+        if (GameManager.Manager.wave == 7)
+        {
+            spawnTile.minYieldTime = 2;
+            spawnTile.maxYieldTime = 4;
+            spawnTile.enemyTier = 1;
+        }
+        if (GameManager.Manager.wave == 14)
+        {
+            spawnTile.minYieldTime = 2;
+            spawnTile.maxYieldTime = 3;
+            spawnTile.enemyTier = 2;
+        }
+        if (GameManager.Manager.wave == 21)
+        {
+            spawnTile.minYieldTime = 1;
+            spawnTile.maxYieldTime = 2;
+            spawnTile.enemyTier = 3;
+        }
     }
 
     private void OnDestroy()

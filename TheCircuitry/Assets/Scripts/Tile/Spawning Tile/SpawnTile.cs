@@ -19,7 +19,7 @@ public class SpawnTile : MonoBehaviour {
     private float y;
 
     private GameObject[] enemies = new GameObject[4];
-    private bool canSpawn = true;
+    private bool canSpawn = false;
     private bool readyToSpawn = true;
     private bool updatedEnemiesWavesAliveFor = false;
     private int totalEnemiesSpawned = 0;
@@ -45,6 +45,7 @@ public class SpawnTile : MonoBehaviour {
         enemies[1] = Resources.Load<GameObject>("Prefabs/Enemies/enemy2");
         enemies[2] = Resources.Load<GameObject>("Prefabs/Enemies/enemy3");
         enemies[3] = Resources.Load<GameObject>("Prefabs/Enemies/enemy4");
+        
     }
 
     private void OnEnable()
@@ -65,8 +66,16 @@ public class SpawnTile : MonoBehaviour {
             if (enemyCanSpawn())
             {
                 int wait = Random.Range(minYieldTime, maxYieldTime);
-                spawnRandomEnemy();
-                totalEnemiesSpawned++;
+                int enemiesLeftToSpawn = maxEnemies - totalEnemiesSpawned;
+                int amtToSpawn = Random.Range(1, enemiesLeftToSpawn / 2);
+
+                for(int i = 0; i < amtToSpawn; i++)
+                {
+                    spawnRandomEnemy();
+                    totalEnemiesSpawned++;
+                    yield return new WaitForSeconds(Random.Range(0.0f, 1.0f));
+                }
+                
                 yield return new WaitForSeconds(wait);
             }
 
@@ -76,7 +85,7 @@ public class SpawnTile : MonoBehaviour {
 
     private bool enemyCanSpawn()
     {
-        return canSpawn && (totalEnemiesSpawned < maxEnemies || maxEnemies == -1) && GameManager.Manager.tipShown;
+        return canSpawn && (totalEnemiesSpawned < maxEnemies || maxEnemies == -1);
     }
 
     public bool allEnemiesSpawnedForWave()
@@ -86,7 +95,8 @@ public class SpawnTile : MonoBehaviour {
 
     private void spawnRandomEnemy()
     {
-        int index = Random.Range(0, enemyTier);
+        int index = Random.Range(0, enemyTier+1);
+
         if(enemies[index] != null)
         {
             GameObject go = Instantiate(enemies[index], transform.position, Quaternion.identity);

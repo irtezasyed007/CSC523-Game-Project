@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ButtonHandler : MonoBehaviour {
+
+    public static event EventHandler GetAudioToggle = delegate { };
 
     public void SetActive(GameObject go, bool isActive)
     {
@@ -31,6 +34,8 @@ public class ButtonHandler : MonoBehaviour {
     public void stopMusic()
     {
         GameManager.Manager.musicEnabled = !GameManager.Manager.musicEnabled;
+
+        GetAudioToggle(this, new EventArgs());
     }
 
     public void startNextWave()
@@ -38,9 +43,14 @@ public class ButtonHandler : MonoBehaviour {
         Wave.wave.startNextWave();
     }
 
+    public void beginGame()
+    {
+        Wave.wave.beginGame();
+    }
+
     public void playRandomCoinSound()
     {
-        string num = Random.Range(0, 22).ToString("D2");
+        string num = UnityEngine.Random.Range(0, 22).ToString("D2");
         GameObject go = Instantiate(Resources.Load<GameObject>("Sounds/Coins_Several/Coins_Several_" + num));
         AudioSource audioSource = go.GetComponent<AudioSource>();
         audioSource.volume = 1.0f;
@@ -59,6 +69,7 @@ public class ButtonHandler : MonoBehaviour {
 
         else
         {
+            GameManager.Manager.doGoldTransaction(amt);
             GameObject plane = Resources.Load<GameObject>("Prefabs/Planes/GreenPlane");
 
             Vector2 pos1 = new Vector2(1229, 199);
@@ -85,6 +96,7 @@ public class ButtonHandler : MonoBehaviour {
 
         else
         {
+            GameManager.Manager.doGoldTransaction(amt);
             GameObject tank = Resources.Load<GameObject>("Prefabs/Tanks/GreenTank");
 
             //Starting points for tank

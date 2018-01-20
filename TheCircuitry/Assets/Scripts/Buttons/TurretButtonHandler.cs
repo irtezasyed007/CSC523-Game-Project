@@ -176,7 +176,7 @@ public class TurretButtonHandler : ButtonHandler
     private void doNotEnoughGoldText(Vector2 position)
     {
         GameObject go = Resources.Load<GameObject>("Prefabs/Text GameObjects/NotEnoughGoldText");
-        go = Instantiate(go, GameObject.Find("Canvas").transform);
+        go = Instantiate(go, GameObject.Find("Level1Canvas").transform);
         go.transform.position = new Vector2(position.x, position.y);
         go.GetComponent<TextFadeOut>().FadeOut();
     }
@@ -184,7 +184,7 @@ public class TurretButtonHandler : ButtonHandler
     private void doUpgradeSuccessfulText(Vector2 position)
     {
         GameObject go = Resources.Load<GameObject>("Prefabs/Text GameObjects/UpgradeSuccessfulText");
-        go = Instantiate(go, GameObject.Find("Canvas").transform);
+        go = Instantiate(go, GameObject.Find("Level1Canvas").transform);
         go.transform.position = new Vector2(position.x, position.y);
         go.GetComponent<TextFadeOut>().FadeOut();
     }

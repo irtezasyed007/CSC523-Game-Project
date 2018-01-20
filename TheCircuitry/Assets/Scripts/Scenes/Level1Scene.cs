@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,6 +20,7 @@ public class Level1Scene : MonoBehaviour
         {
             level1Scene = this;
             DontDestroyOnLoad(gameObject);
+            ButtonHandler.GetAudioToggle += new EventHandler(OnAudioToggle);
         }
 
         else Destroy(gameObject);
@@ -59,6 +61,21 @@ public class Level1Scene : MonoBehaviour
         }
     }
 
+    private void OnAudioToggle(object sender, EventArgs e)
+    {
+        if (GameManager.Manager.musicEnabled)
+        {
+            Text text = GameObject.Find("MusicToggleButton").GetComponentsInChildren<Text>()[1];
+            text.text = "On";
+        }
+
+        else
+        {
+            Text text = GameObject.Find("MusicToggleButton").GetComponentsInChildren<Text>()[1];
+            text.text = "Off";
+        }
+    }
+
     //Updates the health and score Text to the Game's recorded values
     private void loadAndRenderStats()
     {
@@ -94,7 +111,7 @@ public class Level1Scene : MonoBehaviour
 
     public int getRandomValue(int value)
     {
-        return Random.Range(value / 2, value);
+        return UnityEngine.Random.Range(value / 2, value);
     }
 
     private void OnDestroy()
