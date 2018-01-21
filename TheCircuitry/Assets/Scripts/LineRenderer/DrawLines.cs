@@ -43,7 +43,7 @@ public class DrawLines : MonoBehaviour
 
             Draw2pxWide(point1Pos, point2Pos);
         }
-        if(collidersToDraw.Count != 0)
+        if(collidersToDraw != null && collidersToDraw.Count != 0)
         {
             foreach (Collider2D[] endpointColliders in collidersToDraw)
             {
@@ -129,7 +129,7 @@ public class DrawLines : MonoBehaviour
     }
 
     // To show the lines in the game window whne it is running
-    void OnPostRender()
+    void OnRenderObject()
     {
         DrawGrid();
         DrawConnectingLines();
@@ -144,19 +144,17 @@ public class DrawLines : MonoBehaviour
 
     void DrawGrid()
     {
-        // The "y-coordinate" of the bottom side of the background. 768/2 gives the proper positioning, +5 is for adjustment
+        // The "y-coordinate" of the bottom side of the background. +5 is for adjustment
         float backgroundBot = GameObject.FindGameObjectWithTag("Background").transform.position.y - 768/2 + 5;
         // The "top" value of the Grid bar. Not sure why Unity returns the value as a negative
-        float gridTop = GameObject.FindGameObjectWithTag("GridTop").GetComponent<RectTransform>().offsetMax.y * -1 + backgroundBot;
+        float gridTop = GameObject.FindGameObjectWithTag("GridTop").GetComponent<RectTransform>().offsetMax.y * -1 + backgroundBot + 384;
         // The "bot" value of the Grid bar
-        float gridBot = GameObject.FindGameObjectWithTag("GridBot").GetComponent<RectTransform>().offsetMax.y * -1 + backgroundBot;
-
-        // The "x-coordinate" of the left side of the background. 1024/2 gives the proper positioning
+        float gridBot = GameObject.FindGameObjectWithTag("GridBot").GetComponent<RectTransform>().offsetMax.y * -1 + backgroundBot + 384;
+        // The "x-coordinate" of the left side of the background.
         float backgroundLeft = GameObject.FindGameObjectWithTag("Background").transform.position.x - 1024/2;
         //
         float gridLeft = backgroundLeft;
         float gridRight = backgroundLeft + 1024;
-
         float movingX, movingY, numGridLines = 9;  
         for (int i = 0; i < numGridLines; i++)
         {
@@ -164,8 +162,11 @@ public class DrawLines : MonoBehaviour
             Draw(movingX, gridTop, movingX, gridBot);
             if(i == 0)  // The left-most vertical grid line
             {
+                Draw(movingX - 0.5f, gridTop, movingX - 0.5f, gridBot);
                 Draw(movingX - 1, gridTop, movingX - 1, gridBot);
+                Draw(movingX - 1.5f, gridTop, movingX - 1.5f, gridBot);
                 Draw(movingX - 2, gridTop, movingX - 2, gridBot);
+                Draw(movingX - 2.5f, gridTop, movingX - 2.5f, gridBot);
                 Draw(movingX - 3, gridTop, movingX - 3, gridBot);
             }
             if(i == 8)  // The right-most vertical grid line
@@ -173,6 +174,10 @@ public class DrawLines : MonoBehaviour
                 Draw(movingX + 1, gridTop, movingX + 1, gridBot);
                 Draw(movingX + 2, gridTop, movingX + 2, gridBot);
                 Draw(movingX + 3, gridTop, movingX + 3, gridBot);
+
+                Draw(movingX + 0.5f, gridTop, movingX + 0.5f, gridBot);
+                Draw(movingX + 1.5f, gridTop, movingX + 1.5f, gridBot);
+                Draw(movingX + 2.5f, gridTop, movingX + 2.5f, gridBot);
             }
             if(i < 4)
             {
@@ -212,11 +217,15 @@ public class DrawLines : MonoBehaviour
         if(pointA.x == pointB.x)
         {
             Draw(pointA, pointB);
+            Draw(pointA.x + (1/3f), pointA.y, pointB.x + (1/3f), pointB.y);
+            Draw(pointA.x + (2/3f), pointA.y, pointB.x + (2/3f), pointB.y);
             Draw(pointA.x + 1, pointA.y, pointB.x + 1, pointB.y);
         }
         else
         {
             Draw(pointA, pointB);
+            Draw(pointA.x, pointA.y + (1/3f), pointB.x, pointB.y + (1/3f));
+            Draw(pointA.x, pointA.y + (2/3f), pointB.x, pointB.y + (2/3f));
             Draw(pointA.x, pointA.y + 1, pointB.x, pointB.y + 1);
         }   
     }
@@ -226,11 +235,15 @@ public class DrawLines : MonoBehaviour
         if(x1 == x2)
         {
             Draw(x1, y1, x2, y2);
+            Draw(x1 + (1/3f), y1, x2 + (1/3f), y2);
+            Draw(x1 + (2/3f), y1, x2 + (2/3f), y2);
             Draw(x1 + 1, y1, x2 + 1, y2);
         }
         else
         {
             Draw(x1, y1, x2, y2);
+            Draw(x1, y1 - (1/3f), x2, y2 - (1/3f));
+            Draw(x1, y1 - (2/3f), x2, y2 - (2/3f));
             Draw(x1, y1 - 1, x2, y2 - 1);
         }  
     }

@@ -45,13 +45,12 @@ public class TutorialScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         tutorialPanel = GameObject.FindGameObjectWithTag("TutorialPanel");
-        defaultPos = new Vector3(512, 384);     // This is the center of the screen
+        defaultPos = new Vector3(Screen.width/2, Screen.height/2);     // This is the center of the screen
         tutorialText = tutorialPanel.GetComponentInChildren<UnityEngine.UI.Text>();
         tutorialButton = tutorialPanel.GetComponentInChildren<UnityEngine.UI.Button>();
         sectionIndex--;
         GoToNextSection();
     }
-	
 	// Update is called once per frame
 	void Update () {
         
@@ -64,31 +63,31 @@ public class TutorialScript : MonoBehaviour {
             tutorialText.text = tutorialSections[++sectionIndex];
             if (sectionIndex == 3)      // Index for FunctionText
             {
-                MoveNearNewSection();
+                //MoveNearNewSection();
             }
             else if (sectionIndex == 4)  // Index for Submit Button
             {
-                MoveNearNewSection();
+                //MoveNearNewSection();
             }
             else if (sectionIndex == 5)  // Index for Logic Reference and Gate Reference
             {
-                MoveNearNewSection();
+                //MoveNearNewSection();
             }
             else if (sectionIndex == 7)  // Index for Inputs
             {
-                MoveNearNewSection();
+                //MoveNearNewSection();
             }
             else if (sectionIndex == 10) // Index for Output
             {
-                MoveNearNewSection();
+                //MoveNearNewSection();
             }
             else if (sectionIndex == 11) // Index for Gates
             {
-                tutorialPanel.transform.position = defaultPos;
+                //tutorialPanel.transform.position = defaultPos;
             }
             else if (sectionIndex == 12) // Index for part of tutorial where we make the first simple circuit
             {
-                MoveNearNewSection();
+                //MoveNearNewSection();
             }
         }
     }

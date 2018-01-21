@@ -62,16 +62,16 @@ public class Function
                     break;
                 case '+':
                     //Invariant: LET k=operands.Peek()  Precedence of k MUST: (k = +) OR (k > +)  
-                    while (operands.Peek() == '+' || operands.Peek() == '*')
+                    while (operands.Peek() == '+' || operands.Peek() == '×')
                     {
                         output += operands.Pop().ToString();
                     }
 
                     operands.Push(c);
                     break;
-                case '*':
-                    //Invariant: LET k=operands.Peek()  Precedence of k MUST: (k = *)  
-                    while (operands.Peek() == '*' || operands.Peek() == '^')
+                case '×':
+                    //Invariant: LET k=operands.Peek()  Precedence of k MUST: (k = ×)  
+                    while (operands.Peek() == '×' || operands.Peek() == '^')
                     {
                         output += operands.Pop().ToString();
                     }
@@ -79,7 +79,7 @@ public class Function
                     operands.Push(c);
                     break;
                 case '^':
-                    while(operands.Peek() == '^' || operands.Peek() == '*' || operands.Peek() == '+')
+                    while(operands.Peek() == '^' || operands.Peek() == '×' || operands.Peek() == '+')
                     {
                         output += operands.Pop().ToString();
                     }

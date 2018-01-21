@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class LogicInfo : MonoBehaviour
 {
     private Dictionary<string, string> dict;
-    private string[] topics = { "AND", "OR", "Invert", "Parenthesis", "XOR", "The NOT Gates", "De Morgan's Laws" };
+    private string[] topics = { "AND", "OR", "Invert", "Parentheses", "XOR", "Inverted Gates", "De Morgan's Laws" };
     // Use this for initialization
     void Start()
     {
@@ -28,10 +28,10 @@ public class LogicInfo : MonoBehaviour
                 dict.Add(logic, "In this game, we use the apostrophe (') to indicate the \"invertion\" operation. This can " +
                     "also be thought of as a toggle. If the input is 1, the output is 0. If the input is 0, the output is 1.");
             }
-            else if (logic == "Parenthesis")
+            else if (logic == "Parentheses")
             {
-                dict.Add(logic, "Parenthesis are used to group together terms to indicate which order you should do the operations in." +
-                    " When there are multiple parenthesis, priority goes to the innermost parenthesis, followed by going left to right.");
+                dict.Add(logic, "Parentheses are used to group together terms to indicate which order you should do the operations in." +
+                    " When there are multiple parentheses, priority goes to the innermost parentheses, followed by going left to right.");
             }
             else if (logic == "XOR")
             {
@@ -43,7 +43,7 @@ public class LogicInfo : MonoBehaviour
             //    dict.Add(logic, "In this game, we use the symbol shown below to indicate 'XNOR', also called the 'Exclusive NOR'." +
             //        " The output/answer will be 1 if and only if both inputs are 1 or both are 0. This is the opposite of the XOR.");
             //}
-            else if (logic == "The NOT Gates")
+            else if (logic == "Inverted Gates")
             {
                 dict.Add(logic, "The NAND, NOR, and XNOR gates are the opposites of the AND, OR, and XOR gates, respectively. They " +
                     "are equivalent to putting an Inverter after the basic gates. You should use them because you get " +
@@ -71,7 +71,7 @@ public class LogicInfo : MonoBehaviour
         Text text = GameObject.FindGameObjectWithTag("TutorialPanelText").GetComponent<Text>();
         text.text = dict[topic];
         Text supportText = GameObject.Find("Canvas/Panel/SupportText").GetComponent<Text>();
-        if (topic != "The NOT Gates")
+        if (topic != "Inverted Gates")
         {      
             supportText.text = GameObject.Find("Canvas/" + topic + "/Text").GetComponent<Text>().text;
             if(topic == "De Morgan's Laws")

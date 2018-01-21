@@ -339,9 +339,9 @@ internal class CircuitBuilder : MonoBehaviour {
                 Destroy(panel);
             });
 
-            panel.GetComponent<RectTransform>().offsetMax = new Vector3();
-            panel.GetComponent<RectTransform>().offsetMin = new Vector3();
-            panel.GetComponent<RectTransform>().position = new Vector3(512, 384);
+            panel.GetComponent<RectTransform>().offsetMax = new Vector3(100, 100);
+            panel.GetComponent<RectTransform>().offsetMin = new Vector3(100, 100);
+            panel.GetComponent<RectTransform>().position = new Vector3(Screen.width/2, Screen.height/2);
             string result = TestUserCircuit();
             panel.GetComponentInChildren<UnityEngine.UI.Text>().text = result;
             panel.GetComponentInChildren<UnityEngine.UI.Text>().fontSize = 35;
@@ -416,11 +416,12 @@ internal class CircuitBuilder : MonoBehaviour {
             {
                 outputFunction[i] = '⊕';
             }
-            else if(outputFunction[i] == '*')
+            else if(outputFunction[i] == '�')
             {
                 outputFunction[i] = '×';
             }
         }
+        
         GameObject.FindGameObjectWithTag("Function").GetComponent<UnityEngine.UI.Text>().text = "Function: \n"
                 + new string(outputFunction);
     }
@@ -727,7 +728,8 @@ internal class CircuitBuilder : MonoBehaviour {
         {
             DontDestroyOnLoad(input);
         }
-        tutorialSectionIndex = GameObject.FindGameObjectWithTag("TutorialPanel").GetComponent<TutorialScript>().SectionIndex;
+        if(GameManager.Manager.activeScene == "circuitBuilderTutorial")
+            tutorialSectionIndex = GameObject.FindGameObjectWithTag("TutorialPanel").GetComponent<TutorialScript>().SectionIndex;
     }
 
     private void UnpreserveSceneBeforeLoad()

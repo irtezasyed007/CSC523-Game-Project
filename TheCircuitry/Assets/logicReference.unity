@@ -472,7 +472,7 @@ GameObject:
   - component: {fileID: 389156740}
   - component: {fileID: 389156739}
   m_Layer: 0
-  m_Name: The NOT Gates
+  m_Name: Inverted Gates
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -531,7 +531,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'The NOT Gates
+  m_Text: 'Inverted Gates
 
 '
 --- !u!222 &389156738
@@ -1491,7 +1491,7 @@ GameObject:
   - component: {fileID: 880933207}
   - component: {fileID: 880933206}
   m_Layer: 0
-  m_Name: Parenthesis
+  m_Name: Parentheses
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1548,7 +1548,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Parenthesis
+  m_Text: Parentheses
 --- !u!222 &880933205
 CanvasRenderer:
   m_ObjectHideFlags: 0
