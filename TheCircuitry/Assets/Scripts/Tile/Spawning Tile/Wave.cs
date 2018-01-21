@@ -24,9 +24,10 @@ public class Wave : MonoBehaviour
     //In charge of scaling the waves as the player progresses
     private WaveScale waveScale;
     private bool rewardedOnWaveComplete = false;
+    private bool started = false;
 
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         if(wave == null)
         {
@@ -39,7 +40,7 @@ public class Wave : MonoBehaviour
 
         else
         {
-            Destroy(gameObject);
+            if(this != wave) Destroy(gameObject);
         }
     }
 
@@ -85,7 +86,13 @@ public class Wave : MonoBehaviour
 
     public void beginGame()
     {
+        this.started = true;
         spawnTile.startEnemySpawning();
+    }
+
+    public bool isStarted()
+    {
+        return this.started;
     }
 
     public bool IsReadyForWave { get { return isReadyForNextWave; } set { isReadyForNextWave = value; } }

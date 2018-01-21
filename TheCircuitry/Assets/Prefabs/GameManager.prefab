@@ -54,6 +54,6 @@ MonoBehaviour:
   tipShown: 0
   score: 0
   wave: 1
-  gold: 150
+  gold: 0
   health: 100
   musicEnabled: 1

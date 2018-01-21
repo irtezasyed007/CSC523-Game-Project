@@ -17,13 +17,16 @@ public class Tower : MonoBehaviour {
     public int towerTimeToLive;
     protected int ttlCnt = 0;
     public int towerTier;
-    internal bool isBroken = false;
+    public bool isBroken = false;
+    public bool canOpen = true;
     protected bool canFire = true;
     protected Weapon weapon;
     protected Vector2 dir;
     protected int noWeaponFireCount = 0;
     protected int noTowerCountdownCount = 0;
     protected int secondsWaited = 0;
+    private int openCircuitPanelCooldown = 5;
+    private int openCircuitPanelCooldownCounter = 0;
     protected bool startCountdown = false;
     protected bool initialized = false;
 
@@ -78,6 +81,8 @@ public class Tower : MonoBehaviour {
                 if (ttlCnt >= towerTimeToLive && !isBroken)
                 {
                     isBroken = true;
+                    canOpen = false;
+                    StartCoroutine(OpenCircuitPanelCooldown());
                 }
                 else if (!isBroken)
                 {
@@ -85,6 +90,31 @@ public class Tower : MonoBehaviour {
                 }
             }
         }
+    }
+
+    private IEnumerator OpenCircuitPanelCooldown()
+    {
+        while (true)
+        {
+            if(openCircuitPanelCooldownCounter < openCircuitPanelCooldown)
+            {
+                openCircuitPanelCooldownCounter++;
+            }
+
+            else if(openCircuitPanelCooldownCounter >= openCircuitPanelCooldown)
+            {
+                openCircuitPanelCooldownCounter = 0;
+                canOpen = true;
+                break;
+            }
+
+            yield return new WaitForSeconds(1);
+        }
+    }
+
+    public int getCooldownCounterTime()
+    {
+        return this.openCircuitPanelCooldownCounter;
     }
 
     protected List<Enemy> getNearEntities(float range)

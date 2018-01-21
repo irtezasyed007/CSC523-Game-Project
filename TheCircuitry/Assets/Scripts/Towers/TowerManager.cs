@@ -14,7 +14,7 @@ public class TowerManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        if(ALLOWED_TOWERS <= activeTowers.Count)
+        if(ALLOWED_TOWERS <= activeTowers.Count || alreadyExists(gameObject))
         {
             Destroy(this.gameObject);
         }
@@ -80,6 +80,16 @@ public class TowerManager : MonoBehaviour
     public Tower getActiveTower()
     {
         return this.activeTower.GetComponent<Tower>();
+    }
+
+    private bool alreadyExists(GameObject gameObject)
+    {
+        foreach(GameObject go in activeTowers)
+        {
+            if (go.transform.position == gameObject.transform.position) return true;
+        }
+
+        return false;
     }
 
     private void OnDestroy()

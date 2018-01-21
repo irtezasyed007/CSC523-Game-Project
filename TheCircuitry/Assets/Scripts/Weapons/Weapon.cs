@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class Weapon : MonoBehaviour {
 
     public double damage;
+    protected bool isTriggered = false;
 
 	// Use this for initialization
 	void Start () {

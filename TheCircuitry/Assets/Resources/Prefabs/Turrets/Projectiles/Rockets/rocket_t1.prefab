@@ -183,6 +183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 10
+  explosionRadius: 50
 --- !u!198 &198627046760602708
 ParticleSystem:
   m_ObjectHideFlags: 1

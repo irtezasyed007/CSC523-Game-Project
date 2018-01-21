@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class TurretBuilder : MonoBehaviour
 {
-    public const int MAX_INSTANCES = 12;
+    public const int MAX_INSTANCES = 11;
     public static List<GameObject> instantiatedTiles = new List<GameObject>();
     public static int totalTiles = 0;
 

@@ -7,7 +7,7 @@ public class WelcomeScene : MonoBehaviour
 
     private void Start()
     {
-        
+
     }
 
     void OnEnable()
@@ -27,6 +27,7 @@ public class WelcomeScene : MonoBehaviour
         if (scene.name == "welcome")
         {
             GameManager.Manager.resetGame();
+            AudioManager.audioManager.setMusic("Sounds/Music/Mishief Stroll");
         }
     }
 

@@ -29,19 +29,23 @@ public class Bullet : Weapon
 
     protected override void OnTriggerEnter2D(Collider2D collision)
     {
-        GameObject go = collision.gameObject;
-
-        if (go.tag == "Enemy")
+        if (!isTriggered)
         {
-            Destroy(this.gameObject);
-            Enemy enemy = go.GetComponent<Enemy>();
-            enemy.applyDamage(getDamage());
-            enemy.playDamageEffect();
-        }
+            isTriggered = true;
+            GameObject go = collision.gameObject;
 
-        if (go.tag == "OutOfBounds")
-        {
-            Destroy(this.gameObject);
+            if (go.tag == "Enemy")
+            {
+                Destroy(this.gameObject);
+                Enemy enemy = go.GetComponent<Enemy>();
+                enemy.applyDamage(getDamage());
+                enemy.playDamageEffect();
+            }
+
+            if (go.tag == "OutOfBounds")
+            {
+                Destroy(this.gameObject);
+            }
         }
     }
 }

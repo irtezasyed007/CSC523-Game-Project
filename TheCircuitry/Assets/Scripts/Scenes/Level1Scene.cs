@@ -42,8 +42,13 @@ public class Level1Scene : MonoBehaviour
     {
         if(scene.name == "level1")
         {
+            AudioManager.audioManager.setMusic("Sounds/Music/Polka Train");
             GameManager.Manager.setIsActiveForLevelGameObjects(true);
 
+            if (!Wave.wave.isStarted())
+            {
+                GameObject.Find("BeginNextWave").GetComponentsInChildren<Button>(true)[1].gameObject.SetActive(true);
+            }
             if (GameManager.Manager.tipShown) GameObject.Find("StartPanel").SetActive(false);
         }
 
@@ -58,21 +63,30 @@ public class Level1Scene : MonoBehaviour
         if(SceneManager.GetActiveScene().name == "level1")
         {
             loadAndRenderStats();
+            refreshMusicButtonText();
         }
     }
 
     private void OnAudioToggle(object sender, EventArgs e)
     {
-        if (GameManager.Manager.musicEnabled)
-        {
-            Text text = GameObject.Find("MusicToggleButton").GetComponentsInChildren<Text>()[1];
-            text.text = "On";
-        }
+        refreshMusicButtonText();
+    }
 
-        else
+    private void refreshMusicButtonText()
+    {
+        if (SceneManager.GetActiveScene().name == "level1")
         {
-            Text text = GameObject.Find("MusicToggleButton").GetComponentsInChildren<Text>()[1];
-            text.text = "Off";
+            if (GameManager.Manager.musicEnabled)
+            {
+                Text text = GameObject.Find("MusicToggleButton").GetComponentsInChildren<Text>()[1];
+                text.text = "On";
+            }
+
+            else
+            {
+                Text text = GameObject.Find("MusicToggleButton").GetComponentsInChildren<Text>()[1];
+                text.text = "Off";
+            }
         }
     }
 

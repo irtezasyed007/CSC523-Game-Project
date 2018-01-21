@@ -27,39 +27,52 @@ public class TurretButtonHandler : ButtonHandler
         {
             Button btn = gameObject.GetComponent<Button>();
             Tower tower = clickedTurret.GetComponent<TowerManager>().getActiveTower();
+            Text operationalText = null;
+            Text cooldownText = null;
 
             foreach (Text text in btn.gameObject.GetComponentsInChildren<Text>(true))
             {
-                if (text.gameObject.name == "OperationalText")
-                {
-                    //They are currently still fighting enemies
-                    if (!Wave.wave.isWaveFinished())
-                    {
-                        if (tower.isBroken)
-                        {
-                            btn.interactable = true;
-                            text.text = "Nonoperational";
-                            text.color = new Color(255.0f / 255.0f, 0.0f / 255.0f, 0.0f / 255.0f, 255.0f / 255.0f);
-                        }
-
-                        else
-                        {
-                            btn.interactable = false;
-                            text.text = "Operational";
-                            text.color = new Color(32.0f / 255.0f, 150.0f / 255.0f, 52.0f / 255.0f, 255.0f / 255.0f);
-                        }
-                    }
-
-                    //The wave of enemies is over
-                    else
-                    {
-                        btn.interactable = false;
-                        text.text = "Start Next Round!";
-                        text.color = new Color(255.0f / 255.0f, 0.0f / 255.0f, 0.0f / 255.0f, 255.0f / 255.0f);
-                    }
-
-                }
+                //The status of their turret
+                if (text.gameObject.name == "OperationalText") operationalText = text;
+                else if (text.gameObject.name == "CounterText") cooldownText = text;
             }
+
+            if (tower.isBroken)
+            {
+                refreshCooldownText(cooldownText, btn);
+                operationalText.text = "Nonoperational";
+                operationalText.color = new Color(255.0f / 255.0f, 0.0f / 255.0f, 0.0f / 255.0f, 255.0f / 255.0f);
+            }
+
+            else
+            {
+                btn.interactable = false;
+                operationalText.text = "Operational";
+                operationalText.color = new Color(32.0f / 255.0f, 150.0f / 255.0f, 52.0f / 255.0f, 255.0f / 255.0f);
+            }
+
+        }
+    }
+
+    private void refreshCooldownText(Text cooldownText, Button btn)
+    {
+        Tower tower = clickedTurret.GetComponent<TowerManager>().getActiveTower();
+        Text counterText = cooldownText.GetComponentsInChildren<Text>(true)[1];
+
+        if (tower.canOpen)
+        {
+            cooldownText.gameObject.transform.parent.gameObject.SetActive(false);
+            btn.interactable = true;
+        }
+
+        else
+        {
+            cooldownText.gameObject.transform.parent.gameObject.SetActive(true);
+            btn.interactable = false;
+            int time = 6 - tower.getCooldownCounterTime();
+
+            if (time == 1) counterText.text = time.ToString() + " second";
+            else counterText.text = time.ToString() + " seconds";
         }
     }
 

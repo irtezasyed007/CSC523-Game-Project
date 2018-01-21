@@ -78,9 +78,9 @@ internal class CircuitBuilder : MonoBehaviour {
         {
             instance.GetComponent<Tower>().isBroken = false;
             GameManager.Manager.addToScore(Level1Scene.level1Scene.getRandomValue(
-                Wave.wave.baseScoreDecrementOnCircuitFailed));
+                Wave.wave.baseScoreIncrementOnCircuitComplete));
             GameManager.Manager.addToGold(Level1Scene.level1Scene.getRandomValue(
-                Wave.wave.baseScoreDecrementOnCircuitFailed));
+                Wave.wave.baseGoldIncrementOnCircuitComplete));
         }
         return "Answer is correct!";
     }
