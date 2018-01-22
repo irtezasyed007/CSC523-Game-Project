@@ -23,6 +23,8 @@ public class DrawLines : MonoBehaviour
 
     private void Start()
     {
+        if (GameManager.Manager.circuitBuilder == null) return;
+
         if (GameManager.Manager.circuitBuilder.drawColliders == null)
         {
             collidersToDraw = new List<Collider2D[]>();
