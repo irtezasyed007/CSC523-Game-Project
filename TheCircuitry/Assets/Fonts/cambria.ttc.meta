@@ -1,5 +1,7 @@
 fileFormatVersion: 2
-guid: 58b647c5b2ec4184e9a07a561cdf0644
+guid: f5d564afef9a11646848915f68c721d3
+timeCreated: 1516582481
+licenseType: Free
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,10 +10,13 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: JazzCreateBubble
+  fontName: Cambria
   fontNames:
-  - JazzCreateBubble
-  fallbackFontReferences: []
+  - Cambria
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 5c561fe58b6d7f645879f900128f46ac, type: 3}
+  - {fileID: 12800000, guid: 8866b5dad7126df4a8057e5f6d2b5e13, type: 3}
+  - {fileID: 12800000, guid: 6d8f7bcde39e2294db9101d5f18320e3, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

@@ -1,19 +1,20 @@
 fileFormatVersion: 2
-guid: 93b1b3b8cefeac14693b26ad0b2b2f41
-timeCreated: 1516571352
+guid: 6d8f7bcde39e2294db9101d5f18320e3
+timeCreated: 1516582479
 licenseType: Free
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
   fontSize: 16
-  forceTextureCase: -1
+  forceTextureCase: -2
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Arial
+  fontName: Cambria
   fontNames:
-  - Arial
-  fallbackFontReferences: []
+  - Cambria
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 5c561fe58b6d7f645879f900128f46ac, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
