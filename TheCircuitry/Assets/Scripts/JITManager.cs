@@ -9,7 +9,7 @@ public class JITManager : MonoBehaviour
     private GameObject fixTurretJIT;
 
     // Use this for initialization
-    void Awake()
+    void Start()
     {   
         foreach (RectTransform rt in GetComponentsInChildren<RectTransform>(true))
         {
@@ -24,6 +24,8 @@ public class JITManager : MonoBehaviour
         if (!Wave.wave.isStarted() && GameManager.Manager.tipShown 
             && SceneManager.GetActiveScene().name == "level1")
         {
+            if (GameObject.Find("bulletTurrets") == null) return;
+
             GameObject startTurret = GameObject.Find("bulletTurrets").GetComponentInChildren<Tower>().gameObject;
 
             if (startTurret.GetComponent<Tower>().isBroken)
@@ -38,7 +40,7 @@ public class JITManager : MonoBehaviour
             }
         }
 
-        else
+        else if(this != null)
         {
             fixTurretJIT.SetActive(false);
             startWaveJIT.SetActive(false);

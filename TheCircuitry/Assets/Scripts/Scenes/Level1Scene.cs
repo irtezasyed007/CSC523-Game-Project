@@ -64,6 +64,22 @@ public class Level1Scene : MonoBehaviour
         {
             loadAndRenderStats();
             refreshMusicButtonText();
+
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                GameManager.Manager.gold += 1000;
+            }
+
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                GameManager.Manager.score += 1000;
+            }
+
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                GameManager.Manager.incrementWave();
+                Wave.wave.scaleToNextWave();
+            }
         }
     }
 

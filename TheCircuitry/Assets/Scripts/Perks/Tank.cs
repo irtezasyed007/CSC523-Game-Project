@@ -58,7 +58,7 @@ public class Tank : MonoBehaviour
     void Update()
     {
 
-        if (Vector2.Distance(transform.position, endPoint) <= 1) movementSpeed = 0;
+        if (Vector2.Distance(transform.position, endPoint) <= 1.5) movementSpeed = 0;
 
         else
         {

@@ -97,7 +97,7 @@ public class Wave : MonoBehaviour
 
     public bool IsReadyForWave { get { return isReadyForNextWave; } set { isReadyForNextWave = value; } }
 
-    private void scaleToNextWave()
+    public void scaleToNextWave()
     {
         baseNumberOfEnemiesToSpawn += waveScale.NextNumEnemiesSpawn;
         baseScoreIncrementOnKill += waveScale.NextScoreOnKill;

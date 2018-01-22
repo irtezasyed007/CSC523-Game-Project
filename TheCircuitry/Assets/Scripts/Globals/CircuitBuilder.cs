@@ -379,10 +379,10 @@ internal class CircuitBuilder : MonoBehaviour {
         draw = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<DrawLines>();
         listOfGates = new List<GameObject>();
         Mask.value = 1 << LayerMask.NameToLayer("Default");
-        int diff = 1;
-        if (GameManager.Manager.score >= 30 && GameManager.Manager.score < 60) diff = 2;
-        else if (GameManager.Manager.score >= 60 && GameManager.Manager.score < 100) diff = 3;
-        else if (GameManager.Manager.score >= 100) diff = 4;
+        int diff = CircuitBuilder.instance.towerTier;
+        //if (GameManager.Manager.score >= 30 && GameManager.Manager.score < 60) diff = 2;
+        //else if (GameManager.Manager.score >= 60 && GameManager.Manager.score < 100) diff = 3;
+        //else if (GameManager.Manager.score >= 100) diff = 4;
         if (equation == null)
         {
             if(SceneManager.GetActiveScene().name == "circuitBuilderTutorial")
@@ -396,7 +396,7 @@ internal class CircuitBuilder : MonoBehaviour {
             }
             else
             {
-                equation = CSC_523_Game.BooleanStringGenerator.generateBooleanString(1);
+                equation = CSC_523_Game.BooleanStringGenerator.generateBooleanString(diff);
                 func = new Function(equation.StackString);
                 func.viewTruthTable();
                 bool[] stringArr = func.getTruthResults();
